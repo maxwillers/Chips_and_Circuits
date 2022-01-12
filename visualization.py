@@ -19,7 +19,7 @@ def visualization(chip):
         plt.plot(x, y, '-')
     
     # Visualize the gates on chip
-    plt.plot(chip.gates[0],chip.gates[1], 'rs')
+    plt.plot(chip.gates[0],chip.gates[1], 'rs', markersize = 10)
   
     plt.grid()
     plt.show()
