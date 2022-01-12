@@ -15,11 +15,10 @@ def visualization(chip):
 
     # Visualize nets on chip
     for i in range(len(chip.nets)):
-        x, y = zip(*chip.nets[i].path)
-        plt.plot(x, y, '-')
+        plt.plot(*zip(*chip.nets[i].path), '-')
     
     # Visualize the gates on chip
-    plt.plot(chip.gates[0],chip.gates[1], 'rs', markersize = 10)
+    plt.plot(chip.gates[0], chip.gates[1], 'rs', markersize = 10)
   
     plt.grid()
     plt.show()
