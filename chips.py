@@ -1,29 +1,15 @@
-import grid
-import sys
-import pandas as pd
-import argparse
-
-def main(netlist_file, print_file):
-    netlist = pd.read_csv(netlist_file)
-    print_grid = pd.read_csv(print_file)
-    print(netlist)
-    print(print_grid)
+"""
+chips.py
+This file contains the class Chip which forms a chip with gates on them
+"""
 
 
-if __name__ == "__main__":
+class Chip:
+    """Class for creating chip"""
 
-    
-    # Set-up parsing command line arguments
-    parser = argparse.ArgumentParser(description="make chip circuit")
-
-    # Adding arguments
-    parser.add_argument("netlist_file", help="input file (csv)")
-    parser.add_argument("print_file", help="input print file (csv)")
-   
-    # Read arguments from command line
-    args = parser.parse_args()
-
-    # Run main with provide arguments
-    main(args.netlist_file, args.print_file) 
-    
-
+    def __init__(self, netlist, gate_coordinates):
+        # self.x = x
+        # self.y = y
+        #self.grid = [[None for _ in range(self.x)] for _ in range(self.y)]
+        self.gates= [gate_coordinates['x'].tolist(), gate_coordinates['y'].tolist()]
+       
