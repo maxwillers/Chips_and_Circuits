@@ -17,10 +17,13 @@ class Chip:
         self.create_netlist()
     
     def create_netlist(self):
+        """ensure paths are made between the gates as listed in netlist"""
         start_gate = self.netlist["chip_a"].tolist()
         end_gate = self.netlist["chip_b"].tolist()
 
+        
         for i in range (len(start_gate)):
+            # get coordinates of start gate en end gate and make a net between them
             start_coordinate = [self.gates[0][start_gate[i]-1], self.gates[1][start_gate[i]-1]]
             end_coordinate = [self.gates[0][end_gate[i]-1], self.gates[1][end_gate[i]-1]]
             self.add_net(start_coordinate, end_coordinate)
