@@ -11,10 +11,16 @@ from mpl_toolkits.mplot3d import Axes3D
 
 
 def visualization(chip):
-    """ visualizing the chips"""
-    plt.plot(chip.gates[0],chip.gates[1], 'ro')
+    """ visualizing the chips"""  
 
-    plt.plot([1, 2, 3, 4, 5, 6, 6, 5, 4, 4, 5, 6],[5, 5, 5, 5, 5, 5, 4, 4, 4, 3, 2, 2], 'k-')
+    # Visualize nets on chip
+    for i in range(len(chip.nets)):
+        x, y = zip(*chip.nets[i].path)
+        plt.plot(x, y, '-')
+    
+    # Visualize the gates on chip
+    plt.plot(chip.gates[0],chip.gates[1], 'rs')
+  
     plt.grid()
     plt.show()
 
