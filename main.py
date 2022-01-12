@@ -1,10 +1,10 @@
-import pandas as pd
-import argparse
 """
 main.py
 This file contains the function main of the assignment Chips and Circuits
 """
 
+import pandas as pd
+import argparse
 from chips import Chip
 from visualization import visualization
 
