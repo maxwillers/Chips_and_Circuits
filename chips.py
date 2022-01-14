@@ -7,10 +7,11 @@ from net import Net
 class Chip:
     """Class for creating chip"""
 
-    def __init__(self, netlist, gate_coordinates):
-        # self.x = x
-        # self.y = y
-        #self.grid = [[None for _ in range(self.x)] for _ in range(self.y)]
+    def __init__(self, width, length, netlist, gate_coordinates):
+        self.width = width
+        self.length = length
+        self.height = 7
+        self.grid =  [[[None for _ in range(self.width)] for _ in range(self.length)] for _ in range(self.height)]
         self.netlist = netlist
         self.gates= [gate_coordinates['x'].tolist(), gate_coordinates['y'].tolist()]
         self.nets = []
@@ -34,8 +35,12 @@ class Chip:
         # Create a path variable and add starting coordinate
         x= start_coordinate[0]
         y = start_coordinate[1]
-        path = [(x,y)]
+        z = 0
+        path = [(x,y,z)]
         
+        print(start_coordinate)
+        print(end_coordinate)
+
         # Calculate the difference between the x and y coordinates of the start and end
         dx = end_coordinate[0] - x
         dy = end_coordinate[1] - y
@@ -53,15 +58,49 @@ class Chip:
 
         # Change the x coordinate till end x coordinate is reached
         for _ in range(abs(dx)): 
-            x = x + i  
-            path.append((x ,y))
+            x_new = x + i 
+            z_new = z - 1
+            
+            while z != 0 and self.grid[x][y][z_new] != None:
+                z_new = z - 1
+                z = z_new
+                path.append((x ,y, z))
+                self.grid[x][y][z] = 1
+            
+            while self.grid[x_new][y][z] != None and z < self.height :
+                z +=1
+                path.append((x ,y, z))
+                self.grid[x][y][z] = 1 
+                
+            x = x_new 
+            path.append((x ,y, z)) 
+            self.grid[x][y][z] = 1
+            
 
         #Change y coordinate till y coordinate is reached
         for _ in range(abs(dy)):
-            y = y + j
-            path.append((x,y))
+            y_new = y + j
+            z_new = z - 1
+            
+            while z != 0 and self.grid[x][y][z_new] != None:
+                z_new = z - 1
+                z = z_new
+                path.append((x ,y, z))
+                self.grid[x][y][z] = 1
+            
+            while self.grid[x][y_new][z] != None and z < self.height :
+                z +=1
+                path.append((x ,y, z))
+                self.grid[x][y][z] = 1 
+                
+            y = y_new 
+            path.append((x ,y, z))
+            self.grid[x][y][z] = 1 
+            
+            
 
         # Create net
+        print(path)
         net = Net(path)
         self.nets.append(net)
       

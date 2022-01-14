@@ -13,12 +13,12 @@ def main(netlist_file, gate_coordinates):
     netlist = pd.read_csv(netlist_file)
     gate_coordinates = pd.read_csv(gate_coordinates)
 
-    # Get width and height of chip (maybe not nessecary)
+    # Get width and height of chip 
     grid_width = gate_coordinates['x'].max() + 1
     grid_length = gate_coordinates['y'].max() + 1
 
     # Create chip with gates 
-    chip = Chip(netlist, gate_coordinates)
+    chip = Chip(grid_width, grid_length, netlist, gate_coordinates)
 
     # Visualize the chip
     visualization(chip)
