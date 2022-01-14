@@ -2,7 +2,7 @@
 chips.py
 This file contains the class Chip which forms a chip with gates on them
 """
-from net import Net
+from code.classes.net import Net
 
 class Chip:
     """Class for creating chip"""
