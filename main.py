@@ -22,12 +22,6 @@ def main(netlist_file, gate_coordinates):
 
     # Visualize the chip
     visualization_3d(chip)
-
-    
-
-
-
-
    
 
 if __name__ == "__main__":

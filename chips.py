@@ -58,12 +58,14 @@ class Chip:
             x_new = x + i 
             z_new = z - 1
             
+            # Make sure z goes down again if possible
             while z != 0 and self.grid[x][y][z_new] != None:
                 z_new = z - 1
                 z = z_new
                 path.append((x ,y, z))
                 self.grid[x][y][z] = 1
             
+            # Change x if possible otherwise go up
             while self.grid[x_new][y][z] != None and z < self.height :
                 z +=1
                 path.append((x ,y, z))
@@ -78,18 +80,26 @@ class Chip:
             y_new = y + j
             z_new = z - 1
             
+            # Make sure z goes down again if possible
             while z != 0 and self.grid[x][y][z_new] != None:
                 z_new = z - 1
                 z = z_new
                 path.append((x ,y, z))
                 self.grid[x][y][z] = 1
             
+            # Change y if possible otherwise go up
             while self.grid[x][y_new][z] != None and z < self.height :
                 z +=1
                 path.append((x ,y, z))
                 self.grid[x][y][z] = 1 
                 
             y = y_new 
+            path.append((x ,y, z))
+            self.grid[x][y][z] = 1 
+        
+        # Make sure the line goes to base layer if right x and y coordinates are reached
+        if z != 0:
+            z=0
             path.append((x ,y, z))
             self.grid[x][y][z] = 1 
             
