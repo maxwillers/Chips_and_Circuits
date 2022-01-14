@@ -37,9 +37,6 @@ class Chip:
         y = start_coordinate[1]
         z = 0
         path = [(x,y,z)]
-        
-        print(start_coordinate)
-        print(end_coordinate)
 
         # Calculate the difference between the x and y coordinates of the start and end
         dx = end_coordinate[0] - x
@@ -74,8 +71,7 @@ class Chip:
                 
             x = x_new 
             path.append((x ,y, z)) 
-            self.grid[x][y][z] = 1
-            
+            self.grid[x][y][z] = 1    
 
         #Change y coordinate till y coordinate is reached
         for _ in range(abs(dy)):
@@ -97,10 +93,7 @@ class Chip:
             path.append((x ,y, z))
             self.grid[x][y][z] = 1 
             
-            
-
         # Create net
-        print(path)
         net = Net(path)
         self.nets.append(net)
       

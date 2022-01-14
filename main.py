@@ -6,7 +6,7 @@ This file contains the function main of the assignment Chips and Circuits
 import pandas as pd
 import argparse
 from chips import Chip
-from visualization import visualization
+from visualization import visualization, visualization_3d
 
 def main(netlist_file, gate_coordinates):
     # Make lilst of gates on chip and connections to be made between gates
@@ -21,7 +21,7 @@ def main(netlist_file, gate_coordinates):
     chip = Chip(grid_width, grid_length, netlist, gate_coordinates)
 
     # Visualize the chip
-    visualization(chip)
+    visualization_3d(chip)
 
     
 
