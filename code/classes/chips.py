@@ -68,11 +68,11 @@ class Chip:
             z_new = z - 1
             
             # Make sure z goes down again if possible
-            while z != 0 and self.grid[x][y][z_new] > 0:
-                z_new = z - 1
+            while z != 0 and self.grid[x][y][z_new] == 0:
                 z = z_new
                 path.append((x ,y, z))
                 self.grid[x][y][z] += 1
+                z_new = z - 1
             
             # Change x if possible otherwise go up
             while self.grid[x_new][y][z] > 0 and z < self.height :
@@ -90,11 +90,11 @@ class Chip:
             z_new = z - 1
             
             # Make sure z goes down again if possible
-            while z != 0 and self.grid[x][y][z_new] > 0:
-                z_new = z - 1
+            while z != 0 and self.grid[x][y][z_new] == 0:
                 z = z_new
                 path.append((x ,y, z))
                 self.grid[x][y][z] += 1
+                z_new = z - 1
             
             # Change y if possible otherwise go up
             while self.grid[x][y_new][z] > 0 and z < self.height :
