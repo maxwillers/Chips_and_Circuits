@@ -37,9 +37,6 @@ class Chip:
         end_gate = self.netlist["chip_b"].tolist()
 
         for i in range (len(start_gate)):
-            # # get coordinates of start gate en end gate and make a net between them
-            # start_coordinate = [self.gates[start_gate[i] -1].x, self.gates[start_gate[i] -1].y]
-            # end_coordinate = [self.gates[end_gate[i] -1].x, self.gates[end_gate[i] -1].y]
             self.add_net(self.gates[start_gate[i]-1], self.gates[end_gate[i] -1])       
        
     def add_net(self, start_gate, end_gate):
@@ -133,8 +130,14 @@ class Chip:
 
     def is_solution(self):
         """Returns if all gates in netlist are connected"""
-        # to do
-         
+        start_gates = self.netlist["chip_a"].tolist()
+        end_gates = self.netlist["chip_b"].tolist()
+
+        for i in range(len(start_gates)):
+            if self.gates[end_gates[i] -1].id not in self.gates[start_gates[i]-1].connections:
+                return False
+
+        return True
     
     def calculate_value(self):
         """Returns the cost of placing the wires"""
@@ -145,5 +148,6 @@ class Chip:
         
         return value
       
+
     
     
