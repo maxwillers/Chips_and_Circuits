@@ -1,3 +1,8 @@
+"""
+greedy.py
+This file contains the class greedy class which implements a greedy alogrithm for finding paths
+This greedy algorithm based on Manhattan distance.
+"""
 import copy
 from code.classes.net import Net
 
