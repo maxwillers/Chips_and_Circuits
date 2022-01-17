@@ -43,6 +43,7 @@ class Chip:
         dy = end_coordinate[1] - y
 
         # Look if df is negative of not to decide which way to go
+        # df???
         if dx > 0:
             i = 1
         else:
