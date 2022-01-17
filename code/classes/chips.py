@@ -51,6 +51,7 @@ class Chip:
     #     dx = end_gate.x - x
     #     dy = end_gate.y - y
 
+
     #     # Look if df is negative of not to decide which way to go
     #     if dx > 0:
     #         i = 1
