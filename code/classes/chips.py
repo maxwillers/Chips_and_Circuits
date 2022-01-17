@@ -117,6 +117,25 @@ class Chip:
         start_gate.connections.append(end_gate.id)
         end_gate.connections.append(start_gate.id)
         self.nets.append(net)
+
+    
+    def available_neighbours(self, coordinates):
+        """checks available neighbours for each position"""
+        good_neighbours = []
+        x, y, z = coordinates
+        
+        # check for each neighbour if they are available and exist
+        for i in range(-1, 1, 2):
+            if self.grid[x + i][y][z] == 0:      
+                good_neighbours.append((x + i, y, z))
+            if self.grid[x][y + i][z] == 0:
+                good_neighbours.append((x, y + i, z))
+            if self.grid[x][y][z + i] == 0:
+                good_neighbours.append((x, y, z + i))
+        
+        # return list of tuples of all possible neighbours 
+        return good_neighbours 
+        
     
     def get_violations(self):
         """Returns if any of the nets cross eachother"""
