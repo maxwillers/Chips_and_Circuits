@@ -17,7 +17,12 @@ def visualization(chip):
         plt.plot(*zip(*chip.nets[i].path), '-')
     
     # Visualize the gates on chip
-    plt.plot(chip.gates[0], chip.gates[1], 'rs', markersize = 10)
+    gates_y = []
+    gates_x = []
+    for i in range(len(chip.gates)):
+        gates_y.append(chip.gates[i].y)
+        gates_x.append(chip.gates[i].x)
+    plt.plot(gates_x, gates_y, 'rs', markersize = 10)
   
     plt.grid()
     plt.show()
@@ -37,7 +42,12 @@ def visualization_3d(chip):
         ax.plot(*zip(*chip.nets[i].path), '-')
     
     # Visualize the gates on chip
-    ax.plot(chip.gates[0], chip.gates[1], 'rs', markersize = 10)
+    gates_y = []
+    gates_x = []
+    for i in range(len(chip.gates)):
+        gates_y.append(chip.gates[i].y)
+        gates_x.append(chip.gates[i].x)
+    ax.plot(gates_x, gates_y, 'rs', markersize = 10)
 
     plt.grid()
     plt.show()

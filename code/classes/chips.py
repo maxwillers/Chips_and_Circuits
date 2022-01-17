@@ -2,7 +2,6 @@
 chips.py
 This file contains the class Chip which forms a chip with gates on them
 """
-from turtle import width
 from code.classes.net import Net
 from code.classes.gate import Gate
 
@@ -14,46 +13,46 @@ class Chip:
         self.length = length
         self.height = 7
         self.grid =  [[[0 for _ in range(self.width)] for _ in range(self.length)] for _ in range(self.height)]
-        self.netlist = netlist
         self.gates= []
         self.nets = []
         self.intersections = []
-        self.add_gates(self, gate_coordinates)
+        self.gate_coordinates = gate_coordinates
+        self.netlist = netlist
+        self.add_gates()
         self.create_netlist()
 
-    def add_gates(self, gate_coordinates):
+    def add_gates(self):
         """create gates with id and connections"""
-        id_gates = gate_coordinates['chip'].tolist()
-        x_gates = gate_coordinates['x'].tolist()
-        y_gates = gate_coordinates['y'].tolist()
+        id_gates = self.gate_coordinates['chip'].tolist()
+        x_gates = self.gate_coordinates['x'].tolist()
+        y_gates = self.gate_coordinates['y'].tolist()
         
-        for i in len(id_gates):
+        for i in range (len(id_gates)):
             gate = Gate(id_gates[i], x_gates[i], y_gates[i])
             self.gates.append(gate)
-
-    
+  
     def create_netlist(self):
         """ensure paths are made between the gates as listed in netlist"""
         start_gate = self.netlist["chip_a"].tolist()
         end_gate = self.netlist["chip_b"].tolist()
 
         for i in range (len(start_gate)):
-            # get coordinates of start gate en end gate and make a net between them
-            start_coordinate = [self.gates[0][start_gate[i]-1], self.gates[1][start_gate[i]-1]]
-            end_coordinate = [self.gates[0][end_gate[i]-1], self.gates[1][end_gate[i]-1]]
-            self.add_net(start_coordinate, end_coordinate)       
+            # # get coordinates of start gate en end gate and make a net between them
+            # start_coordinate = [self.gates[start_gate[i] -1].x, self.gates[start_gate[i] -1].y]
+            # end_coordinate = [self.gates[end_gate[i] -1].x, self.gates[end_gate[i] -1].y]
+            self.add_net(self.gates[start_gate[i]-1], self.gates[end_gate[i] -1])       
        
-    def add_net(self, start_coordinate, end_coordinate):
+    def add_net(self, start_gate, end_gate):
         """create a new net path between two gates"""
         # Create a path variable and add starting coordinate
-        x= start_coordinate[0]
-        y = start_coordinate[1]
+        x= start_gate.x
+        y = start_gate.y
         z = 0
         path = [(x,y,z)]
 
         # Calculate the difference between the x and y coordinates of the start and end
-        dx = end_coordinate[0] - x
-        dy = end_coordinate[1] - y
+        dx = end_gate.x - x
+        dy = end_gate.y - y
 
         # Look if df is negative of not to decide which way to go
         if dx > 0:
@@ -118,14 +117,16 @@ class Chip:
             
         # Create net
         net = Net(path)
+        start_gate.connections.append(end_gate.id)
+        end_gate.connections.append(start_gate.id)
         self.nets.append(net)
     
     def get_violations(self):
         """Returns if any of the nets cross eachother"""
         violations = []
-        for x in range self.width:
-            for y in range self.length:
-                for z in range self.height:
+        for x in range (self.width):
+            for y in range (self.length):
+                for z in range (self.height):
                     if self.grid[x][y][z] > 1:
                         violations.append((x,y,z))
         return violations
