@@ -1,3 +1,7 @@
+"""
+This file contains the Random class which implements a random algorithm for finding paths between chips.
+"""
+
 from calendar import c
 import random
 import copy
@@ -16,16 +20,15 @@ class Random:
 
     def create_netlist(self):
         """Go over all connection that need to be made and ensure they are made"""
-        # iterate over netlist
+
+        # Iterate over the netlist
         for i in range(len(self.chip.netlist[0])):
             print(i)
             self.random_path(self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])
 
 
     def random_path(self, start_gate, end_gate):
-        """
-        Assign each net with a randomized path
-        """
+        """Assign each net with a randomized path"""
 
         lines = [] 
            
@@ -41,16 +44,16 @@ class Random:
 
         end_coordinates = (ex, ey, ez)
 
-        # while the connection has not been made, make random choices for a new line  
+        # While the connection has not been made, make random choices for a new line  
         while current_coordinates != end_coordinates:
 
-            # if there are neighbour points available make a random choice 
+            # If there are neighbour points available, make a random choice between these neighbouring points
             choose, gates = self.chip.available_neighbours(current_coordinates)
             
-            # iterate over possible neighbour gates
+            # Iterate over the possible neighbouring gates
             for end in gates:
 
-                # if coordinates match end gate coordinate, create net
+                # If the current coordinates match the end gate coordinate, create the net
                 if end == end_coordinates:
                     print(f"check {current_coordinates}, {end_coordinates}") 
                     net = Net(lines)
@@ -59,25 +62,24 @@ class Random:
                     self.chip.nets.append(net)
                     return
                     
-            # if there are neighbours available pick one randomly
+            # If there are neighbours available, pick one randomly
             if choose: 
                 new_line = random.choice(choose)
 
-                # keep track of the lines which have been laid 
+                # Keep track of the lines which have been laid
                 lines.append(new_line)
 
-                # change current position 
+                # Keep track of the current position
                 current_coordinates = new_line
 
                 self.chip.grid[current_coordinates[0]][current_coordinates[1]][current_coordinates[2]] += 1
 
-            # if there are no neighbours available run function again
+            # If there are no neighbours available, run the function again
             if not choose:
                 
-                # delete the lines which have been laid
+                # Delete the lines which have been laid in order to start over
                 for coordinate in lines:
                     self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] = 0
-
 
                 # to do: set limit
                 self.random_path(start_gate, end_gate)
