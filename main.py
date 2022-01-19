@@ -7,8 +7,8 @@ import pandas as pd
 import argparse
 from code.classes.chips import Chip
 from code.visualization.visualization import visualization, visualization_3d
+from code.algorithms.greedy import Greedy
 from code.algorithms.randomise import Random
-
 
 def main(netlist_file, gate_coordinates):
     # Make lilst of gates on chip and connections to be made between gates
@@ -21,6 +21,15 @@ def main(netlist_file, gate_coordinates):
 
     # Create chip with gates 
     chip = Chip(grid_width, grid_length, netlist, gate_coordinates)
+    greedy = Greedy(chip)
+    random = Random(chip)
+
+    # Make dataframe
+    output = greedy.chip.df_output()
+    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_"), 'wires': greedy.chip.calculate_value()}
+    output = output.append(score, ignore_index=True)
+    output.to_csv('output.csv', index=False)
+    
 
     random = Random(chip)
 

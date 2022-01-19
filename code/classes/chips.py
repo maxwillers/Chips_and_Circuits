@@ -4,6 +4,7 @@ This file contains the class Chip which forms a chip with gates on them
 """
 from code.classes.net import Net
 from code.classes.gate import Gate
+import pandas as pd
 
 class Chip:
     """Class for creating chip"""
@@ -19,8 +20,6 @@ class Chip:
         self.gate_coordinates = gate_coordinates
         self.netlist = [netlist["chip_a"].tolist(), netlist["chip_b"].tolist()]
         self.add_gates()
-        #self.create_netlist()
-    
 
     def add_gates(self):
         """create gates with id and connections"""
@@ -39,96 +38,8 @@ class Chip:
             self.grid[x][y][z] = -1
 
             self.gates.append(gate)
-        
-    # def create_netlist(self):
-    #     """ensure paths are made between the gates as listed in netlist"""
-    #     start_gate = self.netlist["chip_a"].tolist()
-    #     end_gate = self.netlist["chip_b"].tolist()
-
-    #     for i in range (len(start_gate)):
-    #         self.add_net(self.gates[start_gate[i]-1], self.gates[end_gate[i] -1])       
-       
-    # def add_net(self, start_gate, end_gate):
-    #     """create a new net path between two gates"""
-    #     # Create a path variable and add starting coordinate
-    #     x= start_gate.x
-    #     y = start_gate.y
-    #     z = 0
-    #     path = [(x,y,z)]
-
-    #     # Calculate the difference between the x and y coordinates of the start and end
-    #     dx = end_gate.x - x
-    #     dy = end_gate.y - y
-
-
-    #     # Look if df is negative of not to decide which way to go
-    #     if dx > 0:
-    #         i = 1
-    #     else:
-    #         i = -1
-
-    #     if dy > 0:
-    #         j = 1
-    #     else:
-    #         j = -1
-
-    #     # Change the x coordinate till end x coordinate is reached
-    #     for _ in range(abs(dx)): 
-    #         x_new = x + i 
-    #         z_new = z - 1
-            
-    #         # Make sure z goes down again if possible
-    #         while z != 0 and self.grid[x][y][z_new] == 0:
-    #             z = z_new
-    #             path.append((x ,y, z))
-    #             self.grid[x][y][z] += 1
-    #             z_new = z - 1
-            
-    #         # Change x if possible otherwise go up
-    #         while self.grid[x_new][y][z] > 0 and z < self.height :
-    #             z +=1
-    #             path.append((x ,y, z))
-    #             self.grid[x][y][z] += 1 
-                
-    #         x = x_new 
-    #         path.append((x ,y, z)) 
-    #         self.grid[x][y][z] += 1    
-
-    #     #Change y coordinate till y coordinate is reached
-    #     for _ in range(abs(dy)):
-    #         y_new = y + j
-    #         z_new = z - 1
-            
-    #         # Make sure z goes down again if possible
-    #         while z != 0 and self.grid[x][y][z_new] == 0:
-    #             z = z_new
-    #             path.append((x ,y, z))
-    #             self.grid[x][y][z] += 1
-    #             z_new = z - 1
-            
-    #         # Change y if possible otherwise go up
-    #         while self.grid[x][y_new][z] > 0 and z < self.height :
-    #             z +=1
-    #             path.append((x ,y, z))
-    #             self.grid[x][y][z] += 1 
-                
-    #         y = y_new 
-    #         path.append((x ,y, z))
-    #         self.grid[x][y][z] += 1 
-        
-    #     # Make sure the line goes to base layer if right x and y coordinates are reached
-    #     if z != 0:
-    #         z=0
-    #         path.append((x ,y, z))
-    #         self.grid[x][y][z] += 1 
-            
-    #     # Create net
-    #     net = Net(path)
-    #     start_gate.connections.append(end_gate.id)
-    #     end_gate.connections.append(start_gate.id)
-    #     self.nets.append(net)
-
     
+
     def available_neighbours(self, coordinates):
         """checks available neighbours for each position"""
         gate_neighbours = []
@@ -137,9 +48,15 @@ class Chip:
       
         # check for each neighbour if they are available and exist
         for i in range(-1, 2, 2):
+            
+            # check if coordinates stay in the grid
             if x + i >= 0 and x + i <= self.width: 
+                
+                # if the segment on the grid is free, it is a option
                 if self.grid[x + i][y][z] == 0:      
                     good_neighbours.append((x + i, y, z))
+                
+                # if the segment on the grid is a gate, it might be the endpoint 
                 elif self.grid[x + i][y][z] == -1:
                     gate_neighbours.append((x + i, y, z))
             if y + i >= 0 and y + i <= self.length:
@@ -169,6 +86,7 @@ class Chip:
                         violations.append((x,y,z))
         return violations
 
+
     def is_solution(self):
         """Returns if all gates in netlist are connected"""
         start_gates = self.netlist["chip_a"].tolist()
@@ -180,6 +98,7 @@ class Chip:
 
         return True
     
+    
     def calculate_value(self):
         """Returns the cost of placing the wires"""
         value = 300
@@ -188,6 +107,18 @@ class Chip:
         value = value * len(self.intersections)
         
         return value
+    
+    def df_output(self):
+        wires =[]
+        nets = []
+        for net in self.nets:
+            wires.append(net.path)
+    
+        for i in range (len(self.netlist[0])): 
+            nets.append((self.netlist[0][i], self.netlist[1][i]))
+
+        return pd.DataFrame(data = {'net': nets, 'wires' : wires})
+        
       
 
     
