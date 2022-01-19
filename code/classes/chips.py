@@ -4,6 +4,7 @@ This file contains the class Chip which forms a chip with gates on them
 """
 from code.classes.net import Net
 from code.classes.gate import Gate
+import pandas as pd
 
 class Chip:
     """Class for creating chip"""
@@ -81,6 +82,18 @@ class Chip:
         value = value * len(self.intersections)
         
         return value
+    
+    def df_output(self):
+        wires =[]
+        nets = []
+        for net in self.nets:
+            wires.append(net.path)
+    
+        for i in range (len(self.netlist[0])): 
+            nets.append((self.netlist[0][i], self.netlist[1][i]))
+
+        return pd.DataFrame(data = {'net': nets, 'wires' : wires})
+        
       
 
     

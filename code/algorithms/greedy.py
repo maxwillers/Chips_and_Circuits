@@ -19,7 +19,6 @@ class Greedy:
         """Go over all connection that need to be made and ensure they are made"""
         for i in range (len(self.chip.netlist[0])):
             self.add_connection(self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1]) 
-    
 
     def add_connection(self, start_gate, end_gate):
         """Make the connection between two gates first changing the x coordinates then the y coordinates"""
@@ -37,11 +36,15 @@ class Greedy:
         # Look if dx is negative of not to decide which way to go
         if dx > 0:
             i = 1
+        elif dx == 0:
+            i = 0
         else:
             i = -1
 
         if dy > 0:
             j = 1
+        elif dy == 0:
+            j = 0
         else:
             j = -1
 

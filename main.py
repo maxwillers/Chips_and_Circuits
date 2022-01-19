@@ -22,6 +22,13 @@ def main(netlist_file, gate_coordinates):
     chip = Chip(grid_width, grid_length, netlist, gate_coordinates)
     greedy = Greedy(chip)
 
+    # Make dataframe
+    output = greedy.chip.df_output()
+    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_"), 'wires': greedy.chip.calculate_value()}
+    output = output.append(score, ignore_index=True)
+    output.to_csv('output.csv', index=False)
+    
+
     # Visualize the chip
     visualization_3d(greedy.chip)
    
