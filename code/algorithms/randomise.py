@@ -1,93 +1,71 @@
 import random
 import copy
+from tracemalloc import start
+from code.classes import chips
+from code.classes.chips import Chip
 
 
-def firstCoordinatePositive():
-    """
-    Continues the net path by adding 1 to the first coordinate
-    """
-    pass
+class Random:
+
+    def __init__(self, chip):
+        self.chip = copy.deepcopy(chip)
+        self.create_netlist()
+        
+
+    def create_netlist(self):
+        """Go over all connection that need to be made and ensure they are made"""
+        # iterate over netlist
+        for i in range(len(self.chip.netlist[0])):
+            print(i)
+            self.random_path(self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])
 
 
-def firstCoordinateNegative():
-    """
-    Continues the net path by subtracting 1 from the first coordinate
-    """
-    pass
+    def random_path(self, start_gate, end_gate):
+        """
+        Assign each net with a randomized path
+        """
+
+        lines = [] 
+           
+        sx = start_gate.x
+        sy = start_gate.y
+        sz = 0
+
+        current_coordinates = (sx, sy, sz)
+
+        ex = end_gate.x
+        ey = end_gate.y 
+        ez = 0
+
+        end_coordinates = (ex, ey, ez)
+
+        # while the connection has not been made, make random choices for a new line  
+        while current_coordinates != end_coordinates:
+
+            # if there are neighbour points available make a random choice 
+            choose, gates = self.chip.available_neighbours(current_coordinates)
+            
+            for end in gates:
+                if end == end_coordinates:
+                    print(f"check {current_coordinates}, {end_coordinates}") 
+                    for coordinate in lines:
+                        self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] += 1
+                    current_coordinates = end
+                    return
+                    
+            # if there are neighbours available pick one randomly
+            if choose: 
+                new_line = random.choice(choose)
+
+                # keep track of the lines which have been laid 
+                lines.append(new_line)
+
+                # change current position 
+                current_coordinates = new_line
+                
+            # if there are no neighbours available run function again
+            if not choose:
+                # to do: set limit
+                self.random_path(start_gate, end_gate)
 
 
-def secondCoordinatePositive():
-    """
-    Continues the net path by adding 1 to the second coordinate
-    """
-    pass
-
-
-def secondCoordinateNegative():
-    """
-    Continues the net path by subtracting 1 from the second coordinate
-    """
-    pass
-
-
-def thirdCoordinatePositive():
-    """
-    Continues the net path by adding 1 to the third coordinate
-    """
-    pass
-
-
-def thirdCoordinateNegative():
-    """
-    Continues the net path by subtracting 1 from the third coordinate
-    """
-    pass
-
-
-# convert the tuple containing the coordinates to a list to make it mutable
-# dus gaat erom: verander eerste coordinaat met + of - 1 / verander tweede coordinaat met dat of derde
-# convert it back to a tuple and put it in a list of tuples, only if the move is possible in this particular instance
-# randomly choose one of the functions from the list and run it
-# save the new coordinates as the new starting point and save all the coordinates in a list; so one list per net 
-
-
-def random_path(graph, start_coordinate, end_coordinate):
-    """
-    Assign each net with a randomized path
-    """
-    # Generate a random path for each net in the netlist
-    # for net in netlist:
-        # while start_coordinate != end_coordinate:
-
-    # Create a list of tuples containing all the possible options for a particular position on the grid
-
-    choose = (firstCoordinatePositive, firstCoordinateNegative, secondCoordinatePositive, secondCoordinateNegative, thirdCoordinatePositive, thirdCoordinateNegative) 
-    random.choice(choose)() 
- 
-
-
-
-
-
-def random_reassignment(graph, possibilities):
-    """
-    Algorithm that reallocates the taken paths until each net is valid.
-    CAUTION: may run indefinitely.
-    """
-    new_graph = copy.deepcopy(graph)
-
-    # Randomly assign a value to each of the nodes
-    random_path(new_graph, possibilities)
-
-    # Find nodes that are "violations" and have neighbours with same value
-    violating_nodes = new_graph.get_violations()
-
-    # While we have violations
-    while len(violating_nodes):
-        # Reconfigure violations randomly
-        random_reconfigure_nodes(new_graph, violating_nodes, possibilities)
-
-        # Find nodes that are violations
-        violating_nodes = new_graph.get_violations()
-
-    return new_graph

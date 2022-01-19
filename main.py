@@ -7,6 +7,8 @@ import pandas as pd
 import argparse
 from code.classes.chips import Chip
 from code.visualization.visualization import visualization, visualization_3d
+from code.algorithms.randomise import Random
+
 
 def main(netlist_file, gate_coordinates):
     # Make lilst of gates on chip and connections to be made between gates
@@ -20,8 +22,11 @@ def main(netlist_file, gate_coordinates):
     # Create chip with gates 
     chip = Chip(grid_width, grid_length, netlist, gate_coordinates)
 
+    random = Random(chip)
+
+
     # Visualize the chip
-    visualization_3d(chip)
+    visualization_3d(random.chip)
    
 
 if __name__ == "__main__":

@@ -12,14 +12,15 @@ class Chip:
         self.width = width
         self.length = length
         self.height = 7
-        self.grid =  [[[0 for _ in range(self.width)] for _ in range(self.length)] for _ in range(self.height)]
+        self.grid = [[[0 for _ in range(self.width + 1)] for _ in range(self.length + 1)] for _ in range(self.height + 1)]
         self.gates= []
         self.nets = []
         self.intersections = []
         self.gate_coordinates = gate_coordinates
         self.netlist = [netlist["chip_a"].tolist(), netlist["chip_b"].tolist()]
         self.add_gates()
-        self.create_netlist()
+        #self.create_netlist()
+    
 
     def add_gates(self):
         """create gates with id and connections"""
@@ -29,8 +30,16 @@ class Chip:
         
         for i in range (len(id_gates)):
             gate = Gate(id_gates[i], x_gates[i], y_gates[i])
+            
+            # set gate value to -1 
+            x = gate.x
+            y = gate.y
+            z = 0
+
+            self.grid[x][y][z] = -1
+
             self.gates.append(gate)
-  
+        
     # def create_netlist(self):
     #     """ensure paths are made between the gates as listed in netlist"""
     #     start_gate = self.netlist["chip_a"].tolist()
@@ -122,20 +131,32 @@ class Chip:
     
     def available_neighbours(self, coordinates):
         """checks available neighbours for each position"""
+        gate_neighbours = []
         good_neighbours = []
         x, y, z = coordinates
-        
+      
         # check for each neighbour if they are available and exist
-        for i in range(-1, 1, 2):
-            if self.grid[x + i][y][z] == 0:      
-                good_neighbours.append((x + i, y, z))
-            if self.grid[x][y + i][z] == 0:
-                good_neighbours.append((x, y + i, z))
-            if self.grid[x][y][z + i] == 0:
-                good_neighbours.append((x, y, z + i))
+        for i in range(-1, 2, 2):
+            if x + i >= 0 and x + i <= self.width: 
+                if self.grid[x + i][y][z] == 0:      
+                    good_neighbours.append((x + i, y, z))
+                elif self.grid[x + i][y][z] == -1:
+                    gate_neighbours.append((x + i, y, z))
+            if y + i >= 0 and y + i <= self.length:
+                if self.grid[x][y + i][z] == 0:
+                    good_neighbours.append((x, y + i, z))
+                elif self.grid[x][y + i][z] == -1:
+                    gate_neighbours.append((x, y + i, z))
+            if z + i >= 0 and z + i <= self.height:
+                if self.grid[x][y][z + i] == 0:
+                    good_neighbours.append((x, y, z + i))
+                elif self.grid[x][y][z + i] == -1:
+                    gate_neighbours.append((x, y, z + i))
+
+                
         
         # return list of tuples of all possible neighbours 
-        return good_neighbours 
+        return good_neighbours, gate_neighbours
 
     
     def get_violations(self):
