@@ -1,8 +1,10 @@
+from calendar import c
 import random
 import copy
 from tracemalloc import start
 from code.classes import chips
 from code.classes.chips import Chip
+from code.classes.net import Net
 
 
 class Random:
@@ -45,12 +47,16 @@ class Random:
             # if there are neighbour points available make a random choice 
             choose, gates = self.chip.available_neighbours(current_coordinates)
             
+            # iterate over possible neighbour gates
             for end in gates:
+
+                # if coordinates match end gate coordinate, create net
                 if end == end_coordinates:
                     print(f"check {current_coordinates}, {end_coordinates}") 
-                    for coordinate in lines:
-                        self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] += 1
-                    current_coordinates = end
+                    net = Net(lines)
+                    start_gate.connections.append(end_gate.id)
+                    end_gate.connections.append(start_gate.id)
+                    self.chip.nets.append(net)
                     return
                     
             # if there are neighbours available pick one randomly
@@ -62,9 +68,17 @@ class Random:
 
                 # change current position 
                 current_coordinates = new_line
-                
+
+                self.chip.grid[current_coordinates[0]][current_coordinates[1]][current_coordinates[2]] += 1
+
             # if there are no neighbours available run function again
             if not choose:
+                
+                # delete the lines which have been laid
+                for coordinate in lines:
+                    self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] = 0
+
+
                 # to do: set limit
                 self.random_path(start_gate, end_gate)
 
