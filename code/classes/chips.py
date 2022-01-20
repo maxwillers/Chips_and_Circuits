@@ -1,10 +1,9 @@
-"""
-chips.py
-This file contains the class Chip which forms a chip with gates on them
-"""
+"""This file contains the class Chip, which forms a chip with gates on them"""
+
 from code.classes.net import Net
 from code.classes.gate import Gate
 import pandas as pd
+
 
 class Chip:
     """Class for creating chip"""
@@ -38,7 +37,7 @@ class Chip:
             self.grid[x][y][z] = -1
 
             self.gates.append(gate)
-    
+            
 
     def available_neighbours(self, coordinates):
         """checks available neighbours for each position"""
@@ -46,17 +45,17 @@ class Chip:
         good_neighbours = []
         x, y, z = coordinates
       
-        # check for each neighbour if they are available and exist
+        # Check for each neighbour (a location on the grid) if they exist and if they are available
         for i in range(-1, 2, 2):
             
-            # check if coordinates stay in the grid
+            # Check if the coordinates stay in the grid
             if x + i >= 0 and x + i <= self.width: 
                 
-                # if the segment on the grid is free, it is a option
+                # If the location on the grid is free, it is a option or so-called "good neighbour"
                 if self.grid[x + i][y][z] == 0:      
                     good_neighbours.append((x + i, y, z))
                 
-                # if the segment on the grid is a gate, it might be the endpoint 
+                # If the location on the grid is a gate, it might be the endpoint 
                 elif self.grid[x + i][y][z] == -1:
                     gate_neighbours.append((x + i, y, z))
             if y + i >= 0 and y + i <= self.length:
@@ -69,33 +68,30 @@ class Chip:
                     good_neighbours.append((x, y, z + i))
                 elif self.grid[x][y][z + i] == -1:
                     gate_neighbours.append((x, y, z + i))
-
-                
         
         # return list of tuples of all possible neighbours 
         return good_neighbours, gate_neighbours
 
     
     def get_violations(self):
-        """Returns if any of the nets cross eachother"""
+        """Returns the violations if any of the nets cross eachother"""
         violations = []
         for x in range (self.width):
             for y in range (self.length):
                 for z in range (self.height):
                     if self.grid[x][y][z] > 1:
-                        violations.append((x,y,z))
+                        violations.append((x, y, z))
         return violations
 
 
     def is_solution(self):
-        """Returns if all gates in netlist are connected"""
+        """Returns True if all gates in netlist are connected"""
         start_gates = self.netlist["chip_a"].tolist()
         end_gates = self.netlist["chip_b"].tolist()
 
         for i in range(len(start_gates)):
             if self.gates[end_gates[i] -1].id not in self.gates[start_gates[i]-1].connections:
                 return False
-
         return True
     
     
@@ -109,6 +105,7 @@ class Chip:
         return value
     
     def df_output(self):
+        """Returns the output in a dataframe"""
         wires =[]
         nets = []
         for net in self.nets:
@@ -118,8 +115,3 @@ class Chip:
             nets.append((self.netlist[0][i], self.netlist[1][i]))
 
         return pd.DataFrame(data = {'net': nets, 'wires' : wires})
-        
-      
-
-    
-    
