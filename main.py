@@ -11,6 +11,7 @@ from code.classes.chips import Chip
 from code.visualization.visualization import visualization_3d
 from code.algorithms.greedy import Greedy
 from code.algorithms.randomise import Random
+from code.algorithms.greedy_2 import Greedy_random
 
 
 def main(netlist_file, gate_coordinates):
@@ -26,16 +27,17 @@ def main(netlist_file, gate_coordinates):
     # Create a chip with gates
     chip = Chip(grid_width, grid_length, netlist, gate_coordinates)
     greedy = Greedy(chip)
-    random = Random(chip)
+    #random = Random(chip)
 
     # Make a dataframe
     output = greedy.chip.df_output()
     score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").split(".csv")[0], 'wires': greedy.chip.calculate_value()}
     output = output.append(score, ignore_index=True)
-    output.to_csv('output.csv', index=False)
+    print(output)
+    #output.to_csv('output.csv', index=False)
     
     # Visualize the chip
-    visualization_3d(random.chip)
+    visualization_3d(greedy.chip)
 
 
 if __name__ == "__main__":
