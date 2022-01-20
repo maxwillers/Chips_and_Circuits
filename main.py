@@ -30,10 +30,6 @@ def main(netlist_file, gate_coordinates):
     output = output.append(score, ignore_index=True)
     output.to_csv('output.csv', index=False)
     
-
-    random = Random(chip)
-
-
     # Visualize the chip
     visualization_3d(random.chip)
    
