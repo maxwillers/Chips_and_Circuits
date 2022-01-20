@@ -24,7 +24,7 @@ def main(netlist_file, gate_coordinates):
 
     # Make dataframe
     output = greedy.chip.df_output()
-    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_"), 'wires': greedy.chip.calculate_value()}
+    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").split(".csv")[0], 'wires': greedy.chip.calculate_value()}
     output = output.append(score, ignore_index=True)
     output.to_csv('output.csv', index=False)
     

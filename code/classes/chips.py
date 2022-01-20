@@ -10,10 +10,10 @@ class Chip:
     """Class for creating chip"""
 
     def __init__(self, width, length, netlist, gate_coordinates):
-        self.width = width
-        self.length = length
+        self.width = width 
+        self.length = length 
         self.height = 7
-        self.grid =  [[[0 for _ in range(self.width)] for _ in range(self.length)] for _ in range(self.height)]
+        self.grid =  [[[0 for _ in range(self.width + 1)] for _ in range(self.length +1)] for _ in range(self.height +1)]
         self.gates= []
         self.nets = []
         self.intersections = []
@@ -76,10 +76,10 @@ class Chip:
     
     def calculate_value(self):
         """Returns the cost of placing the wires"""
-        value = 300
+        value = 0
         for net in self.nets:
             value += len(net.path)
-        value = value * len(self.intersections)
+        value = value + (300 * len(self.intersections))
         
         return value
     

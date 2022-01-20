@@ -52,14 +52,14 @@ class Greedy:
         for _ in range(abs(dx)): 
             x_new = x + i 
             z_new = z - 1
-                
+            
             # Make sure z goes down again if possible
             while z != 0 and self.chip.grid[x][y][z_new] == 0:
                 z = z_new
                 path.append((x ,y, z))
                 self.chip.grid[x][y][z] += 1
                 z_new = z - 1
-                
+           
             # Change x if possible otherwise go up
             while self.chip.grid[x_new][y][z] > 0 and z < self.chip.height :
                 z +=1
