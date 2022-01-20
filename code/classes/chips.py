@@ -102,7 +102,7 @@ class Chip:
                     if self.grid[x][y][z] > 0:
                         counter += 1
                 if counter > 1:
-                    print(x,y)
+                    #print(x,y)
                     intersections = intersections + (counter - 1)
         return intersections
 

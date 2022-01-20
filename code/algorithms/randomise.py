@@ -12,7 +12,7 @@ from code.classes import chips
 from code.classes.chips import Chip
 from code.classes.net import Net
 
-sys.setrecursionlimit(5000)
+#sys.setrecursionlimit(5000)
 
 class Random:
 
@@ -28,6 +28,7 @@ class Random:
         # Iterate over the netlist
         for i in range(len(self.chip.netlist[0])):
             print(f"chip {i + 1}: {self.random_path(self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])}")
+                
         
     
     def random_path(self, start_gate, end_gate):
@@ -49,6 +50,8 @@ class Random:
         ez = 0
 
         end_coordinates = (ex, ey, ez)
+
+        lines.append(current_coordinates)
 
         # While the connection has not been made, make random choices for a new line  
         while current_coordinates != end_coordinates:
