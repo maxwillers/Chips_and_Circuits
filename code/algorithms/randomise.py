@@ -1,7 +1,7 @@
 """
 This file contains the Random class which implements a random algorithm for finding paths between chips.
 """
-
+import sys 
 from calendar import c
 import random
 import copy
@@ -10,12 +10,12 @@ from code.classes import chips
 from code.classes.chips import Chip
 from code.classes.net import Net
 
+sys.setrecursionlimit(5000)
 
 class Random:
 
     def __init__(self, chip):
         self.chip = copy.deepcopy(chip)
-        self.backup = copy.deepcopy(chip)
         self.create_netlist()
         
 
@@ -71,8 +71,8 @@ class Random:
                     if len(lines) == len(set(lines)):
                         
                         for coordinate in lines:
-                            
-                            self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] += 1
+                            if self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] != -1:
+                                self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] += 1
                         lines.append(end)
                         net = Net(lines)
                         current_coordinates = end
@@ -89,7 +89,8 @@ class Random:
                         try:
                             return self.random_path(start_gate, end_gate)
                         except RecursionError:
-                            return self.reset()
+                            print("stuck")
+                            quit() 
             
             if flag == False:
                 break
@@ -117,7 +118,9 @@ class Random:
                 try:
                     return self.random_path(start_gate, end_gate)
                 except RecursionError:
-                    return self.reset()
+                    print('stuck')
+                    quit() 
+                   
 
                     
                     
@@ -127,8 +130,6 @@ class Random:
         return print(f"double check {current_coordinates}, {end_coordinates}") 
     #==
         
-    def reset(self):
-        return self.__init__(self.backup)
 
 
     
