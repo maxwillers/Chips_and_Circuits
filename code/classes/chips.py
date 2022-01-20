@@ -15,7 +15,6 @@ class Chip:
         self.grid = [[[0 for _ in range(self.width + 1)] for _ in range(self.length + 1)] for _ in range(self.height + 1)]
         self.gates= []
         self.nets = []
-        self.intersections = []
         self.gate_coordinates = gate_coordinates
         self.netlist = [netlist["chip_a"].tolist(), netlist["chip_b"].tolist()]
         self.add_gates()
@@ -94,13 +93,25 @@ class Chip:
                 return False
         return True
     
-    
+    def calculate_intersections(self):
+        intersections = 0 
+        for x in range(self.width):
+            for y in range(self.length):
+                counter = 0
+                for z in range(self.height):
+                    if self.grid[x][y][z] > 0:
+                        counter += 1
+                if counter > 1:
+                    print(x,y)
+                    intersections = intersections + (counter - 1)
+        return intersections
+
     def calculate_value(self):
         """Returns the cost of placing the wires"""
         value = 0
         for net in self.nets:
             value += len(net.path)
-        value = value + (300 * len(self.intersections))
+        value = value + (300 * self.calculate_intersections())
         
         return value
     

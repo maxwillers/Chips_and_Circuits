@@ -6,6 +6,8 @@ from calendar import c
 import random
 import copy
 from tracemalloc import start
+
+import jinja2
 from code.classes import chips
 from code.classes.chips import Chip
 from code.classes.net import Net
@@ -48,8 +50,6 @@ class Random:
 
         end_coordinates = (ex, ey, ez)
 
-        lines.append(current_coordinates)
-
         # While the connection has not been made, make random choices for a new line  
         while current_coordinates != end_coordinates:
 
@@ -70,7 +70,6 @@ class Random:
                                 self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] += 1
                         lines.append(end)
                         net = Net(lines)
-                        current_coordinates = end
                         start_gate.connections.append(end_gate.id)
                         end_gate.connections.append(start_gate.id)
                         self.chip.nets.append(net)
