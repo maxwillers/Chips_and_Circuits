@@ -12,10 +12,9 @@ class Chip:
         self.width = width 
         self.length = length 
         self.height = 7
-        self.grid = [[[0 for _ in range(self.width + 1)] for _ in range(self.length + 1)] for _ in range(self.height + 1)]
+        self.grid = [[[0 for _ in range(self.height + 1)] for _ in range(self.length + 1)] for _ in range(self.width + 1)]
         self.gates= []
         self.nets = []
-        self.intersections = []
         self.gate_coordinates = gate_coordinates
         self.netlist = [netlist["chip_a"].tolist(), netlist["chip_b"].tolist()]
         self.add_gates()
@@ -33,7 +32,7 @@ class Chip:
             x = gate.x
             y = gate.y
             z = 0
-
+            print(x,y,z)
             self.grid[x][y][z] = -1
 
             self.gates.append(gate)
@@ -58,11 +57,13 @@ class Chip:
                 # If the location on the grid is a gate, it might be the endpoint 
                 elif self.grid[x + i][y][z] == -1:
                     gate_neighbours.append((x + i, y, z))
+            
             if y + i >= 0 and y + i <= self.length:
                 if self.grid[x][y + i][z] == 0:
                     good_neighbours.append((x, y + i, z))
                 elif self.grid[x][y + i][z] == -1:
                     gate_neighbours.append((x, y + i, z))
+            
             if z + i >= 0 and z + i <= self.height:
                 if self.grid[x][y][z + i] == 0:
                     good_neighbours.append((x, y, z + i))
@@ -94,13 +95,25 @@ class Chip:
                 return False
         return True
     
-    
+    def calculate_intersections(self):
+        intersections = 0 
+        for x in range(self.width):
+            for y in range(self.length):
+                counter = 0
+                for z in range(self.height):
+                    if self.grid[x][y][z] > 0:
+                        counter += 1
+                if counter > 1:
+                    #print(x,y)
+                    intersections = intersections + (counter - 1)
+        return intersections
+
     def calculate_value(self):
         """Returns the cost of placing the wires"""
         value = 0
         for net in self.nets:
             value += len(net.path)
-        value = value + (300 * len(self.intersections))
+        value = value + (300 * self.calculate_intersections())
         
         return value
     

@@ -49,5 +49,5 @@ def visualization_3d(chip, output_png):
 
     # Plot the grid
     plt.grid()
-    plt.savefig(output_png)
     plt.show()
+    plt.savefig(output_png)
