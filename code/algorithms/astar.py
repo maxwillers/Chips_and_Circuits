@@ -45,7 +45,7 @@ class State(object):
         self.distance = 0
 
         # Create a list to store all neighbouring possibilities
-        self.children = []
+        self.neighbours = []
 
         # Check if the current position has a parent
         if parent:
@@ -102,3 +102,24 @@ class State_String(State):
         # Make sure children have not already been generated
         if not self.children:
             pass
+
+
+def getDistance(startCoordinates, endCoordinates):
+    """Calculates the distance with the Manhattan metric and returns the distance between two gates"""
+    x1, y1, z1 = startCoordinates
+    x1, y1, z1 = endCoordinates
+    return abs(x1 - y1 -z1) + abs(x1 + y1 + z1)
+
+def algorithm(grid, start, end):
+    count = 0
+    openSet = PriorityQueue()
+    openSet.put((0, count, start))
+
+    # Keep track of the path of the nodes
+    cameFrom = {}
+
+    g_score = {spot: float("inf") for row in grid for spot in row}
+    g_score[start] = 0
+    f_score = {spot: float("inf") for row in grid for spot in row}
+    f_score[start] = getDistance
+
