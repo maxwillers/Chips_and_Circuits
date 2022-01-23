@@ -27,4 +27,41 @@
 
 # de open list is children a.k.a. possibilities; possible paths
 
-# 
+
+
+# data structure that handles elements in order from a high to a low assigned priority
+from queue import PriorityQueue
+
+class State(object):
+    """Base class that stores all the required components for a funcioning A* algorithm"""
+
+    def __init__(self, value, parent, start = 0, goal = 0):
+
+        # Create a list to store all neighbouring possibilities
+        self.children = []
+        self.parent = parent
+        self.value = value
+        self.distance = 0
+
+        # Check if the current position has a parent
+        if parent:
+            self.start = parent.start
+            self.goal = parent.goal
+
+            # Copy the parent path's list to our current one in order to keep track of where we're at
+            self.path = parent.path[:]
+            self.path.append(value)
+
+        # No parent yet, so we create a list for the path and store our starting values
+        else:
+            self.path = [value]
+            self.start = start
+            self.goal = goal
+
+    def getDistance(self):
+        pass
+
+    def createChildren(self):
+        pass
+
+                    
