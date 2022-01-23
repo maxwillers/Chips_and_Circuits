@@ -14,8 +14,13 @@ from code.algorithms.randomise import Random
 from code.algorithms.greedy_2 import Greedy_random
 
 
-def main(netlist_file, gate_coordinates):
 
+
+def main(netlist_file, gate_coordinates, output_png):
+
+    scores = []
+    total = 0
+    i = 0
     # Make lists of the gates located on the chip and of the connections that are to be made between gates
     netlist = pd.read_csv(netlist_file)
     gate_coordinates = pd.read_csv(gate_coordinates)
@@ -26,18 +31,19 @@ def main(netlist_file, gate_coordinates):
 
     # Create a chip with gates
     chip = Chip(grid_width, grid_length, netlist, gate_coordinates)
-    greedy = Greedy(chip)
-    #random = Random(chip)
-
+    #greedy = Greedy(chip)
+    random = Random(chip)
+    
     # Make a dataframe
-    output = greedy.chip.df_output()
-    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").split(".csv")[0], 'wires': greedy.chip.calculate_value()}
+    output = random.chip.df_output()
+
+    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").split(".csv")[0], 'wires': random.chip.calculate_value()}
     output = output.append(score, ignore_index=True)
     print(output)
-    #output.to_csv('output.csv', index=False)
+    output.to_csv('output.csv', index=False)
     
     # Visualize the chip
-    visualization_3d(greedy.chip)
+    visualization_3d(random.chip, output_png)
 
 
 if __name__ == "__main__":
@@ -48,9 +54,10 @@ if __name__ == "__main__":
     # Adding arguments
     parser.add_argument("netlist_file", help="input file (csv)")
     parser.add_argument("gate_coordinates", help="input print file (csv)")
+    parser.add_argument("output_png", help = "output file (png)")
 
     # Read arguments from command line
     args = parser.parse_args()
 
     # Run main with provided arguments
-    main(args.netlist_file, args.gate_coordinates)
+    main(args.netlist_file, args.gate_coordinates, args.output_png)

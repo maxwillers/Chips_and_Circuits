@@ -1,7 +1,7 @@
 """
 This file contains the Random class which implements a random algorithm for finding paths between chips.
 """
-
+import sys 
 from calendar import c
 import random
 import copy
@@ -12,6 +12,7 @@ from code.classes import chips
 from code.classes.chips import Chip
 from code.classes.net import Net
 
+#sys.setrecursionlimit(5000)
 
 class Random:
 
@@ -22,18 +23,19 @@ class Random:
 
     def create_netlist(self):
         """Go over all connection that need to be made and ensure they are made"""
+        
 
         # Iterate over the netlist
         for i in range(len(self.chip.netlist[0])):
-            self.random_path(self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])
-            print(i)
-
-
+            print(f"chip {i + 1}: {self.random_path(self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])}")
+                
+        
+    
     def random_path(self, start_gate, end_gate):
         """
         Assign each net with a randomized path
         """
-        flag = True
+        
 
         lines = [] 
            
@@ -49,6 +51,8 @@ class Random:
 
         end_coordinates = (ex, ey, ez)
 
+        lines.append(current_coordinates)
+
         # While the connection has not been made, make random choices for a new line  
         while current_coordinates != end_coordinates:
 
@@ -59,29 +63,31 @@ class Random:
             # iterate over possible neighbour gates
             for end in gates:
 
-                # If the current coordinates match the end gate coordinate, create the net
+                # If the current coordinates match the end gate coordinate, check if the coordinates are unique
                 if end == end_coordinates:
-                    #print(f"check {current_coordinates}, {end_coordinates}") 
                     
+                    # if the coordinates are unique, create net
                     if len(lines) == len(set(lines)):
                         for coordinate in lines:
-                            self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] += 1
+                            if self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] != -1:
+                                self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] += 1
+                        lines.append(end)
                         net = Net(lines)
                         start_gate.connections.append(end_gate.id)
                         end_gate.connections.append(start_gate.id)
                         self.chip.nets.append(net)
-                        flag = False
-                        #print(f"double check {current_coordinates}, {end_coordinates}") 
-                        
-                        
-
+                        return print(f"double check {current_coordinates}, {end_coordinates}") 
+                    
+                    # if coordinates are not unique, delete the coordinates and start over
                     else:
+                        lines.clear()
+                        try:
+                            return self.random_path(start_gate, end_gate)
+                        except RecursionError:
+                            print("stuck")
+                            quit() 
+    
 
-                        lines.clear
-                        return self.random_path(start_gate, end_gate)
-            
-            if flag == False:
-                break
             # if there are neighbours available pick one randomly
             if choose: 
             
@@ -93,21 +99,14 @@ class Random:
                 # Keep track of the current position
                 current_coordinates = new_line
 
-                #self.chip.grid[current_coordinates[0]][current_coordinates[1]][current_coordinates[2]] += 1
-
             # If there are no neighbours available, run the function again
             if not choose:
                 
-                # delete the lines which have been laid
-                
-                
-                # to do: set limit
-                return self.random_path(start_gate, end_gate)
-        
-        
-        return print(f"double check {current_coordinates}, {end_coordinates}") 
-    #==
-                
+                # if possible try again to find a connection
+                try:
+                    return self.random_path(start_gate, end_gate)
 
-
-    #def retry(self, start_gate, end_gate):
+                # if a recursion error is occurring quit the program
+                except RecursionError:
+                    print('stuck')
+                    quit()     

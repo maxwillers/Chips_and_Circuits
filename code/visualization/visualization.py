@@ -25,7 +25,7 @@ def visualization(chip):
     plt.show()
 
 
-def visualization_3d(chip):
+def visualization_3d(chip, output_png):
     """ Visualizes the grid in 3D"""
 
     # Create a 3D graph
@@ -50,3 +50,4 @@ def visualization_3d(chip):
     # Plot the grid
     plt.grid()
     plt.show()
+    plt.savefig(output_png)
