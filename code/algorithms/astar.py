@@ -37,11 +37,15 @@ class State(object):
 
     def __init__(self, value, parent, start = 0, goal = 0):
 
-        # Create a list to store all neighbouring possibilities
-        self.children = []
+        # Initialize parameters
         self.parent = parent
         self.value = value
+
+        # Initalize placeholder for the distance 
         self.distance = 0
+
+        # Create a list to store all neighbouring possibilities
+        self.children = []
 
         # Check if the current position has a parent
         if parent:
@@ -61,7 +65,40 @@ class State(object):
     def getDistance(self):
         pass
 
-    def createChildren(self):
+    def generateChildren(self):
         pass
 
                     
+class State_String(State):
+    def __init__(self, value, parent, start=0, goal=0):
+
+        # Initialize the base class in the sub class
+        super(State_String, self).__init__(value, parent, start, goal)
+
+        # Overwrite the placeholder from the base class with a function
+        self.distance = self.getDistance()
+    
+    def getDistance(self):
+        """Measures distance from our starting point on the grid to our goal"""
+
+        # Check if goal has been reached, if so, return 0
+        if self.value == self.goal:
+            return 0
+        distance = 0
+
+        # TO DO: write algorithm to find the length between start and end coordinate
+
+        # for i in range(len(self.goal)):
+        #     letter = self.goal[i]
+        #     try:
+        #         distance += abs(i - self.value.index(letter))
+        #     except:
+        #         distance += abs(i - self.value.find(letter))
+        # return distance
+
+    def generateChildren(self):
+        """Generates all possible moves that a path can make"""
+
+        # Make sure children have not already been generated
+        if not self.children:
+            pass
