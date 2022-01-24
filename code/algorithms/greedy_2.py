@@ -20,9 +20,9 @@ class Greedy_random:
         """Go over all connection that need to be made and ensure they are made"""
         self.new_chip = copy.deepcopy(chip)
         for i in range (len(self.chip.netlist[0])):
-            self.add_connection(self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1]) 
+            self.add_connection(self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1], self.new_chip) 
 
-    def add_connection(self, start_gate, end_gate):
+    def add_connection(self, start_gate, end_gate, new_chip):
         """Make the connection between two gates first changing the x coordinates then the y coordinates"""
         start_x = start_gate.x
         end_x = end_gate.x
@@ -37,7 +37,7 @@ class Greedy_random:
         no_option = []
 
         while (end_x, end_y , 0) not in self.chip.available_neighbours((x,y,z))[1]:
-            neighbors = self.chip.available_neighbours((x,y,z))[0]
+            neighbors = self.new_chip.available_neighbours((x,y,z))[0]
             best_neighbors = []
             available_neigbors = []
           
@@ -51,21 +51,24 @@ class Greedy_random:
             if len(best_neighbors) != 0:
                 x,y,z = random.choice(best_neighbors)
                 path.append((x,y,z))
-                self.chip.grid[x][y][z] += 1
+                self.new_chip.grid[x][y][z] += 1
             elif len(available_neigbors) != 0:
                 x,y,z = random.choice(available_neigbors)
                 path.append((x,y,z))
-                self.chip.grid[x][y][z] += 1
+                self.new_chip.grid[x][y][z] += 1
             else:
                 if len(path) > 1:
-                    self.chip.grid[x][y][z] -= 1
+                    self.new_chip.grid[x][y][z] -= 1
                     no_option.append(path.pop())
                     x,y,z = path[-1]
-
+                else:
+                    self.create_netlist(self.chip)
 
         x,y,z = end_x, end_y, 0
         path.append((x,y,z))
         net = Net(path)
         start_gate.connections.append(end_gate.id)
         end_gate.connections.append(start_gate.id)
-        self.chip.nets.append(net)
+        self.new_chip.nets.append(net)
+
+        self.chip = self.new_chip
