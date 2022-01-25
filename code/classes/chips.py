@@ -96,6 +96,7 @@ class Chip:
         return True
     
     def calculate_intersections(self):
+        """Calculate how many intersections the chip has"""
         intersections = 0 
         for x in range(self.width):
             for y in range(self.length):
@@ -104,7 +105,6 @@ class Chip:
                     if self.grid[x][y][z] > 0:
                         counter += 1
                 if counter > 1:
-                    #print(x,y)
                     intersections = intersections + (counter - 1)
         return intersections
 
