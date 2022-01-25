@@ -32,7 +32,6 @@ class Chip:
             x = gate.x
             y = gate.y
             z = 0
-            print(x,y,z)
             self.grid[x][y][z] = -1
 
             self.gates.append(gate)
