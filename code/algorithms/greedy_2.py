@@ -89,5 +89,3 @@ class Greedy_random:
         start_gate.connections.append(end_gate.id)
         end_gate.connections.append(start_gate.id)
         
-
-        

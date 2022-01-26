@@ -12,7 +12,7 @@ from code.visualization.visualization import visualization_3d
 from code.algorithms.greedy import Greedy
 from code.algorithms.randomise import Random
 from code.algorithms.greedy_2 import Greedy_random
-
+from code.algorithms.astar import Astar
 
 
 
@@ -32,18 +32,18 @@ def main(netlist_file, gate_coordinates, output_png):
     # Create a chip with gates
     chip = Chip(grid_width, grid_length, netlist, gate_coordinates)
     #greedy = Greedy(chip)
-    random = Random(chip)
+    astar = Astar(chip)
     
     # Make a dataframe
-    output = random.chip.df_output()
+    output = astar.chip.df_output()
 
-    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").split(".csv")[0], 'wires': random.chip.calculate_value()}
+    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").split(".csv")[0], 'wires': astar.chip.calculate_value()}
     output = output.append(score, ignore_index=True)
     print(output)
     output.to_csv('output.csv', index=False)
     
     # Visualize the chip
-    visualization_3d(random.chip, output_png)
+    visualization_3d(astar.chip, output_png)
 
 
 if __name__ == "__main__":
