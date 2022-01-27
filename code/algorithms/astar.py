@@ -86,18 +86,22 @@ class Astar():
                     pq.put(option, priority)
                     #print(pq.queue)
                     came_from[option] = location
-            
-                    
-
-                
-
-             
         
         if pq.empty():
             came_from[end_coordinates] = location
         self.chip.weights.clear()
         return came_from, (sx, sy, sz), end_coordinates
         #return self.search(start_gate, end_gate)
+    
+    # def undo_connection(self, start_co, end_co):
+    #     """Removes the path made from the grid an removes net from chip"""
+    #     for net in self.chip.nets:
+    #         if net.path[0] == (start_co[0], start_co[1], 0) and net.path[-1] == (end_co[0], end_co[1], 0):
+    #             for i in range(1, len(net.path), 1):
+    #                 x,y,z = net.path[i]
+    #                 self.chip.grid[x][y][z] -= 1
+                
+    #             self.chip.nets.remove(net)
                     
     def heuristic(self, neighbor, end_gate):
             """Calculates the distance with the Manhattan metric and returns the distance between two gates"""
