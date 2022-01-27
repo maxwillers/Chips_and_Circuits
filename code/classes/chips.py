@@ -35,15 +35,14 @@ class Chip:
             y = gate.y
             z = 0
             self.grid[x][y][z] = -1
+
             self.gates.append(gate)
             
 
     def available_neighbors(self, coordinates):
         """checks available neighbours for each position"""
-        good_neighbors = []
         gate_neighbors = []
-        intersect_neighbors = []
-
+        good_neighbors = []
      
         x, y, z = coordinates
       
@@ -56,40 +55,25 @@ class Chip:
                 # If the location on the grid is free, it is a option or so-called "good neighbour"
                 if self.grid[x + i][y][z] == 0:      
                     good_neighbors.append((x + i, y, z))
-
                 
                 # If the location on the grid is a gate, it might be the endpoint 
                 elif self.grid[x + i][y][z] == -1:
                     gate_neighbors.append((x + i, y, z))
-                else:
-                    wire = self.grid[x + i][y][z]
-                    if coordinates in wire:
-                        intersect_neighbors.append((x + i, y, z))
-                    
-
+            
             if y + i >= 0 and y + i <= self.length:
                 if self.grid[x][y + i][z] == 0:
                     good_neighbors.append((x, y + i, z))
                 elif self.grid[x][y + i][z] == -1:
                     gate_neighbors.append((x, y + i, z))
-                else:
-                    wire = self.grid[x][y + i][z]
-                    if coordinates in wire:
-                        intersect_neighbors.append((x, y + i, z))
             
             if z + i >= 0 and z + i <= self.height:
                 if self.grid[x][y][z + i] == 0:
                     good_neighbors.append((x, y, z + i))
                 elif self.grid[x][y][z + i] == -1:
                     gate_neighbors.append((x, y, z + i))
-                else:
-                    wire = self.grid[x][y][z + i]
-                    if coordinates in wire:
-                        intersect_neighbors.append((x, y, z + i))
-
         
         # return list of tuples of all possible neighbours 
-        return good_neighbors, gate_neighbors, intersect_neighbors
+        return good_neighbors, gate_neighbors
 
     
     def get_violations(self):
@@ -118,9 +102,12 @@ class Chip:
         intersections = 0 
         for x in range(self.width):
             for y in range(self.length):
+                counter = 0
                 for z in range(self.height):
-                    if len(self.grid[x][y][z]) > 1:
-                        intersections += 1
+                    if self.grid[x][y][z] > 0:
+                        counter += 1
+                if counter > 1:
+                    intersections = intersections + (counter - 1)
         return intersections
 
     def calculate_value(self):
@@ -145,14 +132,11 @@ class Chip:
         return pd.DataFrame(data = {'net': nets, 'wires' : wires})
 
     def cost(self, location, neighbor):
-        choose, gates = self.available_neighbors(neighbor)
+        if neighbor[2] > location[2]:
+            self.weights[neighbor] = 1 + 300 * self.intersection(neighbor)
+        else:
+            self.weights[neighbor] = 300 * self.intersection(neighbor)
        
-
-        # for neighbour in choose:
-        # #     x, y = self.available_neighbors(neighbour)
-            
-        self.weights[neighbor] = 300 * self.intersection(neighbor) #+ 600 * len(gates)
-
         return self.weights[neighbor]
 
 
@@ -165,5 +149,3 @@ class Chip:
         if counter > 1:
             intersections = intersections + (counter - 1)
         return intersections
-
-
