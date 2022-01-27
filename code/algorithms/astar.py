@@ -1,95 +1,119 @@
 
 # data structure that handles elements in order from a high to a low assigned priority
 import copy
+from hashlib import new
+from os import path
 from code.classes.net import Net
 from queue import PriorityQueue
 
-
-class Astar(object):
+class Astar():
     """Base class that stores all the required components for a funcioning A* algorithm"""
 
-    def __init__(self, chip, value, parent, start_gate = 0, end_gate = 0):
+    def __init__(self, chip):
         self.chip = copy.deepcopy(chip)
         self.create_netlist()
-
-        # Initialize parameters
-        self.parent = parent
-        self.value = value
-
-        # Initalize placeholder for the distance 
-        self.distance = 0
-
-        # Create a list to store all neighbouring possibilities
-        self.neighbours = []
-
-        # Check if the current position has a parent
-        if parent:
-            self.start_gate = parent.start_gate
-            self.end_gate = parent.goal
-
-            # Copy the parent path's list to our current one in order to keep track of where we're at
-            self.path = parent.path[:]
-            self.path.append(value)
-
-        # No parent yet, so we create a list for the path and store our starting values
-        else:
-            self.path = [value]
-            self.start = start_gate
-            self.goal = end_gate
 
 
     def create_netlist(self):
         """Go over all the connections that need to be made and ensure that they are made"""
         for i in range(len(self.chip.netlist[0])):
-            self.add_connection(self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i]-1])
+            start_gate = self.chip.gates[self.chip.netlist[0][i]-1]
+            end_gate = self.chip.gates[self.chip.netlist[1][i]-1]
+            #print(self.search(start_gate, end_gate))
+            came_from, start, end = self.search(start_gate, end_gate)
+            path = self.create_path(came_from, start, end)
+            for coordinate in path:
+                if self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] != -1:
+                    self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] += 1
 
-
-    def getDistance(self):
-        pass
-
-
-    def generateChildren(self):
-        pass
-
-
-class CreatePath(Astar):
-    def __init__(self, value, parent, start_gate = 0, end_gate = 0):
-
-        # Initialize the base class in the sub class
-        super(CreatePath, self).__init__(value, parent, start_gate, end_gate)
-
-        # Overwrite the placeholder from the base class with a function
-        self.distance = self.getDistance()
+            net = Net(path)
+            start_gate.connections.append(end_gate.id)
+            end_gate.connections.append(start_gate.id)
+            self.chip.nets.append(net)
     
-
-    def getDistance(self, start_gate, end_gate):
-        """Calculates the distance with the Manhattan metric and returns the distance between two gates"""
-        """Constitutes the h in the formula f(n) = g(n) + h(n)"""
-        x1, y1, z1 = start_gate
-        x1, y1, z1 = end_gate
-        return abs(x1 - y1 -z1) + abs(x1 + y1 + z1)
-   
-    
-
-# TO DO: algorithm for calculating both g and f
-    def generateChildren(grid, start_gate, end_gate):
-        count = 0
-        openSet = PriorityQueue()
-        openSet.put((0, count, start_gate))
-
-        # Keep track of the path of the nodes
-        cameFrom = {}
-
-        g_score = {spot: float("inf") for row in grid for spot in row}
-        g_score[start_gate] = 0
-        f_score = {spot: float("inf") for row in grid for spot in row}
-        f_score[start_gate] = getDistance(start_gate)
-
-
+    def search(self, start_gate, end_gate):
         
+        # Set start coordinates
+        sx = start_gate.x
+        sy = start_gate.y
+        sz = 0
 
-    # Create a net on the chip
-    net = Net(path)
-    start_gate.connections.append(end_gate.id)
-    end_gate.connections.append(start_gate.id)
-    self.chip.nets.append(net)
+        # Set end coordinates
+        ex = end_gate.x
+        ey = end_gate.y 
+        ez = 0
+
+        end_coordinates = (ex, ey, ez)
+
+        # Set present coordinates and put them in path
+        current_coordinates = (sx, sy, sz)
+        
+        pq = PriorityQueue()
+        pq.put(current_coordinates, 0)
+        costs_so_far = {}
+        came_from = {}
+        costs_so_far[(sx, sy, sz)] = 0
+        came_from[(sx, sy, sz)] = None
+
+        print(f"start: {current_coordinates}, end: {end_coordinates}")
+
+        #print(pq.empty())
+        while not pq.empty():
+            
+            location = pq.get()
+            if location == (1, 6, 0):
+                print("cheeeeeck")
+
+            choose, gates = self.chip.available_neighbors(location)
+            
+          
+            if end_coordinates in gates:
+
+                #print(end_coordinates)
+                came_from[end_coordinates] = location
+                break
+
+            for option in choose:
+                new_cost = costs_so_far[location] + 1 + self.chip.cost(location, option)
+                if (sx, sy, sz) == (1, 5, 0) and end_coordinates == (4, 4, 0) and option == (1, 6, 0): 
+                    print(f"Option: {option}, cost: {new_cost}")
+                if option not in costs_so_far or new_cost < costs_so_far[option]:
+                    costs_so_far[option] = new_cost
+                    priority = new_cost + self.heuristic(option, end_coordinates)
+                    #if (sx, sy, sz) == (1, 5, 0) and end_coordinates == (4, 4, 0) and option == (1, 6, 0): 
+                        #print(f"priority 1, 6, 0: {priority}")
+                        #print(pq.queue)
+                    pq.put(option, priority)
+                    #print(pq.queue)
+                    came_from[option] = location
+            
+                    
+
+                
+
+             
+        
+        if pq.empty():
+            came_from[end_coordinates] = location
+        self.chip.weights.clear()
+        return came_from, (sx, sy, sz), end_coordinates
+        #return self.search(start_gate, end_gate)
+                    
+    def heuristic(self, neighbor, end_gate):
+            """Calculates the distance with the Manhattan metric and returns the distance between two gates"""
+            """Constitutes the h in the formula f(n) = g(n) + h(n)"""
+            sx, sy, sz = neighbor
+            ex, ey, ez = end_gate
+            return abs(sx - ex) + abs(sy - ey) + abs(sz - ez)
+
+    def create_path(self, came_from, start, end):
+        position = end
+        path = []
+        while position != start:
+            path.append(position)
+            
+            position = came_from[position]
+        path.append(start)
+        path.reverse()
+        return path
+

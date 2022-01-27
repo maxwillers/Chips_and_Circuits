@@ -1,5 +1,6 @@
 """This file contains the class Chip, which forms a chip with gates on them"""
 
+from traceback import print_tb
 from code.classes.net import Net
 from code.classes.gate import Gate
 import pandas as pd
@@ -17,6 +18,7 @@ class Chip:
         self.nets = []
         self.gate_coordinates = gate_coordinates
         self.netlist = [netlist["chip_a"].tolist(), netlist["chip_b"].tolist()]
+        self.weights = {}
         self.add_gates()
 
     def add_gates(self):
@@ -37,10 +39,11 @@ class Chip:
             self.gates.append(gate)
             
 
-    def available_neighbours(self, coordinates):
+    def available_neighbors(self, coordinates):
         """checks available neighbours for each position"""
-        gate_neighbours = []
-        good_neighbours = []
+        gate_neighbors = []
+        good_neighbors = []
+     
         x, y, z = coordinates
       
         # Check for each neighbour (a location on the grid) if they exist and if they are available
@@ -51,26 +54,26 @@ class Chip:
                 
                 # If the location on the grid is free, it is a option or so-called "good neighbour"
                 if self.grid[x + i][y][z] == 0:      
-                    good_neighbours.append((x + i, y, z))
+                    good_neighbors.append((x + i, y, z))
                 
                 # If the location on the grid is a gate, it might be the endpoint 
                 elif self.grid[x + i][y][z] == -1:
-                    gate_neighbours.append((x + i, y, z))
+                    gate_neighbors.append((x + i, y, z))
             
             if y + i >= 0 and y + i <= self.length:
                 if self.grid[x][y + i][z] == 0:
-                    good_neighbours.append((x, y + i, z))
+                    good_neighbors.append((x, y + i, z))
                 elif self.grid[x][y + i][z] == -1:
-                    gate_neighbours.append((x, y + i, z))
+                    gate_neighbors.append((x, y + i, z))
             
             if z + i >= 0 and z + i <= self.height:
                 if self.grid[x][y][z + i] == 0:
-                    good_neighbours.append((x, y, z + i))
+                    good_neighbors.append((x, y, z + i))
                 elif self.grid[x][y][z + i] == -1:
-                    gate_neighbours.append((x, y, z + i))
+                    gate_neighbors.append((x, y, z + i))
         
         # return list of tuples of all possible neighbours 
-        return good_neighbours, gate_neighbours
+        return good_neighbors, gate_neighbors
 
     
     def get_violations(self):
@@ -127,3 +130,22 @@ class Chip:
             nets.append((self.netlist[0][i], self.netlist[1][i]))
 
         return pd.DataFrame(data = {'net': nets, 'wires' : wires})
+
+    def cost(self, location, neighbor):
+        if neighbor[2] > location[2]:
+            self.weights[neighbor] = 1 + 300 * self.intersection(neighbor)
+        else:
+            self.weights[neighbor] = 300 * self.intersection(neighbor)
+       
+        return self.weights[neighbor]
+
+
+    def intersection(self, neighbor):
+        intersections = 0
+        counter = 0
+        for z in range(self.height):
+            if self.grid[neighbor[0]][neighbor[1]][z] > 0:
+                counter += 1
+        if counter > 1:
+            intersections = intersections + (counter - 1)
+        return intersections

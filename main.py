@@ -13,6 +13,7 @@ from code.algorithms.greedy import Greedy
 from code.algorithms.randomise import Random
 from code.algorithms.greedy_2 import Greedy_random
 from statistics import mean
+from code.algorithms.astar import Astar
 
 
 def main(netlist_file, gate_coordinates, output_png):
@@ -30,7 +31,7 @@ def main(netlist_file, gate_coordinates, output_png):
     chip = Chip(grid_width, grid_length, netlist, gate_coordinates)
     score =[]
     for _ in range(50):
-        greedy = Greedy_random(chip)
+        greedy = Astar(chip)
         if greedy:
             score.append(greedy.chip.calculate_value())
     score.sort()
@@ -38,7 +39,13 @@ def main(netlist_file, gate_coordinates, output_png):
     print(f"max:{score[-1]}, min: {score[0]}, avarage:{mean(score)}")
     print(f"sollutions:{len(scores)}")
     
-    # random = Random(chip)
+    
+    # # Make a dataframe
+    # output = greedy.chip.df_output()
+
+    # score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").split(".csv")[0], 'wires': greedy.chip.calculate_value()}
+    # greedy = Greedy(chip)
+    # astar = Astar(chip)
     
     # Make a dataframe
     output = greedy.chip.df_output()

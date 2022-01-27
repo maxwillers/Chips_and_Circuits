@@ -20,82 +20,26 @@ def manhatan_dis_sort(connections):
     for connection in connections:
         start, end = connection
         connections_new.append({'start_gate': start, 'end_gate': end, 'start_co': [start.x, start.y], 'end_co':[end.x, end.y]})
-    connections = sorted(connections_new, key=lambda p:self.dist(p['start_co'],p['end_co']))
+    connections = sorted(connections_new, key=lambda p:dist(p['start_co'],p['end_co']))
 
     return connections
 
 
-def union_sort(connections):
-    """Sorts the netlist based on the location of the gates (from outside to inside)"""
-     netlistVersion2 = deepcopy(netList)
-        # lege derde versie van te definiëren netlist opgeslagen
-        netlistVersion3 = []
-        # lengte netlist berekend
-        k = len(netList)
+def random(connections):
+    """Create a random connections list by swapping connections"""
+    for _ in range(len(connections)*2):
+        # Make two indexes
+        index_1 = 0
+        index_2 = 0
 
-        # de breedte van het eerste veld is 17 (tellend vanaf 0)
-        width = 17
-        # de hoogte van het eerste veld is 12 (tellend vanaf 0)
-        height = 12
+        # Give them a random value and make sure these values are not the same
+        while index_1 == index_2:
+            index_1 = random.randrange(0, len(connections))
+            index_2 = random.randrange(0, len(connections))
 
-        # helftbreedte en hoogte worden berekend om het bord te scheiden
-        halfWidth = width / 2
-        halfHeight = height / 2
+        # Swap nets in the connections list
+        tmp = connections[index_1]
+        connections[index_1] = connections[index_2]
+        connections[index_2] = tmp
 
-        # itereren over lengte netlist
-        for j in range(0, k):
-            # het minimum worddt op een hoog getal gezet
-            minimum = 1000
-            # numbernetlist wordt 0
-            numberNetList = 0
-
-            # itereren over lengte netlist min j
-            for i in range(0, k - j):
-                # de eerste factor van wire opslaan in listelement1
-                listElement1 = netlistVersion2[i][0]
-                # de tweede factor van wire opslaan in listelement2
-                listElement2 = netlistVersion2[i][1]
-
-                # check of de x-waarde in de eerste helft valt
-                if (gate[listElement1].x <= halfWidth):
-                    x1Value = gate[listElement1].x
-                else:
-                    # anders wordt de waarde breedte minus x-element
-                    x1Value = width - gate[listElement1].x
-
-                if (gate[listElement1].y <= halfHeight):
-                    y1value = gate[listElement1].y
-                else:
-                    y1value = height - gate[listElement1].y
-
-                # de waarde van de eerste gate is het
-                # minimum van de x1- en y1waarde
-                value1 = min(x1Value, y1value)
-
-                if (gate[listElement2].x <= halfWidth):
-                    x2Value = gate[listElement2].x
-                else:
-                    x2Value = width - gate[listElement2].x
-
-                if (gate[listElement2].y <= halfHeight):
-                    y2Value = gate[listElement2].y
-                else:
-                    y2Value = height - gate[listElement2].y
-
-                # de waarde van de tweede gate is het
-                # minimum van de x2- en y2waarde
-                value2 = min(x2Value, y2Value)
-
-                sum = value1 + value2
-
-                # als de som kleiner is dan het minimum
-                if (sum < minimum):
-                    minimum = sum
-                    numberNetList = i
-
-            # zet zojuist bepaalde netlistelement in netlistVersion3
-            netlistVersion3.append(netlistVersion2[numberNetList])
-            # haalde aangewezen element uit netlistVersion2
-            netlistVersion2.pop(numberNetList)
-        # return nieuwe netlist
-        return netlistVersion3
+    return connections

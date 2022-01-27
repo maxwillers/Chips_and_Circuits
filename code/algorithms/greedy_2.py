@@ -60,7 +60,7 @@ class Greedy_random:
         while (end_x, end_y , 0) not in self.chip.available_neighbours((x,y,z))[1]:
             neighbors = self.chip.available_neighbours((x,y,z))[0]
             best_neighbors = []
-            available_neigbors = []
+            available_neigbors = [] 
           
             for neighbor in neighbors:
 
@@ -77,27 +77,33 @@ class Greedy_random:
             if len(best_neighbors) != 0:
                 x,y,z = random.choice(best_neighbors)
                 path.append((x,y,z))
-                self.chip.grid[x][y][z] += 1
 
             # Otherwise go to any of the available neighbors
             elif len(available_neigbors) != 0:
                 x,y,z = random.choice(available_neigbors)
                 path.append((x,y,z))
-                self.chip.grid[x][y][z] += 1
+                
 
             # If there are no available neighbors go back a step and make the current position no longer an option
             else:
                 if len(path) > 1:
-                    self.chip.grid[x][y][z] -= 1
+                    self.chip.grid[x][y][z].remove((path[-1], 0))
                     no_option.append(path.pop())
                     x,y,z = path[-1]
                 else:
                     return False
 
-        
         # If end gate is found make net and adjust connecitons in start and end gate
         x,y,z = end_x, end_y, 0
         path.append((x,y,z))
+
+        # Fill path in grid with tuples where path comes from and goes to
+        for i in range (len(path)):
+            x, y, z = path[i]
+            if self.chip.grid[x][y][z] != -1:
+                self.chip.grid[x][y][z] = ((path[i - 1]), (path[i + 1]))
+
+        # If end gate is found make net and adjust connecitons in start and end gate
         net = Net(path)
         self.chip.nets.append(net)
         start_gate.connections.append(end_gate.id)
@@ -115,7 +121,6 @@ class Greedy_random:
                 self.chip.nets.remove(net)
 
             
-
     def run(self):
         """Runs the greedy model"""
 
