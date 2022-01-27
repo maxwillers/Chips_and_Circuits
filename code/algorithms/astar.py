@@ -22,9 +22,10 @@ class Astar():
             #print(self.search(start_gate, end_gate))
             came_from, start, end = self.search(start_gate, end_gate)
             path = self.create_path(came_from, start, end)
-            for coordinate in path:
-                if self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] != -1:
-                    self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] += 1
+            for i in range(len(path)):
+                x, y, z = path[i]
+                if self.chip.grid[x][y][z] != -1:
+                    self.chip.grid[x][y][z] = ((path[i - 1]), (path[i + 1]))
 
             net = Net(path)
             start_gate.connections.append(end_gate.id)
@@ -61,10 +62,10 @@ class Astar():
         while not pq.empty():
             
             location = pq.get()
-            if location == (1, 6, 0):
-                print("cheeeeeck")
+            #if location == (1, 6, 0):
+                #print("cheeeeeck")
 
-            choose, gates = self.chip.available_neighbors(location)
+            choose, gates, intersections = self.chip.available_neighbors(location)
             
           
             if end_coordinates in gates:
@@ -74,30 +75,38 @@ class Astar():
                 break
 
             for option in choose:
-                new_cost = costs_so_far[location] + 1 + self.chip.cost(location, option)
-                if (sx, sy, sz) == (1, 5, 0) and end_coordinates == (4, 4, 0) and option == (1, 6, 0): 
-                    print(f"Option: {option}, cost: {new_cost}")
+                extra_costs = self.chip.cost(location, option)
+                # if extra_costs > 1:
+                #     print(extra_costs)
+                new_cost = costs_so_far[location] + 1 + extra_costs
+
+              
+                #print(f"Option: {option}, cost: {new_cost}")
                 if option not in costs_so_far or new_cost < costs_so_far[option]:
                     costs_so_far[option] = new_cost
                     priority = new_cost + self.heuristic(option, end_coordinates)
                     #if (sx, sy, sz) == (1, 5, 0) and end_coordinates == (4, 4, 0) and option == (1, 6, 0): 
                         #print(f"priority 1, 6, 0: {priority}")
-                        #print(pq.queue)
+                        
                     pq.put(option, priority)
                     #print(pq.queue)
                     came_from[option] = location
-            
-                    
-
-                
-
-             
         
         if pq.empty():
             came_from[end_coordinates] = location
         self.chip.weights.clear()
         return came_from, (sx, sy, sz), end_coordinates
         #return self.search(start_gate, end_gate)
+    
+    # def undo_connection(self, start_co, end_co):
+    #     """Removes the path made from the grid an removes net from chip"""
+    #     for net in self.chip.nets:
+    #         if net.path[0] == (start_co[0], start_co[1], 0) and net.path[-1] == (end_co[0], end_co[1], 0):
+    #             for i in range(1, len(net.path), 1):
+    #                 x,y,z = net.path[i]
+    #                 self.chip.grid[x][y][z] -= 1
+                
+    #             self.chip.nets.remove(net)
                     
     def heuristic(self, neighbor, end_gate):
             """Calculates the distance with the Manhattan metric and returns the distance between two gates"""
