@@ -26,6 +26,7 @@ class Greedy_random:
 
     def add_connection(self, start_gate, end_gate):
         """Make the connection between two gates first changing the x coordinates then the y coordinates"""
+        print(start_gate.id, end_gate.id)
         # Set start coordinates
         start_x = start_gate.x
         end_x = end_gate.x
@@ -43,12 +44,16 @@ class Greedy_random:
         # Make a list with coordinates that are not an option anymore, as they lead to a dead end
         no_option = []
         intersection = False
+        i = 0
 
         # While the endgate is not reached go find a next step
-        while (end_x, end_y , 0) not in self.chip.available_neighbours((x,y,z))[1]:
-            neighbors = self.chip.available_neighbours((x,y,z))[0]
+        while (end_x, end_y , 0) not in self.chip.available_neighbors((x,y,z))[1]:
+            i+=1
+            neighbors = self.chip.available_neighbors((x,y,z))[0]
             best_neighbors = []
             available_neigbors = [] 
+            if i > 50000:
+                return False
           
             for neighbor in neighbors:
 
@@ -73,30 +78,42 @@ class Greedy_random:
                 path.append((x,y,z))
                 intersection = False
                 
-
             # If there are no available neighbors go back a step and make the current position no longer an option
             else:
-                if random.choice(self.chip.available_neighbours((x,y,z)))[2] != 0:         
-                    x,y,z = random.choice(self.chip.available_neighbours((x,y,z))[2])[0]
+                print("intersections")
+                if len(self.chip.available_neighbors((x,y,z))[2]) != 0:         
+                    x,y,z = random.choice(self.chip.available_neighbors((x,y,z))[2])
                     path.append((x,y,z))
                     intersection = True
                 
                 elif intersection == True:
                     intersection_possibilities = []
-                    for intersection_possibility in random.choice(self.chip.available_neighbours((x,y,z)))[2]:
+                    for intersection_possibility in random.choice(self.chip.available_neighbors((x,y,z))[2]):
                         if intersection_possibility not in self.chip.grid[x][y][z]:
                             intersection_possibilities.append(intersection_possibility)
                     if len(intersection_possibility) > 0:
-                        x,y,z = random.choice(intersection_possibilities)[0]
+                        x,y,z = random.choice(intersection_possibilities)
                         path.append((x,y,z))
+                    else:
+                        print("stapje terug")
+                        if len(path) > 1:
+                            self.chip.grid[x][y][z].remove((path[-1], 0))
+                            no_option.append(path.pop())
+                            x,y,z = path[-1]
+                        else:
+                            print("fail")
+                            return False
         
                 else:
+                    print("stapje terug")
                     if len(path) > 1:
-                    self.chip.grid[x][y][z].remove((path[-1], 0))
-                    no_option.append(path.pop())
-                    x,y,z = path[-1]
+                        self.chip.grid[x][y][z] = 0
+                        no_option.append(path.pop())
+                        x,y,z = path[-1]
+                    else:
+                        print("fail")
+                        return False
                 
-
         # If end gate is found make net and adjust connecitons in start and end gate
         x,y,z = end_x, end_y, 0
         path.append((x,y,z))
@@ -112,6 +129,7 @@ class Greedy_random:
         self.chip.nets.append(net)
         start_gate.connections.append(end_gate.id)
         end_gate.connections.append(start_gate.id)
+        print("succes")
         return True
 
     def undo_connection(self, start_co, end_co):
@@ -120,7 +138,8 @@ class Greedy_random:
             if net.path[0] == (start_co[0], start_co[1], 0) and net.path[-1] == (end_co[0], end_co[1], 0):
                 for i in range(1, len(net.path), 1):
                     x,y,z = net.path[i]
-                    self.chip.grid[x][y][z] -= 1
+                    if self.chip.grid[x][y][z] != -1:
+                        self.chip.grid[x][y][z] = 0
                 
                 self.chip.nets.remove(net)
 
@@ -140,6 +159,7 @@ class Greedy_random:
 
         # Go past every connection
         while len(self.connections) > 0:
+            print(f"this is how many connections we now have: {len(self.connection_made)}")
             if steps < 1000:
                 steps +=1
                 connection = self.get_next_connection()
@@ -157,8 +177,9 @@ class Greedy_random:
 
                             # If other connections were made choose one randomly and redo that one
                             if len(self.connection_made) > 0:
-                                connection = self.connection_made.pop(random.randint(0,(len(self.connection_made) -1)))
-                                self.undo_connection(connection['start_co'],connection['end_co'])
+                                connection_remove = self.connection_made.pop(random.randint(0,(len(self.connection_made) -1)))
+                                self.undo_connection(connection_remove['start_co'],connection_remove['end_co'])
+                                self.connections.append(connection_remove)
                                 self.add_connection(connection['start_gate'], connection['end_gate'])
 
                             # Otherwise choose another connection randomly to be done
@@ -169,6 +190,7 @@ class Greedy_random:
                         else:
                             print("fail")
                             return False
+                    self.connection_made.append(connection)
             else: 
                 print("fail")
                 # self.__init__(self.backup_chip)
