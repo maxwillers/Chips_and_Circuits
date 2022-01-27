@@ -127,7 +127,7 @@ class Chip:
         """Returns the cost of placing the wires"""
         value = 0
         for net in self.nets:
-            value += len(net.path)
+            value += (len(net.path) - 2)
         value = value + (300 * self.calculate_intersections())
         
         return value
@@ -146,12 +146,8 @@ class Chip:
 
     def cost(self, location, neighbor):
         choose, gates = self.available_neighbors(neighbor)
-       
-
-        # for neighbour in choose:
-        # #     x, y = self.available_neighbors(neighbour)
             
-        self.weights[neighbor] = 300 * self.intersection(neighbor) #+ 600 * len(gates)
+        self.weights[neighbor] = 300 * self.intersection(neighbor) 
 
         return self.weights[neighbor]
 
