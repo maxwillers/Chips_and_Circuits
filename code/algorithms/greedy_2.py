@@ -42,6 +42,7 @@ class Greedy_random:
 
         # Make a list with coordinates that are not an option anymore, as they lead to a dead end
         no_option = []
+        intersection = False
 
         # While the endgate is not reached go find a next step
         while (end_x, end_y , 0) not in self.chip.available_neighbours((x,y,z))[1]:
@@ -64,21 +65,37 @@ class Greedy_random:
             if len(best_neighbors) != 0:
                 x,y,z = random.choice(best_neighbors)
                 path.append((x,y,z))
+                intersection = False
 
             # Otherwise go to any of the available neighbors
             elif len(available_neigbors) != 0:
                 x,y,z = random.choice(available_neigbors)
                 path.append((x,y,z))
+                intersection = False
                 
 
             # If there are no available neighbors go back a step and make the current position no longer an option
             else:
-                if len(path) > 1:
+                if random.choice(self.chip.available_neighbours((x,y,z)))[2] != 0:         
+                    x,y,z = random.choice(self.chip.available_neighbours((x,y,z))[2])[0]
+                    path.append((x,y,z))
+                    intersection = True
+                
+                elif intersection == True:
+                    intersection_possibilities = []
+                    for intersection_possibility in random.choice(self.chip.available_neighbours((x,y,z)))[2]:
+                        if intersection_possibility not in self.chip.grid[x][y][z]:
+                            intersection_possibilities.append(intersection_possibility)
+                    if len(intersection_possibility) > 0:
+                        x,y,z = random.choice(intersection_possibilities)[0]
+                        path.append((x,y,z))
+        
+                else:
+                    if len(path) > 1:
                     self.chip.grid[x][y][z].remove((path[-1], 0))
                     no_option.append(path.pop())
                     x,y,z = path[-1]
-                else:
-                    return False
+                
 
         # If end gate is found make net and adjust connecitons in start and end gate
         x,y,z = end_x, end_y, 0
@@ -118,7 +135,7 @@ class Greedy_random:
             self.connections.append((self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])) 
         
         # Sort the netlist from closest connection to farthest away
-        manhatan_dis_sort(self.connections)
+        self.connections = manhatan_dis_sort(self.connections)
         steps = 0
 
         # Go past every connection

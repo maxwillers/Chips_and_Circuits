@@ -31,8 +31,8 @@ def main(netlist_file, gate_coordinates, output_png):
     # Create a chip with gates
     chip = Chip(grid_width, grid_length, netlist, gate_coordinates)
     score =[]
-    for _ in range(50):
-        greedy = Astar(chip)
+    for _ in range(10):
+        greedy = Greedy_random(chip)
         if greedy:
             score.append(greedy.chip.calculate_value())
     score.sort()
