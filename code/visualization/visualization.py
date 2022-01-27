@@ -45,7 +45,14 @@ def visualization_3d(chip, output_png):
     for i in range(len(chip.gates)):
         gates_y.append(chip.gates[i].y)
         gates_x.append(chip.gates[i].x)
-    ax.plot(gates_x, gates_y, 'rs', markersize=10)
+    ax.plot(gates_x, gates_y, 'rs', markersize=8)
+    ax.set_xlabel('X axis')
+    ax.set_ylabel('Y axis')
+    ax.set_zlabel('Z axis')
+
+    # Add the total wire cost a particular instance's nets
+    ax.set_title(f'Total wire cost: {chip.calculate_value()}', fontsize=10, fontweight='normal')
+    
 
     # Plot the grid
     plt.grid()
