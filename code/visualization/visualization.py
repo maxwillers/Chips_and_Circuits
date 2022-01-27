@@ -45,7 +45,10 @@ def visualization_3d(chip, output_png):
     for i in range(len(chip.gates)):
         gates_y.append(chip.gates[i].y)
         gates_x.append(chip.gates[i].x)
-    ax.plot(gates_x, gates_y, 'rs', markersize=10)
+    ax.plot(gates_x, gates_y, 'rs', markersize=8)
+    ax.set_xlabel('X axis')
+    ax.set_ylabel('Y axis')
+    ax.set_zlabel('Z axis')
 
     # Plot the grid
     plt.grid()
