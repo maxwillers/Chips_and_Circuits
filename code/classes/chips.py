@@ -72,7 +72,7 @@ class Chip:
                 elif self.grid[x][y][z + i] == -1:
                     gate_neighbors.append((x, y, z + i))
         
-        # return list of tuples of all possible neighbours
+        # return list of tuples of all possible neighbours 
         return good_neighbors, gate_neighbors
 
     
