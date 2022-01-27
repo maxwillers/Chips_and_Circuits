@@ -5,6 +5,7 @@
 This file contains the function main of the assignment Chips and Circuits
 """
 
+from numpy import random
 import pandas as pd
 import argparse
 from code.classes.chips import Chip
@@ -32,18 +33,18 @@ def main(netlist_file, gate_coordinates, output_png):
     # Create a chip with gates
     chip = Chip(grid_width, grid_length, netlist, gate_coordinates)
     #greedy = Greedy(chip)
-    astar = Astar(chip)
+    random = Random(chip)
     
     # Make a dataframe
-    output = astar.chip.df_output()
+    #output = random.chip.df_output()
 
-    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").split(".csv")[0], 'wires': astar.chip.calculate_value()}
-    output = output.append(score, ignore_index=True)
-    print(output)
-    output.to_csv('output.csv', index=False)
+    #score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").split(".csv")[0], 'wires': random.chip.calculate_value()}
+    #output = output.append(score, ignore_index=True)
+    #print(output)
+    #output.to_csv('output.csv', index=False)
     
     # Visualize the chip
-    visualization_3d(astar.chip, output_png)
+    visualization_3d(random.chip, output_png)
 
 
 if __name__ == "__main__":
