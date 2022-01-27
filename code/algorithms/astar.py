@@ -1,6 +1,7 @@
 
 # data structure that handles elements in order from a high to a low assigned priority
 import copy
+from enum import Flag
 from hashlib import new
 from os import path
 from code.classes.net import Net
@@ -34,6 +35,8 @@ class Astar():
     
     def search(self, start_gate, end_gate):
         
+        flag = False
+
         # Set start coordinates
         sx = start_gate.x
         sy = start_gate.y
@@ -58,47 +61,34 @@ class Astar():
 
         print(f"start: {current_coordinates}, end: {end_coordinates}")
 
-        #print(pq.empty())
         while not pq.empty():
             
             location = pq.get()
-            #if location == (1, 6, 0):
-                #print("cheeeeeck")
 
             choose, gates, intersections = self.chip.available_neighbors(location)
             
-          
             if end_coordinates in gates:
-
-                #print(end_coordinates)
                 came_from[end_coordinates] = location
                 break
 
+
             for option in choose:
-                extra_costs = self.chip.cost(location, option)
-                # if extra_costs > 1:
-                #     print(extra_costs)
-                new_cost = costs_so_far[location] + 1 + extra_costs
+                #extra_costs = self.chip.cost(location, option)
+                new_cost = costs_so_far[location] + 1
 
               
-                #print(f"Option: {option}, cost: {new_cost}")
                 if option not in costs_so_far or new_cost < costs_so_far[option]:
                     costs_so_far[option] = new_cost
                     priority = new_cost + self.heuristic(option, end_coordinates)
-                    #if (sx, sy, sz) == (1, 5, 0) and end_coordinates == (4, 4, 0) and option == (1, 6, 0): 
-                        #print(f"priority 1, 6, 0: {priority}")
                         
                     pq.put(option, priority)
-                    #print(pq.queue)
                     came_from[option] = location
-            
-                    
+                
 
-        if pq.empty():
-            came_from[end_coordinates] = location
+        # if pq.empty():
+        #     came_from[end_coordinates] = location
         self.chip.weights.clear()
         return came_from, (sx, sy, sz), end_coordinates
-        #return self.search(start_gate, end_gate)
                     
     def heuristic(self, neighbor, end_gate):
             """Calculates the distance with the Manhattan metric and returns the distance between two gates"""

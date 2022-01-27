@@ -154,7 +154,7 @@ class Chip:
         # for neighbour in choose:
         # #     x, y = self.available_neighbors(neighbour)
             
-        self.weights[neighbor] = 300 * self.intersection(neighbor) #+ 600 * len(gates)
+        #self.weights[neighbor] = 1 #+ 600 * len(gates)
 
         return self.weights[neighbor]
 
