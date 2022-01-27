@@ -7,6 +7,7 @@ import copy
 from code.classes.net import Net
 import random
 import math
+from code.algorithms.sorting import manhatan_dis_sort
 
 class Greedy_random:
     """
@@ -18,20 +19,6 @@ class Greedy_random:
         self.connections = []
         self.connection_made = []
         self.run()
-        
-    
-    def dist(self, p0,p1):
-        """Calculates the distance between two points"""
-        return math.sqrt((p1[0]-p0[0])**2+(p1[1]-p0[1])**2)
-    
-    def sort_netslist(self):
-        """Sorts the netlist based on the distance between the gates"""
-        connections_new =[]
-        for connection in self.connections:
-            start, end = connection
-            connections_new.append({'start_gate': start, 'end_gate': end, 'start_co': [start.x, start.y], 'end_co':[end.x, end.y]})
-        self.connections = sorted(connections_new, key=lambda p:self.dist(p['start_co'],p['end_co']))
-
 
     def get_next_connection(self):
         """Gets the next coordinates for the next connection """
@@ -60,7 +47,7 @@ class Greedy_random:
         while (end_x, end_y , 0) not in self.chip.available_neighbours((x,y,z))[1]:
             neighbors = self.chip.available_neighbours((x,y,z))[0]
             best_neighbors = []
-            available_neigbors = []
+            available_neigbors = [] 
           
             for neighbor in neighbors:
 
@@ -77,27 +64,33 @@ class Greedy_random:
             if len(best_neighbors) != 0:
                 x,y,z = random.choice(best_neighbors)
                 path.append((x,y,z))
-                self.chip.grid[x][y][z] += 1
 
             # Otherwise go to any of the available neighbors
             elif len(available_neigbors) != 0:
                 x,y,z = random.choice(available_neigbors)
                 path.append((x,y,z))
-                self.chip.grid[x][y][z] += 1
+                
 
             # If there are no available neighbors go back a step and make the current position no longer an option
             else:
                 if len(path) > 1:
-                    self.chip.grid[x][y][z] -= 1
+                    self.chip.grid[x][y][z].remove((path[-1], 0))
                     no_option.append(path.pop())
                     x,y,z = path[-1]
                 else:
                     return False
 
-        
         # If end gate is found make net and adjust connecitons in start and end gate
         x,y,z = end_x, end_y, 0
         path.append((x,y,z))
+
+        # Fill path in grid with tuples where path comes from and goes to
+        for i in range (len(path)):
+            x, y, z = path[i]
+            if self.chip.grid[x][y][z] != -1:
+                self.chip.grid[x][y][z] = ((path[i - 1]), (path[i + 1]))
+
+        # If end gate is found make net and adjust connecitons in start and end gate
         net = Net(path)
         self.chip.nets.append(net)
         start_gate.connections.append(end_gate.id)
@@ -115,7 +108,6 @@ class Greedy_random:
                 self.chip.nets.remove(net)
 
             
-
     def run(self):
         """Runs the greedy model"""
 
@@ -126,7 +118,7 @@ class Greedy_random:
             self.connections.append((self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])) 
         
         # Sort the netlist from closest connection to farthest away
-        self.sort_netslist()
+        manhatan_dis_sort(self.connections)
         steps = 0
 
         # Go past every connection

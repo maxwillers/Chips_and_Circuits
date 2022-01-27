@@ -13,15 +13,13 @@ from code.visualization.visualization import visualization_3d
 from code.algorithms.greedy import Greedy
 from code.algorithms.randomise import Random
 from code.algorithms.greedy_2 import Greedy_random
+from statistics import mean
 from code.algorithms.astar import Astar
-
 
 
 def main(netlist_file, gate_coordinates, output_png):
 
     scores = []
-    total = 0
-    i = 0
     # Make lists of the gates located on the chip and of the connections that are to be made between gates
     netlist = pd.read_csv(netlist_file)
     gate_coordinates = pd.read_csv(gate_coordinates)
@@ -32,6 +30,7 @@ def main(netlist_file, gate_coordinates, output_png):
 
     # Create a chip with gates
     chip = Chip(grid_width, grid_length, netlist, gate_coordinates)
+<<<<<<< HEAD
     #greedy = Greedy(chip)
     random = Random(chip)
     
@@ -45,6 +44,35 @@ def main(netlist_file, gate_coordinates, output_png):
     
     # Visualize the chip
     visualization_3d(random.chip, output_png)
+=======
+    score =[]
+    for _ in range(50):
+        greedy = Astar(chip)
+        if greedy:
+            score.append(greedy.chip.calculate_value())
+    score.sort()
+    print(score)
+    print(f"max:{score[-1]}, min: {score[0]}, avarage:{mean(score)}")
+    print(f"sollutions:{len(scores)}")
+    
+    
+    # # Make a dataframe
+    # output = greedy.chip.df_output()
+
+    # score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").split(".csv")[0], 'wires': greedy.chip.calculate_value()}
+    # greedy = Greedy(chip)
+    # astar = Astar(chip)
+    
+    # Make a dataframe
+    output = greedy.chip.df_output()
+
+    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").split(".csv")[0], 'wires': greedy.chip.calculate_value()}
+    output = output.append(score, ignore_index=True)
+    output.to_csv('output.csv', index=False)
+    
+    # Visualize the chip
+    visualization_3d(greedy.chip, output_png)
+>>>>>>> 0de94774659f0c7a169303fe903ba0d468230ff6
 
 
 if __name__ == "__main__":
