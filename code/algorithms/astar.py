@@ -4,8 +4,11 @@ import copy
 from enum import Flag
 from hashlib import new
 from os import path
+
+from matplotlib.pyplot import flag
 from code.classes.net import Net
 from queue import PriorityQueue
+import random
 
 class Astar():
     """Base class that stores all the required components for a funcioning A* algorithm"""
@@ -67,27 +70,44 @@ class Astar():
 
             choose, gates, intersections = self.chip.available_neighbors(location)
             
-            if end_coordinates in gates:
-                came_from[end_coordinates] = location
-                break
+            for gate in gates:
+                if gate == end_coordinates:
+                    choose.append(gate)
 
+            if location == end_coordinates:
+                break
 
             for option in choose:
                 #extra_costs = self.chip.cost(location, option)
-                new_cost = costs_so_far[location] + 1
+                new_cost = costs_so_far[location] + self.chip.cost(option)
+                
 
-              
                 if option not in costs_so_far or new_cost < costs_so_far[option]:
+                    print(new_cost)
                     costs_so_far[option] = new_cost
-                    priority = new_cost + self.heuristic(option, end_coordinates)
+                    priority = new_cost  #self.heuristic(option, end_coordinates)
                         
                     pq.put(option, priority)
                     came_from[option] = location
-                
+            
+
+
+                # if flag == True:
+                #     intersection_possibilities = []
+                #     for intersection_possibility in intersections:
+                #         if intersection_possibility not in self.chip.grid[current_coordinates[0]][current_coordinates[1]][current_coordinates[2]]:
+                #             intersection_possibilities.append(intersection_possibility)
+                #             x, y, z = random.choice(intersection_possibilities)[0]
+                #             came_from[]
+                #         else:         
+                #             x,y,z = random.choice(self.chip.available_neighbours((x,y,z))[1])[0]
+                #             path.append((x,y,z))
+                #             intersection = True
+
+
 
         # if pq.empty():
-        #     came_from[end_coordinates] = location
-        self.chip.weights.clear()
+        #    came_from[end_coordinates] = location
         return came_from, (sx, sy, sz), end_coordinates
                     
     def heuristic(self, neighbor, end_gate):

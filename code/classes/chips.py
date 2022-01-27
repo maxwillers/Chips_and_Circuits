@@ -118,12 +118,9 @@ class Chip:
         intersections = 0 
         for x in range(self.width):
             for y in range(self.length):
-                counter = 0
                 for z in range(self.height):
-                    if self.grid[x][y][z] == 0:
-                        counter += 1
-                if counter > 1:
-                    intersections = intersections + (counter - 1)
+                    if len(self.grid[x][y][z]) > 1:
+                        intersections += 1
         return intersections
 
     def calculate_value(self):
@@ -147,8 +144,8 @@ class Chip:
 
         return pd.DataFrame(data = {'net': nets, 'wires' : wires})
 
-    def cost(self, location, neighbor):
-        choose, gates = self.available_neighbors(neighbor)
+    def cost(self, neighbor):
+        #choose, gates = self.available_neighbors(neighbor)
        
 
         # for neighbour in choose:
@@ -156,7 +153,7 @@ class Chip:
             
         #self.weights[neighbor] = 1 #+ 600 * len(gates)
 
-        return self.weights[neighbor]
+        return self.weights.get(neighbor, 1)
 
 
     def intersection(self, neighbor):
