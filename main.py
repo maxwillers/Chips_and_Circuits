@@ -5,6 +5,7 @@
 This file contains the function main of the assignment Chips and Circuits
 """
 
+from numpy import random
 import pandas as pd
 import argparse
 from code.classes.chips import Chip

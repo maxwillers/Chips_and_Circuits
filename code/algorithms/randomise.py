@@ -35,9 +35,9 @@ class Random:
         """
         Assign each net with a randomized path
         """
-        
+        flag = False
 
-        lines = [] 
+        path = [] 
            
         sx = start_gate.x
         sy = start_gate.y
@@ -51,13 +51,13 @@ class Random:
 
         end_coordinates = (ex, ey, ez)
 
-        lines.append(current_coordinates)
+        path.append(current_coordinates)
 
         # While the connection has not been made, make random choices for a new line  
         while current_coordinates != end_coordinates:
 
             # If there are neighbour points available, make a random choice between these neighbouring points
-            choose, gates = self.chip.available_neighbours(current_coordinates)
+            choose, gates, intersections = self.chip.available_neighbors(current_coordinates)
             
             
             # iterate over possible neighbour gates
@@ -67,20 +67,25 @@ class Random:
                 if end == end_coordinates:
                     
                     # if the coordinates are unique, create net
-                    if len(lines) == len(set(lines)):
-                        for coordinate in lines:
-                            if self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] != -1:
-                                self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] += 1
-                        lines.append(end)
-                        net = Net(lines)
+                    if len(path) == len(set(path)):
+                        path.append(end)
+                        for i in range(len(path)):
+                            x, y, z = path[i]
+                            if self.chip.grid[x][y][z] != -1:
+                                self.chip.grid[x][y][z] = ((path[i - 1]), (path[i + 1]))
+                            
+                        net = Net(path)
                         start_gate.connections.append(end_gate.id)
                         end_gate.connections.append(start_gate.id)
                         self.chip.nets.append(net)
+                        for i in range(len(path)):
+                            x, y, z = path[i]
+                            print(self.chip.grid[x][y][z])
                         return print(f"double check {current_coordinates}, {end_coordinates}") 
                     
                     # if coordinates are not unique, delete the coordinates and start over
                     else:
-                        lines.clear()
+                        path.clear()
                         try:
                             return self.random_path(start_gate, end_gate)
                         except RecursionError:
@@ -94,14 +99,25 @@ class Random:
                 new_line = random.choice(choose)
 
                 # Keep track of the lines which have been laid
-                lines.append(new_line)
+                path.append(new_line)
 
                 # Keep track of the current position
                 current_coordinates = new_line
 
+                flag == False
+
             # If there are no neighbours available, run the function again
-            if not choose:
+            elif not choose and len(intersections) > 0 and flag == False:
+                new_line = random.choice(intersections)
+
+                path.append(new_line)
+
+                current_coordinates = new_line
                 
+                flag = True
+
+
+            else:
                 # if possible try again to find a connection
                 try:
                     return self.random_path(start_gate, end_gate)
