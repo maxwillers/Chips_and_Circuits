@@ -7,6 +7,7 @@ import copy
 from code.classes.net import Net
 import random
 import math
+from code.algorithms.sorting import manhatan_dis_sort
 
 class Greedy_random:
     """
@@ -18,20 +19,6 @@ class Greedy_random:
         self.connections = []
         self.connection_made = []
         self.run()
-        
-    
-    def dist(self, p0,p1):
-        """Calculates the distance between two points"""
-        return math.sqrt((p1[0]-p0[0])**2+(p1[1]-p0[1])**2)
-    
-    def sort_netslist(self):
-        """Sorts the netlist based on the distance between the gates"""
-        connections_new =[]
-        for connection in self.connections:
-            start, end = connection
-            connections_new.append({'start_gate': start, 'end_gate': end, 'start_co': [start.x, start.y], 'end_co':[end.x, end.y]})
-        self.connections = sorted(connections_new, key=lambda p:self.dist(p['start_co'],p['end_co']))
-
 
     def get_next_connection(self):
         """Gets the next coordinates for the next connection """
@@ -131,7 +118,7 @@ class Greedy_random:
             self.connections.append((self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])) 
         
         # Sort the netlist from closest connection to farthest away
-        self.sort_netslist()
+        manhatan_dis_sort(self.connections)
         steps = 0
 
         # Go past every connection
