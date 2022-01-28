@@ -60,31 +60,41 @@ class Chip:
                 
                 # If the location on the grid is a gate, it might be the endpoint 
                 elif self.grid[x + i][y][z] == -1:
-                    gate_neighbors.append((x + i, y, z))
+                    if self.grid[x][y][z] == 0 or self.grid[x][y][z] == -1:
+                        gate_neighbors.append((x + i, y, z))
+                    elif (x + i, y , z) not in self.grid[x][y][z]:
+                        gate_neighbors.append((x + i, y, z))
                 else:
                     wire = self.grid[x + i][y][z]
-                    if coordinates in wire:
+                    if coordinates not in wire:
                         intersect_neighbors.append((x + i, y, z))
                     
 
             if y + i >= 0 and y + i <= self.length:
                 if self.grid[x][y + i][z] == 0:
                     good_neighbors.append((x, y + i, z))
+                
                 elif self.grid[x][y + i][z] == -1:
-                    gate_neighbors.append((x, y + i, z))
+                    if self.grid[x][y][z] == 0 or self.grid[x][y][z] == -1:
+                        gate_neighbors.append((x, y + i, z))
+                    elif (x, y + i, z) not in self.grid[x][y][z]:
+                        gate_neighbors.append((x, y + i, z))
                 else:
                     wire = self.grid[x][y + i][z]
-                    if coordinates in wire:
+                    if coordinates not in wire:
                         intersect_neighbors.append((x, y + i, z))
             
             if z + i >= 0 and z + i <= self.height:
                 if self.grid[x][y][z + i] == 0:
                     good_neighbors.append((x, y, z + i))
                 elif self.grid[x][y][z + i] == -1:
-                    gate_neighbors.append((x, y, z + i))
+                    if self.grid[x][y][z] == 0 or self.grid[x][y][z] == -1:
+                        gate_neighbors.append((x, y, z + i))
+                    elif (x, y, z + i) not in self.grid[x][y][z]:
+                        gate_neighbors.append((x, y, z + i))
                 else:
                     wire = self.grid[x][y][z + i]
-                    if coordinates in wire:
+                    if coordinates not in wire:
                         intersect_neighbors.append((x, y, z + i))
 
         
@@ -119,7 +129,7 @@ class Chip:
         for x in range(self.width):
             for y in range(self.length):
                 for z in range(self.height):
-                    if len(self.grid[x][y][z]) > 1:
+                    if self.grid[x][y][z] != 0 and self.grid[x][y][z] != -1 :
                         intersections += 1
         return intersections
 

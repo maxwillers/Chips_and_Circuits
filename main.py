@@ -31,30 +31,28 @@ def main(netlist_file, gate_coordinates, output_png):
 
     # Create a chip with gates
     chip = Chip(grid_width, grid_length, netlist, gate_coordinates)
-    # score =[]
-    # for _ in range(10):
-    #     greedy = Greedy_random(chip)
-    #     if greedy:
-    #         score.append(greedy.chip.calculate_value())
-    # score.sort()
-    # print(score)
-    # print(f"max:{score[-1]}, min: {score[0]}, avarage:{mean(score)}")
-    # print(f"sollutions:{len(scores)}")
+    score = []
+    sollution =[]
+    for _ in range(1):
+        greedy = Astar(chip)
+        score.append(greedy.chip.calculate_value())
+        sollution.append(greedy)
+        print(score)
+        
     
-    astar = Astar(chip)
+    # astar = Astar(chip)
     # # Make a dataframe
-   
     
     # Make a dataframe
-    #output = astar.chip.df_output()
+    output = greedy.chip.df_output()
 
-    #score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").split(".csv")[0], 'wires': astar.chip.calculate_value()}
-    #output = output.append(score, ignore_index=True)
-    #print(output)
-    #output.to_csv('output.csv', index=False)
+    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").split(".csv")[0], 'wires': greedy.chip.calculate_value()}
+    output = output.append(score, ignore_index=True)
+    print(output)
+    output.to_csv('output.csv', index=False)
     
     # Visualize the chip
-    visualization_3d(astar.chip, output_png)
+    visualization_3d(greedy.chip, output_png)
 
 
 if __name__ == "__main__":
