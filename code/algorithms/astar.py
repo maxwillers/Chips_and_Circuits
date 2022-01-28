@@ -35,6 +35,8 @@ class Astar():
     def __init__(self, chip):
         self.chip = copy.deepcopy(chip)
         self.create_netlist()
+        
+
  
  
     def create_netlist(self):
@@ -55,13 +57,17 @@ class Astar():
             path = self.create_path(came_from, start, end)
             for i in range(len(path)):
                 x, y, z = path[i]
-                if self.chip.grid[x][y][z] != -1:
+                if self.chip.grid[x][y][z] == 0:
                     self.chip.grid[x][y][z] = ((path[i - 1]), (path[i + 1]))
+                elif self.chip.grid[x][y][z] != -1 and self.chip.grid[x][y][z] != 0:
+                    self.chip.grid[x][y][z] = ((path[i - 1]), (path[i + 1]))
+                    self.chip.intersections += len(self.chip.grid[x][y][z]) / 2
             net = Net(path)
             start_gate.connections.append(end_gate.id)
             end_gate.connections.append(start_gate.id)
             self.chip.nets.append(net)
-   
+
+
     def search(self, start_gate, end_gate):
         
         flag = False

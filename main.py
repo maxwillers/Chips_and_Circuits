@@ -34,9 +34,9 @@ def main(netlist_file, gate_coordinates, output_png):
     score = []
     sollution =[]
     for _ in range(1):
-        greedy = Astar(chip)
-        score.append(greedy.chip.calculate_value())
-        sollution.append(greedy)
+        astar = Astar(chip)
+        score.append(astar.chip.calculate_value())
+        sollution.append(astar)
         print(score)
         
     
@@ -44,15 +44,16 @@ def main(netlist_file, gate_coordinates, output_png):
     # # Make a dataframe
     
     # Make a dataframe
-    output = greedy.chip.df_output()
+    output = astar.chip.df_output()
 
-    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").split(".csv")[0], 'wires': greedy.chip.calculate_value()}
+    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").split(".csv")[0], 'wires': astar.chip.calculate_value()}
     output = output.append(score, ignore_index=True)
     print(output)
     output.to_csv('output.csv', index=False)
+    print(astar.chip.intersections)
     
     # Visualize the chip
-    visualization_3d(greedy.chip, output_png)
+    visualization_3d(astar.chip, output_png)
 
 
 if __name__ == "__main__":

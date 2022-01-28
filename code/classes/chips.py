@@ -1,5 +1,6 @@
 """This file contains the class Chip, which forms a chip with gates on them"""
 
+
 from traceback import print_tb
 from code.classes.net import Net
 from code.classes.gate import Gate
@@ -19,7 +20,9 @@ class Chip:
         self.gate_coordinates = gate_coordinates
         self.netlist = [netlist["chip_a"].tolist(), netlist["chip_b"].tolist()]
         self.weights = {}
+        self.intersections = 0
         self.add_gates()
+
 
     def add_gates(self):
         """create gates with id and connections"""
@@ -123,22 +126,23 @@ class Chip:
                 return False
         return True
     
-    def calculate_intersections(self):
-        """Calculate how many intersections the chip has"""
-        intersections = 0 
-        for x in range(self.width):
-            for y in range(self.length):
-                for z in range(self.height):
-                    if self.grid[x][y][z] != 0 and self.grid[x][y][z] != -1 :
-                        intersections += 1
-        return intersections
+    # def calculate_intersections(self, intersections):
+    #     """Calculate how many intersections the chip has"""
+    #     return intersections
+        # intersections = 0 
+        # for x in range(self.width):
+        #     for y in range(self.length):
+        #         for z in range(self.height):
+        #             if self.grid[x][y][z] != 0 and self.grid[x][y][z] != -1 :
+        #                 intersections += 1
+        # return intersections
 
     def calculate_value(self):
         """Returns the cost of placing the wires"""
         value = 0
         for net in self.nets:
             value += (len(net.path) - 2)
-        value = value + (300 * self.calculate_intersections())
+        value = value + (300 * self.intersections)
         
         return value
     
@@ -161,19 +165,15 @@ class Chip:
             
         # self.weights[neighbor] = 300 * self.intersection(neighbor) 
         if gates:
-            return self.weights.get(neighbor, 1) + 10 * len(gates)
+            return self.weights.get(neighbor, 1) + 10 * len(gates) + 100 * self.intersection(neighbor)
         else:
-            return self.weights.get(neighbor, 1)
+            return self.weights.get(neighbor, 1) + 100 * self.intersection(neighbor)
 
 
     def intersection(self, neighbor):
         intersections = 0
-        counter = 0
-        for z in range(self.height):
-            if self.grid[neighbor[0]][neighbor[1]][z] > 0:
-                counter += 1
-        if counter > 1:
-            intersections = intersections + (counter - 1)
+        if self.grid[neighbor[0]][neighbor[1]][neighbor[2]] != 0 and self.grid[neighbor[0]][neighbor[1]][neighbor[2]] != -1:
+            intersections += 1
         return intersections
 
 
