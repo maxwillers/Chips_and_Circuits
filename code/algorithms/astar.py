@@ -41,14 +41,14 @@ class Astar():
  
     def create_netlist(self):
         """Go over all the connections that need to be made and ensure that they are made"""
-        connections =[]
+        
         for i in range (len(self.chip.netlist[0])):
-            connections.append((self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])) 
+            self.chip.connections.append((self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])) 
         
         # Sort the netlist from closest connection to farthest away
-        connections = manhatan_dis_sort(connections)
+        self.chip.connections = manhatan_dis_sort(self.chip.connections)
             #print(self.search(start_gate, end_gate))
-        for connection in connections:
+        for connection in self.chip.connections:
             start_gate = connection['start_gate']
             end_gate = connection['end_gate']
 
@@ -57,11 +57,11 @@ class Astar():
             path = self.create_path(came_from, start, end)
             for i in range(len(path)):
                 x, y, z = path[i]
-                if self.chip.grid[x][y][z] == 0:
-                    self.chip.grid[x][y][z] = ((path[i - 1]), (path[i + 1]))
-                elif self.chip.grid[x][y][z] != -1 and self.chip.grid[x][y][z] != 0:
-                    self.chip.grid[x][y][z] = ((path[i - 1]), (path[i + 1]))
-                    self.chip.intersections += len(self.chip.grid[x][y][z]) / 2
+                if self.chip.grid[x][y][z] != -1: 
+                    if self.chip.grid[x][y][z] == 0 :
+                        self.chip.grid[x][y][z] = [(path[i - 1]), (path[i + 1])]
+                    elif len(self.chip.grid[x][y][z]) == 2:
+                        self.chip.grid[x][y][z] = [self.chip.grid[x][y][z], [(path[i - 1]), (path[i + 1])]]
             net = Net(path)
             start_gate.connections.append(end_gate.id)
             end_gate.connections.append(start_gate.id)
@@ -94,7 +94,7 @@ class Astar():
         costs_so_far[(sx, sy, sz)] = 0
         came_from[(sx, sy, sz)] = None
  
-        print(f"start: {current_coordinates}, end: {end_coordinates}")
+        # print(f"start: {current_coordinates}, end: {end_coordinates}")
         while not pq.empty():
            
             location = pq.get()
@@ -124,7 +124,7 @@ class Astar():
                                     
         if pq.empty():
             came_from[end_coordinates] = location        
-            print("false")
+            # print("false")
       
         return came_from, (sx, sy, sz), end_coordinates
                    
