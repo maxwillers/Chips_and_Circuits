@@ -1,119 +1,157 @@
 
 # data structure that handles elements in order from a high to a low assigned priority
 import copy
+from enum import Flag
 from hashlib import new
 from os import path
+import numpy
+ 
+ 
+from matplotlib.pyplot import flag
 from code.classes.net import Net
 from queue import PriorityQueue
-
+import random
+from code.algorithms.sorting import random, manhatan_dis_sort
+ 
 class Astar():
     """Base class that stores all the required components for a funcioning A* algorithm"""
-
+ 
     def __init__(self, chip):
         self.chip = copy.deepcopy(chip)
         self.create_netlist()
-
-
+ 
+ 
     def create_netlist(self):
         """Go over all the connections that need to be made and ensure that they are made"""
-        for i in range(len(self.chip.netlist[0])):
-            start_gate = self.chip.gates[self.chip.netlist[0][i]-1]
-            end_gate = self.chip.gates[self.chip.netlist[1][i]-1]
+        connections =[]
+        for i in range (len(self.chip.netlist[0])):
+            connections.append((self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])) 
+        
+        # Sort the netlist from closest connection to farthest away
+        connections = manhatan_dis_sort(connections)
             #print(self.search(start_gate, end_gate))
+        for connection in connections:
+            start_gate = connection['start_gate']
+            end_gate = connection['end_gate']
+
+            # Find a path between two gates
             came_from, start, end = self.search(start_gate, end_gate)
             path = self.create_path(came_from, start, end)
-            for coordinate in path:
-                if self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] != -1:
-                    self.chip.grid[coordinate[0]][coordinate[1]][coordinate[2]] += 1
-
+            
+            # Add tuples with coordinates of neigbors in path to grid
+            for i in range(len(path)):
+                x, y, z = path[i]
+                if self.chip.grid[x][y][z] != -1:
+                    self.chip.grid[x][y][z] = ((path[i - 1]), (path[i + 1]))
+ 
             net = Net(path)
             start_gate.connections.append(end_gate.id)
             end_gate.connections.append(start_gate.id)
             self.chip.nets.append(net)
-    
+   
     def search(self, start_gate, end_gate):
-        
+       
+        flag = False
+ 
         # Set start coordinates
         sx = start_gate.x
         sy = start_gate.y
         sz = 0
-
+ 
         # Set end coordinates
         ex = end_gate.x
-        ey = end_gate.y 
+        ey = end_gate.y
         ez = 0
-
+ 
         end_coordinates = (ex, ey, ez)
-
+ 
         # Set present coordinates and put them in path
         current_coordinates = (sx, sy, sz)
-        
+       
         pq = PriorityQueue()
         pq.put(current_coordinates, 0)
         costs_so_far = {}
         came_from = {}
         costs_so_far[(sx, sy, sz)] = 0
         came_from[(sx, sy, sz)] = None
-
+ 
         print(f"start: {current_coordinates}, end: {end_coordinates}")
-
-        #print(pq.empty())
+ 
         while not pq.empty():
-            
+           
             location = pq.get()
-            if location == (1, 6, 0):
-                print("cheeeeeck")
-
-            choose, gates = self.chip.available_neighbors(location)
-            
-          
-            if end_coordinates in gates:
-
-                #print(end_coordinates)
-                came_from[end_coordinates] = location
+ 
+            choose, gates, intersections = self.chip.available_neighbors(location)
+           
+            for gate in gates:
+                if gate == end_coordinates:
+                    choose.append(gate)
+ 
+            if location == end_coordinates:
                 break
+ 
+            if len(choose) != 0:
+                for option in choose:
+                    #extra_costs = self.chip.cost(location, option)
+                    new_cost = costs_so_far[location] + self.chip.cost(option)
 
-            for option in choose:
-                new_cost = costs_so_far[location] + 1 + self.chip.cost(location, option)
-                if (sx, sy, sz) == (1, 5, 0) and end_coordinates == (4, 4, 0) and option == (1, 6, 0): 
-                    print(f"Option: {option}, cost: {new_cost}")
-                if option not in costs_so_far or new_cost < costs_so_far[option]:
-                    costs_so_far[option] = new_cost
-                    priority = new_cost + self.heuristic(option, end_coordinates)
-                    #if (sx, sy, sz) == (1, 5, 0) and end_coordinates == (4, 4, 0) and option == (1, 6, 0): 
-                        #print(f"priority 1, 6, 0: {priority}")
-                        #print(pq.queue)
-                    pq.put(option, priority)
-                    #print(pq.queue)
-                    came_from[option] = location
-            
-                    
-
-                
-
-             
-        
+                    if option not in costs_so_far or new_cost < costs_so_far[option]:
+                        costs_so_far[option] = new_cost
+                        priority = new_cost + self.heuristic(option, end_coordinates)
+                        print(f"coordinate:{option}, heuristic:{priority}")
+                        pq.put(option, priority)
+                        came_from[option] = location
+            else:
+                if len(intersections) != 0:
+                    for option in intersections:
+                        #extra_costs = self.chip.cost(location, option)
+                        new_cost = costs_so_far[location] + self.chip.cost(option)
+                        if option not in costs_so_far or new_cost < costs_so_far[option]:
+                            costs_so_far[option] = new_cost
+                            priority = new_cost + self.heuristic(option, end_coordinates)
+                            print(f"coordinate:{option}, heuristic:{priority}")
+                            pq.put(option, priority)
+                            came_from[option] = location
+                        print(f"chosen:{came_from[option]}")
+               
+ 
+                # if flag == True:
+                #     intersection_possibilities = []
+                #     for intersection_possibility in intersections:
+                #         if intersection_possibility not in self.chip.grid[current_coordinates[0]][current_coordinates[1]][current_coordinates[2]]:
+                #             intersection_possibilities.append(intersection_possibility)
+                #             x, y, z = random.choice(intersection_possibilities)[0]
+                #             came_from[]
+                #         else:        
+                #             x,y,z = random.choice(self.chip.available_neighbours((x,y,z))[1])[0]
+                #             path.append((x,y,z))
+                #             intersection = True
+ 
+ 
+ 
         if pq.empty():
+            print(f" Deze gaat fout !!!!!!!! start: {current_coordinates}, end: {end_coordinates}")
             came_from[end_coordinates] = location
-        self.chip.weights.clear()
+        print(came_from, (sx, sy, sz))
+        print()
         return came_from, (sx, sy, sz), end_coordinates
-        #return self.search(start_gate, end_gate)
-                    
+                   
     def heuristic(self, neighbor, end_gate):
             """Calculates the distance with the Manhattan metric and returns the distance between two gates"""
             """Constitutes the h in the formula f(n) = g(n) + h(n)"""
-            sx, sy, sz = neighbor
-            ex, ey, ez = end_gate
-            return abs(sx - ex) + abs(sy - ey) + abs(sz - ez)
-
+            a = numpy.array(neighbor)
+            b = numpy.array(end_gate)
+            return numpy.linalg.norm(a-b)
+ 
     def create_path(self, came_from, start, end):
         position = end
         path = []
         while position != start:
             path.append(position)
-            
+           
             position = came_from[position]
         path.append(start)
         path.reverse()
         return path
-
+ 
+ 

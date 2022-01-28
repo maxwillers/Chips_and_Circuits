@@ -1,5 +1,5 @@
 """
-greedy_2.py
+greedy_itt.py
 This file contains the class greedy class which implements a greedy alogrithm for finding paths
 This greedy algorithm based on Manhattan distance.
 """
@@ -8,7 +8,7 @@ from statistics import median
 from code.classes.net import Net
 import random
 import math
-from code.algorithms.sorting import manhatan_dis_sort, random_sort
+from code.algorithms.sorting import manhatan_dis_sort
 
 class Greedy_random:
     """
@@ -123,6 +123,7 @@ class Greedy_random:
                         no_option.append(path.pop())
                         x,y,z = path[-1]
                     else:
+                        print("fail")
                         return False
                 
         # If end gate is found make net and adjust connecitons in start and end gate
@@ -140,40 +141,72 @@ class Greedy_random:
         self.chip.nets.append(net)
         start_gate.connections.append(end_gate.id)
         end_gate.connections.append(start_gate.id)
-        
+        print("succes")
+        return True
+
+    def undo_connection(self, start_co, end_co):
+        """Removes the path made from the grid an removes net from chip"""
+        for net in self.chip.nets:
+            if net.path[0] == (start_co[0], start_co[1], 0) and net.path[-1] == (end_co[0], end_co[1], 0):
+                for i in range(1, len(net.path), 1):
+                    x,y,z = net.path[i]
+                    if self.chip.grid[x][y][z] != -1:
+                        self.chip.grid[x][y][z] = 0
+                
+                self.chip.nets.remove(net)
 
             
     def run(self):
         """Runs the greedy model"""
 
         self.backup_chip = copy.deepcopy(self.chip)
+
+        # Add netlist
+        for i in range (len(self.chip.netlist[0])):
+            self.connections.append((self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])) 
         
         # Sort the netlist from closest connection to farthest away
-        self.connections = random_sort(self.chip.netlist)
-        connections_new =[]
-        for i in range(len(self.connections)):
-            start, end = self.chip.gates[self.connections[0][i]-1], self.chip.gates[self.connections[1][i]-1]
-            connections_new.append({'start_gate': start, 'end_gate': end, 'start_co': [start.x, start.y], 'end_co':[end.x, end.y]})
-        self.connections = connections_new
+        self.connections = manhatan_dis_sort(self.connections)
+        steps = 0
 
         # Go past every connection
         while len(self.connections) > 0:
-            connection = self.get_next_connection()
+            print(f"this is how many connections we now have: {len(self.connection_made)}")
+            if steps < 1000:
+                steps +=1
+                connection = self.get_next_connection()
 
-            self.add_connection(connection['start_gate'], connection['end_gate'])
-            
-            
-            
+                # If connection succesfully made add to connection made list
+                if self.add_connection(connection['start_gate'], connection['end_gate']):
+                    self.connection_made.append(connection)
+                
+                # Otherwise add this connection to connection list again
+                else: 
+                    while not self.add_connection(connection['start_gate'], connection['end_gate']):
+                        steps +=1 
+                        if steps < 1000: 
+                            self.connections.append(connection)
+
+                            # If other connections were made choose one randomly and redo that one
+                            if len(self.connection_made) > 0:
+                                connection_remove = self.connection_made.pop(random.randint(0,(len(self.connection_made) -1)))
+                                self.undo_connection(connection_remove['start_co'],connection_remove['end_co'])
+                                self.connections.append(connection_remove)
+                                self.add_connection(connection['start_gate'], connection['end_gate'])
+
+                            # Otherwise choose another connection randomly to be done
+                            else:
+                                connection = self.connections.pop(random.randint(0, len(self.connections)-1))
+                        
+                        # Fail if to many steps have past
+                        else:
+                            print("fail")
+                            return False
+                    self.connection_made.append(connection)
+            else: 
+                print("fail")
+                # self.__init__(self.backup_chip)
+                return False
+
         print("succes")
-                
-                
-                
-        
-    
-        
-        
-
-
-        
-
-        
+        return True
