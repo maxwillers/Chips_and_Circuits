@@ -119,7 +119,7 @@ class Chip:
         for x in range(self.width):
             for y in range(self.length):
                 for z in range(self.height):
-                    if len(self.grid[x][y][z]) > 1:
+                    if self.grid[x][y][z] != 0 and self.grid[x][y][z] != -1 :
                         intersections += 1
         return intersections
 
@@ -144,12 +144,15 @@ class Chip:
 
         return pd.DataFrame(data = {'net': nets, 'wires' : wires})
 
-    def cost(self, location, neighbor):
-        choose, gates = self.available_neighbors(neighbor)
+    def cost(self, neighbor):
+        choose, gates, intersections = self.available_neighbors(neighbor)
             
-        self.weights[neighbor] = 300 * self.intersection(neighbor) 
+        # self.weights[neighbor] = 300 * self.intersection(neighbor) 
+        if gates:
+            return self.weights.get(neighbor, 1) + 10* len(gates)
+        else:
+            return self.weights.get(neighbor, 1)
 
-        return self.weights[neighbor]
 
 
     def intersection(self, neighbor):
