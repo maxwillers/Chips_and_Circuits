@@ -145,14 +145,15 @@ class Chip:
         return pd.DataFrame(data = {'net': nets, 'wires' : wires})
 
     def cost(self, neighbor):
+
+
         choose, gates, intersections = self.available_neighbors(neighbor)
             
         # self.weights[neighbor] = 300 * self.intersection(neighbor) 
         if gates:
-            return self.weights.get(neighbor, 1) + 10* len(gates)
+            return self.weights.get(neighbor, 1) + 10 * len(gates)
         else:
             return self.weights.get(neighbor, 1)
-
 
 
     def intersection(self, neighbor):

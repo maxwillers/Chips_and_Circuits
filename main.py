@@ -38,16 +38,10 @@ def main(netlist_file, gate_coordinates, output_png):
         score.append(greedy.chip.calculate_value())
         sollution.append(greedy)
         print(score)
-        # print(f"max:{score[-1]}, min: {score[0]}, avarage:{mean(score)}")
-        # print(f"sollutions:{len(scores)}")
         
     
-    # # Make a dataframe
-    # output = greedy.chip.df_output()
-
-    # score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").split(".csv")[0], 'wires': greedy.chip.calculate_value()}
-    # greedy = Greedy(chip)
     # astar = Astar(chip)
+    # # Make a dataframe
     
     # Make a dataframe
     output = greedy.chip.df_output()

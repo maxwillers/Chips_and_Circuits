@@ -107,13 +107,14 @@ class Random:
                 flag == False
 
             # If there are no neighbours available, run the function again
-            elif not choose and len(intersections) > 0 and flag == False:
+            elif len(choose) == 0 and len(intersections) > 0 and flag == False:
                 new_line = random.choice(intersections)
 
                 path.append(new_line)
 
                 current_coordinates = new_line
-                
+                print('whaaat')
+
                 flag = True
 
 

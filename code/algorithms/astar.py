@@ -4,15 +4,28 @@ import copy
 from enum import Flag
 from hashlib import new
 from os import path
-import numpy
- 
- 
+from code.algorithms.sorting import random, manhatan_dis_sort
+import numpy 
+import heapq
 from matplotlib.pyplot import flag
 from code.classes.net import Net
-from queue import PriorityQueue
+#from queue import PriorityQueue
 import random
-from code.algorithms.sorting import random, manhatan_dis_sort
- 
+
+class PriorityQueue:
+    
+    def __init__(self):
+        self.coordinates = []
+    
+    def empty(self):
+        return not self.coordinates
+
+    def put(self, coordinate, priority):
+        heapq.heappush(self.coordinates, (priority, coordinate))
+
+    def get(self):
+        return heapq.heappop(self.coordinates)[1]
+
 class Astar():
     """Base class that stores all the required components for a funcioning A* algorithm"""
  
@@ -37,22 +50,19 @@ class Astar():
             # Find a path between two gates
             came_from, start, end = self.search(start_gate, end_gate)
             path = self.create_path(came_from, start, end)
-            
-            # Add tuples with coordinates of neigbors in path to grid
             for i in range(len(path)):
                 x, y, z = path[i]
                 if self.chip.grid[x][y][z] != -1:
                     self.chip.grid[x][y][z] = ((path[i - 1]), (path[i + 1]))
- 
             net = Net(path)
             start_gate.connections.append(end_gate.id)
             end_gate.connections.append(start_gate.id)
             self.chip.nets.append(net)
    
     def search(self, start_gate, end_gate):
-       
+        
         flag = False
- 
+
         # Set start coordinates
         sx = start_gate.x
         sy = start_gate.y
@@ -76,45 +86,33 @@ class Astar():
         came_from[(sx, sy, sz)] = None
  
         print(f"start: {current_coordinates}, end: {end_coordinates}")
- 
         while not pq.empty():
            
             location = pq.get()
- 
+
             choose, gates, intersections = self.chip.available_neighbors(location)
-           
+            
             for gate in gates:
                 if gate == end_coordinates:
                     choose.append(gate)
- 
+
             if location == end_coordinates:
                 break
- 
-            if len(choose) != 0:
-                for option in choose:
-                    #extra_costs = self.chip.cost(location, option)
-                    new_cost = costs_so_far[location] + self.chip.cost(option)
 
-                    if option not in costs_so_far or new_cost < costs_so_far[option]:
-                        costs_so_far[option] = new_cost
-                        priority = new_cost + self.heuristic(option, end_coordinates)
-                        print(f"coordinate:{option}, heuristic:{priority}")
-                        pq.put(option, priority)
-                        came_from[option] = location
-            else:
-                if len(intersections) != 0:
-                    for option in intersections:
-                        #extra_costs = self.chip.cost(location, option)
-                        new_cost = costs_so_far[location] + self.chip.cost(option)
-                        if option not in costs_so_far or new_cost < costs_so_far[option]:
-                            costs_so_far[option] = new_cost
-                            priority = new_cost + self.heuristic(option, end_coordinates)
-                            print(f"coordinate:{option}, heuristic:{priority}")
-                            pq.put(option, priority)
-                            came_from[option] = location
-                        print(f"chosen:{came_from[option]}")
-               
- 
+            for option in choose:
+                #extra_costs = self.chip.cost(location, option)
+                new_cost = costs_so_far[location] + self.chip.cost(option)
+                
+                if option not in costs_so_far or new_cost < costs_so_far[option]:
+                    costs_so_far[option] = new_cost
+                    #print(self.heuristic(option, end_coordinates))
+                    priority = new_cost  + self.heuristic(option, end_coordinates)
+                    print(f"coordinaat: {option, priority}")    
+                
+                    pq.put(option, priority)
+                    came_from[option] = location
+                                    
+
                 # if flag == True:
                 #     intersection_possibilities = []
                 #     for intersection_possibility in intersections:
@@ -126,9 +124,7 @@ class Astar():
                 #             x,y,z = random.choice(self.chip.available_neighbours((x,y,z))[1])[0]
                 #             path.append((x,y,z))
                 #             intersection = True
- 
- 
- 
+
         if pq.empty():
             print(f" Deze gaat fout !!!!!!!! start: {current_coordinates}, end: {end_coordinates}")
             came_from[end_coordinates] = location
@@ -142,7 +138,7 @@ class Astar():
             a = numpy.array(neighbor)
             b = numpy.array(end_gate)
             return numpy.linalg.norm(a-b)
- 
+
     def create_path(self, came_from, start, end):
         position = end
         path = []
