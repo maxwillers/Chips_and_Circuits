@@ -4,11 +4,30 @@ import copy
 from enum import Flag
 from hashlib import new
 from os import path
+import numpy 
+import heapq
+
+
+
 
 from matplotlib.pyplot import flag
 from code.classes.net import Net
-from queue import PriorityQueue
+#from queue import PriorityQueue
 import random
+
+class PriorityQueue:
+    
+    def __init__(self):
+        self.coordinates = []
+    
+    def empty(self):
+        return not self.coordinates
+
+    def put(self, coordinate, priority):
+        heapq.heappush(self.coordinates, (priority, coordinate))
+
+    def get(self):
+        return heapq.heappop(self.coordinates)[1]
 
 class Astar():
     """Base class that stores all the required components for a funcioning A* algorithm"""
@@ -81,16 +100,17 @@ class Astar():
                 #extra_costs = self.chip.cost(location, option)
                 new_cost = costs_so_far[location] + self.chip.cost(option)
                 
-
                 if option not in costs_so_far or new_cost < costs_so_far[option]:
-                    print(new_cost)
                     costs_so_far[option] = new_cost
-                    priority = new_cost  #self.heuristic(option, end_coordinates)
-                        
+                    #print(self.heuristic(option, end_coordinates))
+                    
+                    
+                    priority = new_cost  + self.heuristic(option, end_coordinates)
+                    print(f"coordinaat: {option, priority}")    
+                
                     pq.put(option, priority)
                     came_from[option] = location
-            
-
+                                    
 
                 # if flag == True:
                 #     intersection_possibilities = []
@@ -106,16 +126,16 @@ class Astar():
 
 
 
-        # if pq.empty():
-        #    came_from[end_coordinates] = location
+        if pq.empty():
+           came_from[end_coordinates] = location
         return came_from, (sx, sy, sz), end_coordinates
                     
     def heuristic(self, neighbor, end_gate):
             """Calculates the distance with the Manhattan metric and returns the distance between two gates"""
             """Constitutes the h in the formula f(n) = g(n) + h(n)"""
-            sx, sy, sz = neighbor
-            ex, ey, ez = end_gate
-            return abs(sx - ex) + abs(sy - ey) + abs(sz - ez)
+            a = numpy.array(neighbor)
+            b = numpy.array(end_gate)
+            return numpy.linalg.norm(a-b)
 
     def create_path(self, came_from, start, end):
         position = end
