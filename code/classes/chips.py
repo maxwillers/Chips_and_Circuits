@@ -18,6 +18,7 @@ class Chip:
         self.nets = []
         self.gate_coordinates = gate_coordinates
         self.netlist = [netlist["chip_a"].tolist(), netlist["chip_b"].tolist()]
+        self.connections = []
         self.weights = {}
         self.add_gates()
 
@@ -56,35 +57,45 @@ class Chip:
                 # If the location on the grid is free, it is a option or so-called "good neighbour"
                 if self.grid[x + i][y][z] == 0:      
                     good_neighbors.append((x + i, y, z))
-
                 
                 # If the location on the grid is a gate, it might be the endpoint 
                 elif self.grid[x + i][y][z] == -1:
-                    gate_neighbors.append((x + i, y, z))
+                    if self.grid[x][y][z] == 0 or self.grid[x][y][z] == -1:
+                        gate_neighbors.append((x + i, y, z))
+                    elif (x + i, y , z) not in self.grid[x][y][z]:
+                        gate_neighbors.append((x + i, y, z))
                 else:
                     wire = self.grid[x + i][y][z]
-                    if coordinates in wire:
+                    if coordinates not in wire:
                         intersect_neighbors.append((x + i, y, z))
                     
-
+            # Check for neighbors with varying y coordinate
             if y + i >= 0 and y + i <= self.length:
                 if self.grid[x][y + i][z] == 0:
                     good_neighbors.append((x, y + i, z))
+                
                 elif self.grid[x][y + i][z] == -1:
-                    gate_neighbors.append((x, y + i, z))
+                    if self.grid[x][y][z] == 0 or self.grid[x][y][z] == -1:
+                        gate_neighbors.append((x, y + i, z))
+                    elif (x, y + i, z) not in self.grid[x][y][z]:
+                        gate_neighbors.append((x, y + i, z))
                 else:
                     wire = self.grid[x][y + i][z]
-                    if coordinates in wire:
+                    if coordinates not in wire:
                         intersect_neighbors.append((x, y + i, z))
             
+            # Check for neighbors with varying z coordinate
             if z + i >= 0 and z + i <= self.height:
                 if self.grid[x][y][z + i] == 0:
                     good_neighbors.append((x, y, z + i))
                 elif self.grid[x][y][z + i] == -1:
-                    gate_neighbors.append((x, y, z + i))
+                    if self.grid[x][y][z] == 0 or self.grid[x][y][z] == -1:
+                        gate_neighbors.append((x, y, z + i))
+                    elif (x, y, z + i) not in self.grid[x][y][z]:
+                        gate_neighbors.append((x, y, z + i))
                 else:
                     wire = self.grid[x][y][z + i]
-                    if coordinates in wire:
+                    if coordinates not in wire:
                         intersect_neighbors.append((x, y, z + i))
 
         
@@ -119,15 +130,19 @@ class Chip:
         for x in range(self.width):
             for y in range(self.length):
                 for z in range(self.height):
-                    if self.grid[x][y][z] != 0 and self.grid[x][y][z] != -1 :
-                        intersections += 1
+                    if self.grid[x][y][z] != 0 and self.grid[x][y][z] != -1:
+                        if len(self.grid[x][y][z][0]) == 2 :
+                            intersections += 1
+        print(f"intersections: {intersections}")
         return intersections
 
     def calculate_value(self):
         """Returns the cost of placing the wires"""
         value = 0
         for net in self.nets:
-            value += (len(net.path) - 2)
+            value = value + (len(net.path) - 2)
+        print(f"value:{value}")
+        print(f"intersections:{self.calculate_intersections()}")
         value = value + (300 * self.calculate_intersections())
         
         return value
@@ -139,8 +154,8 @@ class Chip:
         for net in self.nets:
             wires.append(net.path)
     
-        for i in range (len(self.netlist[0])): 
-            nets.append((self.netlist[0][i], self.netlist[1][i]))
+        for connection in self.connections: 
+            nets.append((connection['start_gate'].id, connection['end_gate'].id))
 
         return pd.DataFrame(data = {'net': nets, 'wires' : wires})
 
