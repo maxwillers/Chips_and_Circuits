@@ -47,7 +47,6 @@ class Chip:
         gate_neighbors = []
         intersect_neighbors = []
 
-     
         x, y, z = coordinates
       
         # Check for each neighbour (a location on the grid) if they exist and if they are available
@@ -99,12 +98,11 @@ class Chip:
                     wire = self.grid[x][y][z + i]
                     if coordinates not in wire:
                         intersect_neighbors.append((x, y, z + i))
-
         
         # return list of tuples of all possible neighbours 
         return good_neighbors, gate_neighbors, intersect_neighbors
 
-    
+    ########### Moet nog aangepast worden, maar is dit uberhaupt relevant???#############
     def get_violations(self):
         """Returns the violations if any of the nets cross eachother"""
         violations = []
@@ -125,6 +123,7 @@ class Chip:
             if self.gates[end_gates[i] -1].id not in self.gates[start_gates[i]-1].connections:
                 return False
         return True
+
     
     def calculate_intersections(self):
         """Calculate how many intersections the chip has"""
@@ -135,19 +134,18 @@ class Chip:
                     if self.grid[x][y][z] != 0 and self.grid[x][y][z] != -1:
                         if len(self.grid[x][y][z][0]) == 2 :
                             intersections += 1
-        print(f"intersections: {intersections}")
         return intersections
+
 
     def calculate_value(self):
         """Returns the cost of placing the wires"""
         value = 0
         for net in self.nets:
             value = value + (len(net.path) - 1)
-        print(f"value:{value}")
-        print(f"intersections:{self.calculate_intersections()}")
         value = value + (300 * self.calculate_intersections())
         
         return value
+
     
     def df_output(self):
         """Returns the output in a dataframe"""
@@ -163,7 +161,7 @@ class Chip:
 
 
     def cost(self, neighbor):
-
+        """Returns costs for the next step (used in astar algorithm)"""
         choose, gates, intersections = self.available_neighbors(neighbor)
             
         # self.weights[neighbor] = 300 * self.intersection(neighbor) 
@@ -173,6 +171,7 @@ class Chip:
             return self.weights.get(neighbor, 1) + 100 * self.intersection(neighbor)
 
 
+######### moet dit er niet uit? #################
     def intersection(self, neighbor):
         intersections = 0
         if self.grid[neighbor[0]][neighbor[1]][neighbor[2]] != 0 and self.grid[neighbor[0]][neighbor[1]][neighbor[2]] != -1:

@@ -13,14 +13,12 @@ from code.algorithms.greedy import Greedy
 from code.algorithms.randomise import Random
 from code.algorithms.greedy_2 import Greedy_random
 from code.algorithms.astar import Astar
+import statistics
 
 
 
-def main(netlist_file, gate_coordinates, output_png):
+def main(netlist_file, gate_coordinates, output_png, algorithm):
 
-    scores = []
-    total = 0
-    i = 0
     # Make lists of the gates located on the chip and of the connections that are to be made between gates
     netlist = pd.read_csv(netlist_file)
     gate_coordinates = pd.read_csv(gate_coordinates)
@@ -31,29 +29,32 @@ def main(netlist_file, gate_coordinates, output_png):
 
     # Create a chip with gates
     chip = Chip(grid_width, grid_length, netlist, gate_coordinates)
-    score = []
-    sollution =[]
-    for _ in range(1):
-        greedy = Astar(chip)
-        score.append(greedy.chip.calculate_value())
-        sollution.append(greedy)
-        print(score)
+    all_output = []
+    score_2 = []
+    for _ in range(100):
+        if algorithm == 'astar':
+            run_chip = Astar(chip)
+        elif algorithm == 'greedy':
+            run_chip = Greedy_random(chip)
+        elif algorithm == 'random':
+            run_chip = Random(chip)
         
+        score_2.append(run_chip.chip.calculate_value())
     
-    # astar = Astar(chip)
-    # # Make a dataframe
+    print(score_2)
+    print(statistics.mean(score_2))
+        
+
+    output = run_chip.chip.df_output()
+    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").replace("netlist", "net").split(".csv")[0], 'wires': run_chip.chip.calculate_value()}
+    output = output.append(score, ignore_index=True)
+        # all_output.append(output)  
     
     # Make a dataframe
-    output = greedy.chip.df_output()
-
-    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").replace("netlist", "net").split(".csv")[0], 'wires': greedy.chip.calculate_value()}
-    output = output.append(score, ignore_index=True)
-    print(output)
     output.to_csv('output.csv', index=False)
     
     # Visualize the chip
-    visualization_3d(greedy.chip, output_png)
-
+    visualization_3d(run_chip.chip, output_png)
 
 if __name__ == "__main__":
 
@@ -64,9 +65,10 @@ if __name__ == "__main__":
     parser.add_argument("netlist_file", help="input file (csv)")
     parser.add_argument("gate_coordinates", help="input print file (csv)")
     parser.add_argument("output_png", help = "output file (png)")
+    parser.add_argument("algorithm", help = "algorithm you want to use")
 
     # Read arguments from command line
     args = parser.parse_args()
 
     # Run main with provided arguments
-    main(args.netlist_file, args.gate_coordinates, args.output_png)
+    main(args.netlist_file, args.gate_coordinates, args.output_png, args.algorithm)
