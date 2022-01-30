@@ -142,7 +142,7 @@ class Chip:
         """Returns the cost of placing the wires"""
         value = 0
         for net in self.nets:
-            value = value + (len(net.path) - 2)
+            value = value + (len(net.path) - 1)
         print(f"value:{value}")
         print(f"intersections:{self.calculate_intersections()}")
         value = value + (300 * self.calculate_intersections())
@@ -154,15 +154,15 @@ class Chip:
         wires =[]
         nets = []
         for net in self.nets:
-            wires.append(net.path)
+            wires.append(str(net.path).replace(' ', ''))
     
         for connection in self.connections: 
-            nets.append((connection['start_gate'].id, connection['end_gate'].id))
+            nets.append(f"({connection['start_gate'].id},{connection['end_gate'].id})")
 
         return pd.DataFrame(data = {'net': nets, 'wires' : wires})
 
-    def cost(self, neighbor):
 
+    def cost(self, neighbor):
 
         choose, gates, intersections = self.available_neighbors(neighbor)
             
