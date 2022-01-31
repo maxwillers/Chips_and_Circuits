@@ -109,8 +109,9 @@ class Greedy_random:
             if self.chip.grid[x][y][z] != -1: 
                 if self.chip.grid[x][y][z] == 0 :
                     self.chip.grid[x][y][z] = [(path[i - 1]), (path[i + 1])]
-                elif len(self.chip.grid[x][y][z]) == 2:
+                else:
                     self.chip.grid[x][y][z] = [self.chip.grid[x][y][z], [(path[i - 1]), (path[i + 1])]]
+            print(self.chip.grid[x][y][z])
 
         # If end gate is found make net and adjust connecitons in start and end gate
         net = Net(path)
@@ -130,6 +131,7 @@ class Greedy_random:
         self.chip.connections = manhatan_dis_sort(self.chip.connections)
 
         self.connections = copy.deepcopy(self.chip.connections)
+        print(len(self.connections))
 
 
         # Sort the netlist from closest connection to farthest away
@@ -144,13 +146,15 @@ class Greedy_random:
         # Go past every connection
         while len(self.connections) > 0:
             connection = self.get_next_connection()
-            self.add_connection(connection['start_gate'], connection['end_gate'])
+            if not self.add_connection(connection['start_gate'], connection['end_gate']):
+                print("fail")
+                return False
             
             
             
         print("succes")
                 
-                
+    
                 
         
     

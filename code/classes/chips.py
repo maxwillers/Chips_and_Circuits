@@ -48,6 +48,8 @@ class Chip:
         intersect_neighbors = []
 
         x, y, z = coordinates
+
+        # print(self.grid[x][y][z])
       
         # Check for each neighbour (a location on the grid) if they exist and if they are available
         for i in range(-1, 2, 2):
@@ -156,6 +158,7 @@ class Chip:
     
         for connection in self.connections: 
             nets.append(f"({connection['start_gate'].id},{connection['end_gate'].id})")
+
 
         return pd.DataFrame(data = {'net': nets, 'wires' : wires})
 
