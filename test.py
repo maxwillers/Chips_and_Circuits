@@ -1,130 +1,118 @@
-
-# data structure that handles elements in order from a high to a low assigned priority
-import copy
-from enum import Flag
-from hashlib import new
-from os import path
-
-from matplotlib.pyplot import flag
-from code.classes.net import Net
-from queue import PriorityQueue
+"""
+This file contains the Random class which implements a random algorithm for finding paths between chips.
+"""
+import sys 
+from calendar import c
 import random
+import copy
+from tracemalloc import start
 
-class Astar():
-    """Base class that stores all the required components for a funcioning A* algorithm"""
+import jinja2
+from code.classes import chips
+from code.classes.chips import Chip
+from code.classes.net import Net
+
+#sys.setrecursionlimit(5000)
+
+class Random:
 
     def __init__(self, chip):
         self.chip = copy.deepcopy(chip)
         self.create_netlist()
-
+        
 
     def create_netlist(self):
-        """Go over all the connections that need to be made and ensure that they are made"""
-        for i in range(len(self.chip.netlist[0])):
-            start_gate = self.chip.gates[self.chip.netlist[0][i]-1]
-            end_gate = self.chip.gates[self.chip.netlist[1][i]-1]
-            #print(self.search(start_gate, end_gate))
-            came_from, start, end = self.search(start_gate, end_gate)
-            path = self.create_path(came_from, start, end)
-            for i in range(len(path)):
-                x, y, z = path[i]
-                if self.chip.grid[x][y][z] != -1:
-                    self.chip.grid[x][y][z] = ((path[i - 1]), (path[i + 1]))
-
-            net = Net(path)
-            start_gate.connections.append(end_gate.id)
-            end_gate.connections.append(start_gate.id)
-            self.chip.nets.append(net)
-    
-    def search(self, start_gate, end_gate):
+        """Go over all connection that need to be made and ensure they are made"""
         
-        flag = False
 
-        # Set start coordinates
+        # Iterate over the netlist
+        for i in range(len(self.chip.netlist[0])):
+            print(f"chip {i + 1}: {self.random_path(self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])}")
+                
+        
+    
+    def random_path(self, start_gate, end_gate):
+        """
+        Assign each net with a randomized path
+        """
+        path = [] 
+           
         sx = start_gate.x
         sy = start_gate.y
         sz = 0
 
-        # Set end coordinates
+        current_coordinates = (sx, sy, sz)
+
         ex = end_gate.x
         ey = end_gate.y 
         ez = 0
 
         end_coordinates = (ex, ey, ez)
 
-        # Set present coordinates and put them in path
-        current_coordinates = (sx, sy, sz)
-        
-        pq = PriorityQueue()
-        pq.put(current_coordinates, 0)
-        costs_so_far = {}
-        came_from = {}
-        costs_so_far[(sx, sy, sz)] = 0
-        came_from[(sx, sy, sz)] = None
+        path.append(current_coordinates)
 
-        print(f"start: {current_coordinates}, end: {end_coordinates}")
+        # While the connection has not been made, make random choices for a new line  
+        while current_coordinates != end_coordinates:
 
-        while not pq.empty():
+            # If there are neighbour points available, make a random choice between these neighbouring points
+            choose, gates, intersections = self.chip.available_neighbors(current_coordinates)
             
-            location = pq.get()
+            choose.extend(intersections)
+            # iterate over possible neighbour gates
+            for end in gates:
 
-            choose, gates, intersections = self.chip.available_neighbors(location)
-            
-            for gate in gates:
-                if gate == end_coordinates:
-                    choose.append(gate)
-
-            if location == end_coordinates:
-                break
-
-            for option in choose:
-                #extra_costs = self.chip.cost(location, option)
-                new_cost = costs_so_far[location] + self.chip.cost(option)
+                # If the current coordinates match the end gate coordinate, check if the coordinates are unique
+                if end == end_coordinates:
+                    
+                
+                    path.append(end) 
+                    for i in range(len(path)):
+                        x, y, z = path[i]
+                        if self.chip.grid[x][y][z] != -1: 
+                            if self.chip.grid[x][y][z] == 0 :
+                                self.chip.grid[x][y][z] = [(path[i - 1]), (path[i + 1])]
+                            elif len(self.chip.grid[x][y][z]) == 2:
+                                self.chip.grid[x][y][z] = [self.chip.grid[x][y][z], [(path[i - 1]), (path[i + 1])]]
+                            
+                    net = Net(path) 
+                    start_gate.connections.append(end_gate.id)
+                    end_gate.connections.append(start_gate.id)
+                    self.chip.nets.append(net)
+                    # for i in range(len(path)):
+                    #     x, y, z = path[i]
+                    #     print(self.chip.grid[x][y][z])
+                    return print(f"double check {current_coordinates}, {end_coordinates}") 
+                
                 
 
-                if option not in costs_so_far or new_cost < costs_so_far[option]:
-                    print(new_cost)
-                    costs_so_far[option] = new_cost
-                    priority = new_cost  #self.heuristic(option, end_coordinates)
-                        
-                    pq.put(option, priority)
-                    came_from[option] = location
+            # if there are neighbours available pick one randomly
+            if choose: 
             
+                new_line = random.choice(choose)
+
+                # Keep track of the lines which have been laid
+                path.append(new_line)
+
+                # Keep track of the current position
+                current_coordinates = new_line
 
 
-                # if flag == True:
-                #     intersection_possibilities = []
-                #     for intersection_possibility in intersections:
-                #         if intersection_possibility not in self.chip.grid[current_coordinates[0]][current_coordinates[1]][current_coordinates[2]]:
-                #             intersection_possibilities.append(intersection_possibility)
-                #             x, y, z = random.choice(intersection_possibilities)[0]
-                #             came_from[]
-                #         else:         
-                #             x,y,z = random.choice(self.chip.available_neighbours((x,y,z))[1])[0]
-                #             path.append((x,y,z))
-                #             intersection = True
+            # If there are no neighbours available, run the function again
+            # elif len(choose) == 0 and len(intersections) > 0:
+            #     new_line = random.choice(intersections)
+
+            #     path.append(new_line)
+
+            #     current_coordinates = new_line
+                
 
 
+            else:
+                # if possible try again to find a connection
+                try:
+                    return self.random_path(start_gate, end_gate)
 
-        # if pq.empty():
-        #    came_from[end_coordinates] = location
-        return came_from, (sx, sy, sz), end_coordinates
-                    
-    def heuristic(self, neighbor, end_gate):
-            """Calculates the distance with the Manhattan metric and returns the distance between two gates"""
-            """Constitutes the h in the formula f(n) = g(n) + h(n)"""
-            sx, sy, sz = neighbor
-            ex, ey, ez = end_gate
-            return abs(sx - ex) + abs(sy - ey) + abs(sz - ez)
-
-    def create_path(self, came_from, start, end):
-        position = end
-        path = []
-        while position != start:
-            path.append(position)
-            
-            position = came_from[position]
-        path.append(start)
-        path.reverse()
-        return path
-
+                # if a recursion error is occurring quit the program
+                except RecursionError:
+                    print('stuck')
+                    quit()     

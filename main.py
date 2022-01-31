@@ -13,7 +13,7 @@ from code.algorithms.greedy import Greedy
 from code.algorithms.randomise import Random
 from code.algorithms.greedy_2 import Greedy_random
 from code.algorithms.astar import Astar
-
+from code.algorithms.hillclimber import Hillclimber
 
 
 def main(netlist_file, gate_coordinates, output_png):
@@ -39,10 +39,9 @@ def main(netlist_file, gate_coordinates, output_png):
         sollution.append(astar)
         print(score)
         
-    
+    hill = Hillclimber(astar)
     # astar = Astar(chip)
     # # Make a dataframe
-    
     # Make a dataframe
     output = astar.chip.df_output()
 
