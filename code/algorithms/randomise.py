@@ -69,10 +69,15 @@ class Random:
                     # if the coordinates are unique, create net
                     if len(path) == len(set(path)):
                         path.append(end)
-                        for i in range(len(path)):
-                            x, y, z = path[i]
-                            if self.chip.grid[x][y][z] != -1:
-                                self.chip.grid[x][y][z] = ((path[i - 1]), (path[i + 1]))
+
+                    for i in range(len(path)):
+                        x, y, z = path[i]
+                        if self.chip.grid[x][y][z] != -1: 
+                            if self.chip.grid[x][y][z] == 0 :
+                                self.chip.grid[x][y][z] = [(path[i - 1]), (path[i + 1])]
+                            else:
+                                self.chip.grid[x][y][z].append((path[i - 1]))
+                                self.chip.grid[x][y][z].append((path[i + 1]))
                             
                         net = Net(path)
                         start_gate.connections.append(end_gate.id)
@@ -113,7 +118,7 @@ class Random:
                 path.append(new_line)
 
                 current_coordinates = new_line
-                print('whaaat')
+                # print('whaaat')
 
                 flag = True
 

@@ -110,8 +110,8 @@ class Greedy_random:
                 if self.chip.grid[x][y][z] == 0 :
                     self.chip.grid[x][y][z] = [(path[i - 1]), (path[i + 1])]
                 else:
-                    self.chip.grid[x][y][z] = [self.chip.grid[x][y][z], [(path[i - 1]), (path[i + 1])]]
-            print(self.chip.grid[x][y][z])
+                    self.chip.grid[x][y][z].append((path[i - 1]))
+                    self.chip.grid[x][y][z].append((path[i + 1]))
 
         # If end gate is found make net and adjust connecitons in start and end gate
         net = Net(path)
