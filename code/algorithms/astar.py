@@ -2,6 +2,7 @@
 # data structure that handles elements in order from a high to a low assigned priority
 import copy
 from enum import Flag
+from errno import EMSGSIZE
 from hashlib import new
 from os import path
 from code.algorithms.sorting import random, manhatan_dis_sort
@@ -34,11 +35,10 @@ class Astar():
  
     def __init__(self, chip):
         self.chip = copy.deepcopy(chip)
+        self.connections = []
         self.create_netlist()
         
 
- 
- 
     def create_netlist(self):
         """Go over all the connections that need to be made and ensure that they are made"""
         
@@ -57,20 +57,21 @@ class Astar():
             path = self.create_path(came_from, start, end)
             for i in range(len(path)):
                 x, y, z = path[i]
-                if self.chip.grid[x][y][z] != -1: 
-                    if self.chip.grid[x][y][z] == 0 :
+                if self.chip.grid[x][y][z] != -1:
+                    if self.chip.grid[x][y][z] == 0:
                         self.chip.grid[x][y][z] = [(path[i - 1]), (path[i + 1])]
-                    elif len(self.chip.grid[x][y][z]) == 2:
-                        self.chip.grid[x][y][z] = [self.chip.grid[x][y][z], [(path[i - 1]), (path[i + 1])]]
+                    else:
+                        self.chip.grid[x][y][z] = self.chip.grid[x][y][z] + [(path[i - 1]), (path[i + 1])]
             net = Net(path)
             start_gate.connections.append(end_gate.id)
             end_gate.connections.append(start_gate.id)
             self.chip.nets.append(net)
-
+            self.connections.append([path[0], path[-1]])
+        
+  
 
     def search(self, start_gate, end_gate):
         
-        flag = False
 
         # Set start coordinates
         sx = start_gate.x
@@ -117,23 +118,29 @@ class Astar():
                 if option not in costs_so_far or new_cost < costs_so_far[option]:
                     costs_so_far[option] = new_cost
                     #print(self.heuristic(option, end_coordinates))                    
-                    priority = new_cost  + self.heuristic(option, end_coordinates) 
+                    priority = new_cost  + self.manhattan_heuristic(location, option, end_coordinates) 
                 
                     pq.put(option, priority)
                     came_from[option] = location
                                     
-        if pq.empty():
-            came_from[end_coordinates] = location        
+        # if pq.empty():
+        #     came_from[end_coordinates] = location        
             # print("false")
       
         return came_from, (sx, sy, sz), end_coordinates
                    
-    def heuristic(self, neighbor, end_gate):
+    def manhattan_heuristic(self, location, neighbor, end_gate):
             """Calculates the distance with the Manhattan metric and returns the distance between two gates"""
             """Constitutes the h in the formula f(n) = g(n) + h(n)"""
-            a = numpy.array(neighbor)
-            b = numpy.array(end_gate)
-            return numpy.linalg.norm(a-b)
+            # sx, sy, sz = location
+            nx, ny, nz = neighbor
+            ex, ey, ez = end_gate
+            
+            
+            return abs(nx - ex) + abs(ny - ey)
+            # a = numpy.array(neighbor)
+            # b = numpy.array(end_gate)
+            # return numpy.linalg.norm(a-b)
 
     def create_path(self, came_from, start, end):
         position = end

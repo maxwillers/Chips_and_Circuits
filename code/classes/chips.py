@@ -1,10 +1,12 @@
 """This file contains the class Chip, which forms a chip with gates on them"""
 
+<<<<<<< HEAD
 from traceback import print_tb
+=======
+>>>>>>> 10648f2959b7e3a24df76f6087742cee4eae03c0
 from code.classes.net import Net
 from code.classes.gate import Gate
 import pandas as pd
-
 
 class Chip:
     """Class for creating chip"""
@@ -62,8 +64,13 @@ class Chip:
                 elif self.grid[x + i][y][z] == -1:
                     gate_neighbors.append((x + i, y, z))
                 else:
+<<<<<<< HEAD
                     wire = self.grid[x + i][y][z]
                     if coordinates in wire:
+=======
+                    wires = self.grid[x + i][y][z]
+                    if coordinates not in wires:
+>>>>>>> 10648f2959b7e3a24df76f6087742cee4eae03c0
                         intersect_neighbors.append((x + i, y, z))
                     
 
@@ -73,25 +80,46 @@ class Chip:
                 elif self.grid[x][y + i][z] == -1:
                     gate_neighbors.append((x, y + i, z))
                 else:
+<<<<<<< HEAD
                     wire = self.grid[x][y + i][z]
                     if coordinates in wire:
                         intersect_neighbors.append((x, y + i, z))
             
+=======
+                    wires = self.grid[x][y + i][z]
+                    if coordinates not in wires:
+                        intersect_neighbors.append((x, y + i, z))
+                    
+                        
+            # Check for neighbors with varying z coordinate
+>>>>>>> 10648f2959b7e3a24df76f6087742cee4eae03c0
             if z + i >= 0 and z + i <= self.height:
                 if self.grid[x][y][z + i] == 0:
                     good_neighbors.append((x, y, z + i))
                 elif self.grid[x][y][z + i] == -1:
                     gate_neighbors.append((x, y, z + i))
                 else:
+<<<<<<< HEAD
                     wire = self.grid[x][y][z + i]
                     if coordinates in wire:
                         intersect_neighbors.append((x, y, z + i))
 
+=======
+                    wires = self.grid[x][y][z + i]
+                    if coordinates not in wires:
+                        intersect_neighbors.append((x, y, z + i))
+                    
+>>>>>>> 10648f2959b7e3a24df76f6087742cee4eae03c0
         
         # return list of tuples of all possible neighbours 
         return good_neighbors, gate_neighbors, intersect_neighbors
 
+<<<<<<< HEAD
     
+=======
+
+    ########### Moet nog aangepast worden, maar is dit uberhaupt relevant???#############
+>>>>>>> 10648f2959b7e3a24df76f6087742cee4eae03c0
     def get_violations(self):
         """Returns the violations if any of the nets cross eachother"""
         violations = []
@@ -119,8 +147,17 @@ class Chip:
         for x in range(self.width):
             for y in range(self.length):
                 for z in range(self.height):
+<<<<<<< HEAD
                     if len(self.grid[x][y][z]) > 1:
                         intersections += 1
+=======
+                    
+                    if self.grid[x][y][z] != 0 and self.grid[x][y][z] != -1:
+                        if len(self.grid[x][y][z]) == 4:
+                            intersections += 1
+                        elif len(self.grid[x][y][z]) > 4:
+                            intersections += len(self.grid[x][y][z]) - 4     
+>>>>>>> 10648f2959b7e3a24df76f6087742cee4eae03c0
         return intersections
 
     def calculate_value(self):
@@ -144,6 +181,7 @@ class Chip:
 
         return pd.DataFrame(data = {'net': nets, 'wires' : wires})
 
+<<<<<<< HEAD
     def cost(self, location, neighbor):
         choose, gates = self.available_neighbors(neighbor)
             
@@ -161,3 +199,15 @@ class Chip:
         if counter > 1:
             intersections = intersections + (counter - 1)
         return intersections
+=======
+
+    def cost(self, neighbor):
+        """Returns costs for the next step (used in astar algorithm)"""
+        gates = self.available_neighbors(neighbor)[1]
+            
+        if gates:
+            return self.weights.get(neighbor, 1) + 10 * len(gates) + 300 * self.intersection(neighbor)
+        else:
+            return self.weights.get(neighbor, 1) + 300 * self.intersection(neighbor) 
+
+>>>>>>> 10648f2959b7e3a24df76f6087742cee4eae03c0
