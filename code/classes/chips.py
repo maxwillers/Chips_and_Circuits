@@ -40,6 +40,7 @@ class Chip:
 
     def available_neighbors(self, coordinates):
         """checks available neighbours for each position"""
+        
         good_neighbors = []
         gate_neighbors = []
         intersect_neighbors = []
@@ -163,6 +164,11 @@ class Chip:
 
         return pd.DataFrame(data = {'net': nets, 'wires' : wires})
 
+    def intersection(self, neighbor):
+        intersections = 0
+        if self.grid[neighbor[0]][neighbor[1]][neighbor[2]] != 0 and self.grid[neighbor[0]][neighbor[1]][neighbor[2]] != -1:
+            intersections += 1
+        return intersections
 
     def cost(self, neighbor):
         """Returns costs for the next step (used in astar algorithm)"""
