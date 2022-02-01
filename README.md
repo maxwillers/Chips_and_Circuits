@@ -39,9 +39,9 @@ The code exists of several folders:
 
 
 ## Code examples
-To generate a plot of chip_0 and netlist_1 using the randomise algorithm, use:
+* To generate a plot of chip_0 and netlist_1 using the randomise algorithm, use:
 ` `
-To generate a plot of chip_1 and netlist_4 using the greedy algorithm, use:
-` ` 
-To generate a plot of chip_2 and netlist_7 using the A* algorithm, use:
+* To generate a plot of chip_1 and netlist_4 using the greedy algorithm, use:
+`python3 main.py gates_netlists/chip_0/netlist_3.csv gates_netlists/chip_0/print_0.csv plots/plot.png greedy ` 
+* To generate a plot of chip_2 and netlist_7 using the A* algorithm, use:
 ` ` 
