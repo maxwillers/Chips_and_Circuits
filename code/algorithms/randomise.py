@@ -27,7 +27,7 @@ def run_random(chip):
         random_chip.connections.append((random_chip.gates[random_chip.netlist[0][i]-1], random_chip.gates[random_chip.netlist[1][i] -1])) 
     
     # Rearange list so the shortest distances will be first
-    random_chip.connections = manhatan_dis_sort(random_chip.connections)
+    random_chip.connections = manhattan_dis_sort(random_chip.connections)
 
     # Go over every connection to be made an make a connection       
     for connection in random_chip.connections:

@@ -13,7 +13,7 @@ class Hillclimber():
     def __init__(self, astar_chip): 
         self.astar_chip = copy.deepcopy(astar_chip)
         self.score = astar_chip.calculate_value()
-        for iteration in range(1000):
+        for iteration in range(10000):
             print(f'Iteration {iteration}/1000, current value: {self.score}')
             new_astar_chip = copy.deepcopy(self.astar_chip)
             self.reconfigure_astar_chip(new_astar_chip)
@@ -22,7 +22,7 @@ class Hillclimber():
 
 
     def reconfigure_astar_chip(self, new_astar_chip):
-        print(len(new_astar_chip.connections))
+        #print(len(new_astar_chip.connections))
         connection_set = []
         while len(connection_set) < len(new_astar_chip.connections):
             random_connection = random.choice(new_astar_chip.connections)
@@ -37,7 +37,6 @@ class Hillclimber():
             
         
         self.undo_connection(new_astar_chip, new_astar_chip.connections[0]['start_co'], new_astar_chip.connections[0]['end_co'])
-        print("hellooo")
         path = randomise.random_path(new_astar_chip, new_astar_chip.connections[0]['start_gate'], new_astar_chip.connections[0]['end_gate'])
         self.create_new_connection(new_astar_chip, path)
         #new_astar_chip.connections.remove(new_astar_chip.connections[0])
@@ -48,6 +47,8 @@ class Hillclimber():
     def check_solution(self, new_astar_chip):
         new_score = new_astar_chip.calculate_value()        
         old_score = self.score
+        if new_score < 100:
+            print(new_score)
         #print(new_astar_chip.calculate_intersections())
         if new_score <= old_score:
             self.astar_chip = new_astar_chip
