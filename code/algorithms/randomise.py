@@ -19,54 +19,54 @@ sys.setrecursionlimit(5000)
 def run_random(chip):
     """Go over all connection that need to be made and ensure they are made"""
 
-    chip = copy.deepcopy(chip)
+    random_chip = copy.deepcopy(chip)
 
     # Iterate over the netlist
-    for i in range(len(chip.netlist[0])):
-        chip.connections.append((chip.gates[chip.netlist[0][i]-1], chip.gates[chip.netlist[1][i] -1])) 
+    for i in range(len(random_chip.netlist[0])):
+        random_chip.connections.append((random_chip.gates[random_chip.netlist[0][i]-1], random_chip.gates[random_chip.netlist[1][i] -1])) 
     
     # Rearange list so the shortest distances will be first
-    chip.connections = manhatan_dis_sort(chip.connections)
+    random_chip.connections = manhatan_dis_sort(random_chip.connections)
 
     # Go over every connection to be made an make a connection       
-    for connection in chip.connections:
+    for connection in random_chip.connections:
         start_gate = connection['start_gate']
         end_gate = connection['end_gate']
 
-        path = random_path(chip, start_gate, end_gate)
+        path = random_path(random_chip, start_gate, end_gate)
 
         # Change values in grid to the coordinates every grid point connects to
         for i in range(len(path)):
             x, y, z = path[i]
-            if chip.grid[x][y][z] != -1: 
-                if chip.grid[x][y][z] == 0:
-                    chip.grid[x][y][z] = [(path[i - 1]), (path[i + 1])]
+            if random_chip.grid[x][y][z] != -1: 
+                if random_chip.grid[x][y][z] == 0:
+                    random_chip.grid[x][y][z] = [(path[i - 1]), (path[i + 1])]
                 else:
-                    chip.grid[x][y][z] = chip.grid[x][y][z] + [(path[i - 1]), (path[i + 1])]
+                    random_chip.grid[x][y][z] = random_chip.grid[x][y][z] + [(path[i - 1]), (path[i + 1])]
         
         # Add path to net and add connections to gates
         net = Net(path) 
         start_gate.connections.append(end_gate.id)
         end_gate.connections.append(start_gate.id)
-        chip.nets.append(net)
+        random_chip.nets.append(net)
 
-    return chip
+    return random_chip
 
-def random_path(chip, start_gate, end_gate):
+def random_path(random_chip, start_gate, end_gate):
     """
     Assign each net with a randomized path
     """
     path = [] 
     set_path = set(path)
     counter = 0
-    sx = start_gate[0]
-    sy = start_gate[1]
+    sx = start_gate.x
+    sy = start_gate.y
     sz = 0
 
     current_coordinates = (sx, sy, sz)
 
-    ex = end_gate[0]
-    ey = end_gate [1]
+    ex = end_gate.x
+    ey = end_gate.y
     ez = 0
 
     end_coordinates = (ex, ey, ez)
@@ -77,7 +77,7 @@ def random_path(chip, start_gate, end_gate):
     while current_coordinates != end_coordinates:
 
         # If there are neighbour points available, make a random choice between these neighbouring points
-        choose, gates, intersections = chip.available_neighbors(current_coordinates)
+        choose, gates, intersections = random_chip.available_neighbors(current_coordinates)
         choose.extend(intersections)
 
         # iterate over possible neighbour gates
@@ -101,9 +101,9 @@ def random_path(chip, start_gate, end_gate):
 
             # Keep track of the current position
             elif counter == 1000:
-                print(counter)
+                
                 try:
-                    return random_path(chip, start_gate, end_gate)
+                    return random_path(random_chip, start_gate, end_gate)
 
                 # if a recursion error is occurring quit the program
                 except RecursionError:
@@ -116,7 +116,7 @@ def random_path(chip, start_gate, end_gate):
 
             # if possible try again to find a connection
             try:
-                return random_path(chip, start_gate, end_gate)
+                return random_path(random_chip, start_gate, end_gate)
 
             # if a recursion error is occurring quit the program
             except RecursionError:

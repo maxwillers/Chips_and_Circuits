@@ -35,7 +35,7 @@ class Astar():
  
     def __init__(self, chip):
         self.chip = copy.deepcopy(chip)
-        self.connections = []
+        #self.connections = []
         self.create_netlist()
         
 
@@ -65,8 +65,9 @@ class Astar():
             net = Net(path)
             start_gate.connections.append(end_gate.id)
             end_gate.connections.append(start_gate.id)
+            
             self.chip.nets.append(net)
-            self.connections.append([path[0], path[-1]])
+            #self.connections.append([path[0], path[-1]])
         
   
 
