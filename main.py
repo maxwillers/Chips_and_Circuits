@@ -7,15 +7,15 @@ This file contains the function main of the assignment Chips and Circuits
 
 import pandas as pd
 import argparse
+from code.algorithms import hillclimber
 from code.classes.chips import Chip
 from code.visualization.visualization import visualization_3d
 from code.algorithms.greedy import Greedy
-from code.algorithms.randomise import Random
+from code.algorithms import randomise 
 from code.algorithms.greedy_2 import Greedy_random
 from code.algorithms.greedy_itt import Greedy_itt
 from code.algorithms.astar import Astar
-import statistics
-
+from code.algorithms.hillclimber import Hillclimber
 
 
 def main(netlist_file, gate_coordinates, output_png, algorithm):
@@ -57,6 +57,9 @@ def main(netlist_file, gate_coordinates, output_png, algorithm):
     
     # Visualize the chip
     visualization_3d(run_chip.chip, output_png)
+
+    hill = Hillclimber(run_chip)
+
 
 if __name__ == "__main__":
 
