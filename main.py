@@ -60,6 +60,7 @@ def main(netlist_file, gate_coordinates, output_png, algorithm):
 
     hill = Hillclimber(run_chip)
 
+    visualization_3d(run_chip.chip, 'out2.png')
 
 if __name__ == "__main__":
 

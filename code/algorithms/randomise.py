@@ -66,14 +66,14 @@ def random_path(chip, start_gate, end_gate):
     path = []
     set_path = set(path)
     counter = 0
-    sx = start_gate.x
-    sy = start_gate.y
+    sx = start_gate[0]
+    sy = start_gate[1]
     sz = 0
 
     current_coordinates = (sx, sy, sz)
 
-    ex = end_gate.x
-    ey = end_gate.y
+    ex = end_gate[0]
+    ey = end_gate [1]
     ez = 0
 
     end_coordinates = (ex, ey, ez)
@@ -108,8 +108,9 @@ def random_path(chip, start_gate, end_gate):
 
             # Keep track of the current position
             elif counter == 1000:
+                print(counter)
                 try:
-                    return random_path(start_gate, end_gate)
+                    return random_path(chip, start_gate, end_gate)
 
                 # if a recursion error is occurring quit the program
                 except RecursionError:
@@ -122,7 +123,7 @@ def random_path(chip, start_gate, end_gate):
 
             # if possible try again to find a connection
             try:
-                return random_path(start_gate, end_gate)
+                return random_path(chip, start_gate, end_gate)
 
             # if a recursion error is occurring quit the program
             except RecursionError:
