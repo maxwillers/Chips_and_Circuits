@@ -10,7 +10,7 @@ import argparse
 from code.algorithms import hillclimber
 from code.classes.chips import Chip
 from code.visualization.visualization import visualization_3d
-from code.algorithms.greedy import Greedy
+from code.algorithms.greedy_breakthrough import Greedy
 from code.algorithms import randomise 
 from code.algorithms.greedy_2 import Greedy_random
 from code.algorithms.greedy_itt import Greedy_itt

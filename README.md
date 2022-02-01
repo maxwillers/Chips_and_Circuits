@@ -1,32 +1,47 @@
 
 # Chips and Circuits
-### Nikki van der Woord, Max Willers & Madelief Verburg
+### A program containing three distinct algoritms used to solve the Chips and Circuits problem case
+By Nikki van der Woord, Max Willers & Madelief Verburg
 ------------------------------------------------------
 
-# Introduction
+## Introduction
 
-This is code for the project 'Chips and Circuits' of the minor computer programming from the UvA.
+This program has been created for the 'Chips and Circuits' project for the Programming Theory course, which is part of the UvA's Programming minor.
 
-It attempts to find the most sufficient way to wire a chip. The chip contains several gates with their own coordinates. These gates have to be connected with eachother as is stated in the netlist. The goal is to do this so the costst are the lowest.
+It attempts to find the most sufficient way to wire a chip. A chip contains several gates, each with their own coordinates. These gates need to be connected with each other through nets. Which gates should be connected with which gate is stated in a given netlist. The goal of this program is to be able to generate solutions in which the gates are connected according to the netlist in the most optimized way as is possible. The aim is to find solutions while keeping the total costs of the placed nets as low as possible.
 
-The cost are calculated as follows:
+The total cost are calculated as follows:
     total cost = units of wire + 300 * intersections
 
-Hereby the **units of wire** is every coordinate the wire passes and the **intersections** are when two wires cross the same coordinate.
+Hereby the **units of wire** is every coordinate the wire passes and an **intersections** occurs when two wires cross the same coordinate. This formula goes to show that finding the shorest paths for all the nets is not the issue to be taken in to consideration, and that intersections should be avoided as much as possible, as these amp up the cost drastically. 
 
-However there are some restrictions:
--  **collision** are not allowed
+Furthermore, there are some restrictions regarding laying down the nets:
+-  **Collision** is not allowed
     - collisions happen when two units run allong the same path
 - The path cannot go past the chip
-    - the chip grid is the size of the outer gate coordinates + 1. so it starts at 0 and ends at max x value +1 and max y value +1. The height is 7. 
+    - the chip grid is the size of the outer gate coordinates + 1. so it starts at 0 and ends at max x value +1 and max y value +1. The chip always has a height of 7.
 
 
-# Files
+## Technologies
+Project is created with:
+* Python version: 3.9
+* Matplotlib library version: 3.4
 
+
+## Files
 The code exists of several folders:
-- **code***: contains all important code
-    - algorithms: contains all algorithms for a sollution
-    - classes: contains all classes for this case
-    - visualization: contains files for visualization
-- **gate_netlist**: contains the available chips and their netlsit
+- **code***: contains three important folders, namely:
+    - algorithms: the random, greedy and A* algoritms are stored here
+    - classes: the Chip, Net and Gate classes are kept here
+    - visualization: contains files for a 3D visualization using matplotlib
+- **gate_netlist**: contains this case's provided chips and their netlists
 - main.py: to run the code
+
+
+## Code examples
+To generate a plot of chip_0 and netlist_1 using the randomise algorithm, use:
+` `
+To generate a plot of chip_1 and netlist_4 using the greedy algorithm, use:
+` ` 
+To generate a plot of chip_2 and netlist_7 using the A* algorithm, use:
+` ` 
