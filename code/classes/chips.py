@@ -1,6 +1,5 @@
 """This file contains the class Chip, which forms a chip with gates on them"""
 
-from traceback import print_tb
 from code.classes.net import Net
 from code.classes.gate import Gate
 import pandas as pd
@@ -17,8 +16,10 @@ class Chip:
         self.nets = []
         self.gate_coordinates = gate_coordinates
         self.netlist = [netlist["chip_a"].tolist(), netlist["chip_b"].tolist()]
+        self.connections = []
         self.weights = {}
         self.add_gates()
+
 
     def add_gates(self):
         """create gates with id and connections"""
@@ -43,7 +44,6 @@ class Chip:
         gate_neighbors = []
         intersect_neighbors = []
 
-     
         x, y, z = coordinates
       
         # Check for each neighbour (a location on the grid) if they exist and if they are available
@@ -59,33 +59,45 @@ class Chip:
                 
                 # If the location on the grid is a gate, it might be the endpoint 
                 elif self.grid[x + i][y][z] == -1:
-                    gate_neighbors.append((x + i, y, z))
+                    if self.grid[x][y][z] == 0 or self.grid[x][y][z] == -1:
+                        gate_neighbors.append((x + i, y, z))
+                    elif (x + i, y , z) not in self.grid[x][y][z]:
+                        gate_neighbors.append((x + i, y, z))
                 else:
-                    wire = self.grid[x + i][y][z]
-                    if coordinates in wire:
+                    wires = self.grid[x + i][y][z]
+                    if coordinates not in wires:
                         intersect_neighbors.append((x + i, y, z))
                     
-
+            # Check for neighbors with varying y coordinate
             if y + i >= 0 and y + i <= self.length:
                 if self.grid[x][y + i][z] == 0:
                     good_neighbors.append((x, y + i, z))
+                
                 elif self.grid[x][y + i][z] == -1:
-                    gate_neighbors.append((x, y + i, z))
+                    if self.grid[x][y][z] == 0 or self.grid[x][y][z] == -1:
+                        gate_neighbors.append((x, y + i, z))
+                    elif (x, y + i, z) not in self.grid[x][y][z]:
+                        gate_neighbors.append((x, y + i, z))
                 else:
-                    wire = self.grid[x][y + i][z]
-                    if coordinates in wire:
+                    wires = self.grid[x][y + i][z]
+                    if coordinates not in wires:
                         intersect_neighbors.append((x, y + i, z))
-            
+                    
+                        
+            # Check for neighbors with varying z coordinate
             if z + i >= 0 and z + i <= self.height:
                 if self.grid[x][y][z + i] == 0:
                     good_neighbors.append((x, y, z + i))
                 elif self.grid[x][y][z + i] == -1:
-                    gate_neighbors.append((x, y, z + i))
+                    if self.grid[x][y][z] == 0 or self.grid[x][y][z] == -1:
+                        gate_neighbors.append((x, y, z + i))
+                    elif (x, y, z + i) not in self.grid[x][y][z]:
+                        gate_neighbors.append((x, y, z + i))
                 else:
-                    wire = self.grid[x][y][z + i]
-                    if coordinates in wire:
+                    wires = self.grid[x][y][z + i]
+                    if coordinates not in wires:
                         intersect_neighbors.append((x, y, z + i))
-
+                    
         
         # return list of tuples of all possible neighbours 
         return good_neighbors, gate_neighbors, intersect_neighbors
@@ -112,6 +124,7 @@ class Chip:
             if self.gates[end_gates[i] -1].id not in self.gates[start_gates[i]-1].connections:
                 return False
         return True
+
     
     def calculate_intersections(self):
         """Calculate how many intersections the chip has"""
@@ -127,24 +140,26 @@ class Chip:
                             intersections += len(self.grid[x][y][z]) - 4     
         return intersections
 
+
     def calculate_value(self):
         """Returns the cost of placing the wires"""
         value = 0
         for net in self.nets:
-            value += (len(net.path) - 2)
+            value = value + (len(net.path) - 1)
         value = value + (300 * self.calculate_intersections())
         
         return value
+
     
     def df_output(self):
         """Returns the output in a dataframe"""
         wires =[]
         nets = []
         for net in self.nets:
-            wires.append(net.path)
+            wires.append(str(net.path).replace(' ', ''))
     
-        for i in range (len(self.netlist[0])): 
-            nets.append((self.netlist[0][i], self.netlist[1][i]))
+        for connection in self.connections: 
+            nets.append(f"({connection['start_gate'].id},{connection['end_gate'].id})")
 
         return pd.DataFrame(data = {'net': nets, 'wires' : wires})
 
@@ -158,7 +173,7 @@ class Chip:
         else:
             return self.weights.get(neighbor, 1) + 300 * self.intersection(neighbor) 
             
-            
+
     def intersection(self, neighbor):
          intersections = 0
          if self.grid[neighbor[0]][neighbor[1]][neighbor[2]] != 0 and self.grid[neighbor[0]][neighbor[1]][neighbor[2]] != -1:

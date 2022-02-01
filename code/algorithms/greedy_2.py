@@ -128,7 +128,7 @@ class Greedy_random:
             self.chip.connections.append((self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])) 
         
         # Sort the netlist from closest connection to farthest away
-        self.chip.connections = manhatan_dis_sort(self.chip.connections)
+        self.chip.connections = random_sort(self.chip.connections)
 
         self.connections = copy.deepcopy(self.chip.connections)
         print(len(self.connections))
