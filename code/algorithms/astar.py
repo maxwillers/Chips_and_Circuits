@@ -60,8 +60,8 @@ class Astar():
                 if self.chip.grid[x][y][z] != -1:
                     if self.chip.grid[x][y][z] == 0:
                         self.chip.grid[x][y][z] = [(path[i - 1]), (path[i + 1])]
-                    elif len(self.chip.grid[x][y][z]) == 2:
-                        self.chip.grid[x][y][z] = [self.chip.grid[x][y][z], [(path[i - 1]), (path[i + 1])]]
+                    else:
+                        self.chip.grid[x][y][z] = self.chip.grid[x][y][z] + [(path[i - 1]), (path[i + 1])]
             net = Net(path)
             start_gate.connections.append(end_gate.id)
             end_gate.connections.append(start_gate.id)

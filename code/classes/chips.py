@@ -71,7 +71,7 @@ class Chip:
                     wires = self.grid[x + i][y][z]
                     if coordinates not in wires:
                         intersect_neighbors.append((x + i, y, z))
-                    
+              
 
                     
             # Check for neighbors with varying y coordinate
@@ -88,7 +88,8 @@ class Chip:
                     wires = self.grid[x][y + i][z]
                     if coordinates not in wires:
                         intersect_neighbors.append((x, y + i, z))
-            
+                    
+                        
             # Check for neighbors with varying z coordinate
             if z + i >= 0 and z + i <= self.height:
                 if self.grid[x][y][z + i] == 0:
@@ -102,7 +103,7 @@ class Chip:
                     wires = self.grid[x][y][z + i]
                     if coordinates not in wires:
                         intersect_neighbors.append((x, y, z + i))
-
+                    
         
         # return list of tuples of all possible neighbours 
         return good_neighbors, gate_neighbors, intersect_neighbors
@@ -135,9 +136,12 @@ class Chip:
         for x in range(self.width):
             for y in range(self.length):
                 for z in range(self.height):
+                    
                     if self.grid[x][y][z] != 0 and self.grid[x][y][z] != -1:
-                        if len(self.grid[x][y][z][0]) == 2 :
+                        if len(self.grid[x][y][z]) == 4:
                             intersections += 1
+                        elif len(self.grid[x][y][z]) > 4:
+                            intersections += len(self.grid[x][y][z]) - 4     
         print(f"intersections: {intersections}")
         return intersections
 
@@ -161,8 +165,7 @@ class Chip:
         for connection in self.connections: 
             nets.append((connection['start_gate'].id, connection['end_gate'].id))
 
-        print(len(wires))
-        print(len(nets))
+        
         return pd.DataFrame(data = {'net': nets, 'wires' : wires})
 
     def cost(self, neighbor):
