@@ -49,7 +49,7 @@ def create_netlist(self):
                 #     print(self.chip.grid[x][y][z])
     
 
-def random_path(start_gate, end_gate):
+def random_path(self, start_gate, end_gate):
     """
     Assign each net with a randomized path
     """
