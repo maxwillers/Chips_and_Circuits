@@ -160,10 +160,4 @@ class Chip:
                 counter += 1
         if counter > 1:
             intersections = intersections + (counter - 1)
-<<<<<<< HEAD
         return intersections
-=======
-        return intersections
-
-
->>>>>>> 912308cabdb163e10064d7ae709c25320ffad71a

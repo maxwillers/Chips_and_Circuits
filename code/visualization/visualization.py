@@ -51,7 +51,7 @@ def visualization_3d(chip, output_png):
     ax.set_zlabel('Z axis')
 
     # Add the total wire cost a particular instance's nets
-    ax.set_title(f'Total wire cost: {chip.calculate_value()}', fontsize=10, fontweight='normal')
+    #ax.set_title(f'Total wire cost: {chip.calculate_value()}', fontsize=10, fontweight='normal')
     
 
     # Plot the grid

@@ -25,21 +25,25 @@ def manhatan_dis_sort(connections):
     return connections
 
 
-def random(connections):
+def random_sort(connections):
     """Create a random connections list by swapping connections"""
-    for _ in range(len(connections)*2):
+    for _ in range(len(connections[0])*2):
         # Make two indexes
         index_1 = 0
         index_2 = 0
 
         # Give them a random value and make sure these values are not the same
         while index_1 == index_2:
-            index_1 = random.randrange(0, len(connections))
-            index_2 = random.randrange(0, len(connections))
+            index_1 = random.randrange(0, len(connections[0]))
+            index_2 = random.randrange(0, len(connections[0]))
 
         # Swap nets in the connections list
-        tmp = connections[index_1]
-        connections[index_1] = connections[index_2]
-        connections[index_2] = tmp
+        tmp = connections[0][index_1]
+        connections[0][index_1] = connections[0][index_2]
+        connections[0][index_2] = tmp
+
+        tmp = connections[1][index_1]
+        connections[1][index_1] = connections[1][index_2]
+        connections[1][index_2] = tmp
 
     return connections
