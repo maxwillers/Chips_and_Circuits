@@ -47,8 +47,9 @@ class Chip:
         gate_neighbors = []
         intersect_neighbors = []
 
-     
         x, y, z = coordinates
+
+        # print(self.grid[x][y][z])
       
         # Check for each neighbour (a location on the grid) if they exist and if they are available
         for i in range(-1, 2, 2):
@@ -108,7 +109,7 @@ class Chip:
         # return list of tuples of all possible neighbours 
         return good_neighbors, gate_neighbors, intersect_neighbors
 
-    
+    ########### Moet nog aangepast worden, maar is dit uberhaupt relevant???#############
     def get_violations(self):
         """Returns the violations if any of the nets cross eachother"""
         violations = []
@@ -129,6 +130,7 @@ class Chip:
             if self.gates[end_gates[i] -1].id not in self.gates[start_gates[i]-1].connections:
                 return False
         return True
+
     
     def calculate_intersections(self):
         """Calculate how many intersections the chip has"""
@@ -145,32 +147,33 @@ class Chip:
         print(f"intersections: {intersections}")
         return intersections
 
+
     def calculate_value(self):
         """Returns the cost of placing the wires"""
         value = 0
         for net in self.nets:
-            value = value + (len(net.path) - 2)
-        print(f"value:{value}")
-        print(f"intersections:{self.calculate_intersections()}")
+            value = value + (len(net.path) - 1)
         value = value + (300 * self.calculate_intersections())
         
         return value
+
     
     def df_output(self):
         """Returns the output in a dataframe"""
         wires =[]
         nets = []
         for net in self.nets:
-            wires.append(net.path)
+            wires.append(str(net.path).replace(' ', ''))
+    
         for connection in self.connections: 
-            nets.append((connection['start_gate'].id, connection['end_gate'].id))
+            nets.append(f"({connection['start_gate'].id},{connection['end_gate'].id})")
 
-        
+
         return pd.DataFrame(data = {'net': nets, 'wires' : wires})
 
+
     def cost(self, neighbor):
-
-
+        """Returns costs for the next step (used in astar algorithm)"""
         choose, gates, intersections = self.available_neighbors(neighbor)
             
         # self.weights[neighbor] = 300 * self.intersection(neighbor) 
@@ -180,6 +183,7 @@ class Chip:
             return self.weights.get(neighbor, 1) + 300 * self.intersection(neighbor) 
 
 
+######### moet dit er niet uit? #################
     def intersection(self, neighbor):
         intersections = 0
         if self.grid[neighbor[0]][neighbor[1]][neighbor[2]] != 0 and self.grid[neighbor[0]][neighbor[1]][neighbor[2]] != -1:

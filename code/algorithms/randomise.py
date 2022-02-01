@@ -93,9 +93,6 @@ def random_path(self, start_gate, end_gate):
                 #         print('stuck')
                 #         quit()     
 
-
-                    
-            
             
         # if there are neighbours available pick one randomly
         if choose: 

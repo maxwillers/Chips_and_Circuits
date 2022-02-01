@@ -27,7 +27,6 @@ class Greedy_random:
 
     def add_connection(self, start_gate, end_gate):
         """Make the connection between two gates first changing the x coordinates then the y coordinates"""
-        print(start_gate.id, end_gate.id)
         # Set start coordinates
         start_x = start_gate.x
         end_x = end_gate.x
@@ -44,7 +43,6 @@ class Greedy_random:
 
         # Make a list with coordinates that are not an option anymore, as they lead to a dead end
         no_option = []
-        intersection = False
         i = 0
 
         # While the endgate is not reached go find a next step
@@ -76,38 +74,23 @@ class Greedy_random:
             if len(best_neighbors) != 0:
                 x,y,z = random.choice(best_neighbors)
                 path.append((x,y,z))
-                intersection = False
             
             elif len(medium_neighbors) != 0:
                 x,y,z = random.choice(best_neighbors)
                 path.append((x,y,z))
-                intersection = False
 
             # Otherwise go to any of the available neighbors
             elif len(available_neigbors) != 0:
                 x,y,z = random.choice(available_neigbors)
                 path.append((x,y,z))
-                intersection = False
+                
                 
             # If there are no available neighbors go back a step and make the current position no longer an option
             else:
-                print("intersections")
-                print(self.chip.available_neighbors((x,y,z))[2])
-                if len(self.chip.available_neighbors((x,y,z))[2]) != 0:         
-                    x,y,z = random.choice(self.chip.available_neighbors((x,y,z))[2])
-                    path.append((x,y,z))
-                    intersection = True
-                
-                elif intersection == True:
-                    intersection_possibilities = []
-                    for intersection_possibility in random.choice(self.chip.available_neighbors((x,y,z))[2]):
-                        if intersection_possibility not in self.chip.grid[x][y][z]:
-                            intersection_possibilities.append(intersection_possibility)
-                    if len(intersection_possibility) > 0:
-                        x,y,z = random.choice(intersection_possibilities)
+                    if len(self.chip.available_neighbors((x,y,z))[2]) > 0:
+                        x,y,z = random.choice(self.chip.available_neighbors((x,y,z))[2])
                         path.append((x,y,z))
                     else:
-                        print("stapje terug")
                         if len(path) > 1:
                             self.chip.grid[x][y][z].remove((path[-1], 0))
                             no_option.append(path.pop())
@@ -115,25 +98,20 @@ class Greedy_random:
                         else:
                             print("fail")
                             return False
-        
-                else:
-                    print("stapje terug")
-                    if len(path) > 1:
-                        self.chip.grid[x][y][z] = 0
-                        no_option.append(path.pop())
-                        x,y,z = path[-1]
-                    else:
-                        return False
                 
         # If end gate is found make net and adjust connecitons in start and end gate
         x,y,z = end_x, end_y, 0
         path.append((x,y,z))
 
         # Fill path in grid with tuples where path comes from and goes to
-        for i in range (len(path)):
+        for i in range(len(path)):
             x, y, z = path[i]
-            if self.chip.grid[x][y][z] != -1:
-                self.chip.grid[x][y][z] = ((path[i - 1]), (path[i + 1]))
+            if self.chip.grid[x][y][z] != -1: 
+                if self.chip.grid[x][y][z] == 0 :
+                    self.chip.grid[x][y][z] = [(path[i - 1]), (path[i + 1])]
+                else:
+                    self.chip.grid[x][y][z].append((path[i - 1]))
+                    self.chip.grid[x][y][z].append((path[i + 1]))
 
         # If end gate is found make net and adjust connecitons in start and end gate
         net = Net(path)
@@ -145,28 +123,38 @@ class Greedy_random:
             
     def run(self):
         """Runs the greedy model"""
-
-        self.backup_chip = copy.deepcopy(self.chip)
+        
+        for i in range (len(self.chip.netlist[0])):
+            self.chip.connections.append((self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])) 
         
         # Sort the netlist from closest connection to farthest away
-        self.connections = random_sort(self.chip.netlist)
-        connections_new =[]
-        for i in range(len(self.connections)):
-            start, end = self.chip.gates[self.connections[0][i]-1], self.chip.gates[self.connections[1][i]-1]
-            connections_new.append({'start_gate': start, 'end_gate': end, 'start_co': [start.x, start.y], 'end_co':[end.x, end.y]})
-        self.connections = connections_new
+        self.chip.connections = manhatan_dis_sort(self.chip.connections)
+
+        self.connections = copy.deepcopy(self.chip.connections)
+        print(len(self.connections))
+
+
+        # Sort the netlist from closest connection to farthest away
+        # self.connections = manhatan_dis_sort(self.chip.netlist)
+        # connections_new =[]
+        # for i in range(len(self.connections)):
+        #     start, end = self.chip.gates[self.connections[0][i]-1], self.chip.gates[self.connections[1][i]-1]
+        #     connections_new.append({'start_gate': start, 'end_gate': end, 'start_co': [start.x, start.y], 'end_co':[end.x, end.y]})
+        # self.connections = connections_new
+    
 
         # Go past every connection
         while len(self.connections) > 0:
             connection = self.get_next_connection()
-
-            self.add_connection(connection['start_gate'], connection['end_gate'])
+            if not self.add_connection(connection['start_gate'], connection['end_gate']):
+                print("fail")
+                return False
             
             
             
         print("succes")
                 
-                
+    
                 
         
     

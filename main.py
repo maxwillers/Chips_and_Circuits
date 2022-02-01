@@ -13,15 +13,13 @@ from code.visualization.visualization import visualization_3d
 from code.algorithms.greedy import Greedy
 from code.algorithms import randomise 
 from code.algorithms.greedy_2 import Greedy_random
+from code.algorithms.greedy_itt import Greedy_itt
 from code.algorithms.astar import Astar
 from code.algorithms.hillclimber import Hillclimber
 
 
-def main(netlist_file, gate_coordinates, output_png):
+def main(netlist_file, gate_coordinates, output_png, algorithm):
 
-    scores = []
-    total = 0
-    i = 0
     # Make lists of the gates located on the chip and of the connections that are to be made between gates
     netlist = pd.read_csv(netlist_file)
     gate_coordinates = pd.read_csv(gate_coordinates)
@@ -32,30 +30,35 @@ def main(netlist_file, gate_coordinates, output_png):
 
     # Create a chip with gates
     chip = Chip(grid_width, grid_length, netlist, gate_coordinates)
-    score = []
-    sollution =[]
+    all_output = []
+    score_2 = []
     for _ in range(1):
-        astar = Astar(chip)
-        score.append(astar.chip.calculate_value())
-        sollution.append(astar)
-        print(score)
+        if algorithm == 'astar':
+            run_chip = Astar(chip)
+        elif algorithm == 'greedy':
+            run_chip = Greedy_itt(chip)
+        elif algorithm == 'random':
+            run_chip = Random(chip)
         
-    #hill = Hillclimber(astar)
-    # astar = Astar(chip)
-    # # Make a dataframe
-    # Make a dataframe
-    output = astar.chip.df_output()
+        if run_chip == True:
+            score_2.append(run_chip.chip.calculate_value())
+    
+    print(score_2)
+    # print(statistics.mean(score_2))
+        
 
-    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").replace("netlist", "net").split(".csv")[0], 'wires': astar.chip.calculate_value()}
+    output = run_chip.chip.df_output()
+    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").replace("netlist", "net").split(".csv")[0], 'wires': run_chip.chip.calculate_value()}
     output = output.append(score, ignore_index=True)
-    print(output)
+        # all_output.append(output)  
+    
+    # Make a dataframe
     output.to_csv('output.csv', index=False)
-   
     
     # Visualize the chip
-    visualization_3d(astar.chip, output_png)
+    visualization_3d(run_chip.chip, output_png)
 
-    hill = Hillclimber(astar)
+    hill = Hillclimber(run_chip)
 
 
 if __name__ == "__main__":
@@ -67,9 +70,10 @@ if __name__ == "__main__":
     parser.add_argument("netlist_file", help="input file (csv)")
     parser.add_argument("gate_coordinates", help="input print file (csv)")
     parser.add_argument("output_png", help = "output file (png)")
+    parser.add_argument("algorithm", help = "algorithm you want to use")
 
     # Read arguments from command line
     args = parser.parse_args()
 
     # Run main with provided arguments
-    main(args.netlist_file, args.gate_coordinates, args.output_png)
+    main(args.netlist_file, args.gate_coordinates, args.output_png, args.algorithm)
