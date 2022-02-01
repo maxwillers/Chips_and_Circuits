@@ -5,7 +5,6 @@ from traceback import print_tb
 from code.classes.net import Net
 from code.classes.gate import Gate
 import pandas as pd
-import itertools
 
 class Chip:
     """Class for creating chip"""

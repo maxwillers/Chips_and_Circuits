@@ -38,7 +38,7 @@ def main(netlist_file, gate_coordinates, output_png, algorithm):
         elif algorithm == 'greedy':
             run_chip = Greedy_itt(chip)
         elif algorithm == 'random':
-            run_chip = Random(chip)
+            run_chip = randomise.create_netlist(chip)
         
         if run_chip == True:
             score_2.append(run_chip.chip.calculate_value())

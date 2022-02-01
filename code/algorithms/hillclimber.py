@@ -23,10 +23,10 @@ class Hillclimber():
             all_connections.remove(random_connection)
         randomise.random_path(all_connections[0][0], all_connections[0][1])
     
+    
     def check_solution(self, new_astar_chip):
         new_score = new_astar_chip.chip.calculate_value()
         old_score = self.score
-
         if new_score <= old_score:
             self.astar_chip = new_astar_chip
             self.score = new_score
