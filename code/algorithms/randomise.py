@@ -3,18 +3,19 @@ randomise.py
 
 This file contains the Random class which implements a random algorithm for finding paths between chips.
 """
-import sys 
+import sys
 from calendar import c
 import random
 import copy
 from tracemalloc import start
 import jinja2
-from code.algorithms.sorting import manhatan_dis_sort
+from code.algorithms.helpers import manhattan_dis_sort
 from code.classes import chips
 from code.classes.chips import Chip
 from code.classes.net import Net
 
 sys.setrecursionlimit(5000)
+
 
 def run_random(chip):
     """Go over all connection that need to be made and ensure they are made"""
@@ -45,7 +46,7 @@ def run_random(chip):
                     random_chip.grid[x][y][z] = random_chip.grid[x][y][z] + [(path[i - 1]), (path[i + 1])]
         
         # Add path to net and add connections to gates
-        net = Net(path) 
+        net = Net(path)
         start_gate.connections.append(end_gate.id)
         end_gate.connections.append(start_gate.id)
         random_chip.nets.append(net)
@@ -56,7 +57,7 @@ def random_path(random_chip, start_gate, end_gate):
     """
     Assign each net with a randomized path
     """
-    path = [] 
+    path = []
     set_path = set(path)
     counter = 0
     sx = start_gate.x
@@ -73,7 +74,7 @@ def random_path(random_chip, start_gate, end_gate):
 
     path.append(current_coordinates)
 
-    # While the connection has not been made, make random choices for a new line  
+    # While the connection has not been made, make random choices for a new line
     while current_coordinates != end_coordinates:
 
         # If there are neighbour points available, make a random choice between these neighbouring points
@@ -87,9 +88,9 @@ def random_path(random_chip, start_gate, end_gate):
             if end == end_coordinates:
                 path.append(end)
                 return path
-            
+
         # if there are neighbours available pick one randomly
-        if choose: 
+        if choose:
 
             new_line = random.choice(choose)
 
@@ -107,8 +108,8 @@ def random_path(random_chip, start_gate, end_gate):
 
                 # if a recursion error is occurring quit the program
                 except RecursionError:
-                    print('stuck')
-                    quit()     
+                    print("stuck")
+                    quit()
             else:
                 counter += 1
 
@@ -120,7 +121,5 @@ def random_path(random_chip, start_gate, end_gate):
 
             # if a recursion error is occurring quit the program
             except RecursionError:
-                print('stuck')
-                quit()  
-
-
+                print("stuck")
+                quit()
