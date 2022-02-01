@@ -47,6 +47,7 @@ class Greedy_itt:
         while (end_x, end_y , 0) not in self.chip.available_neighbors((x,y,z))[1]:
             neighbors = self.chip.available_neighbors((x,y,z))[0]
             best_neighbors = []
+            medium_neighbors = []
             available_neigbors = [] 
           
             for neighbor in neighbors:
@@ -59,9 +60,15 @@ class Greedy_itt:
                     # Check if the available neighbors are in the right direction or not
                     if abs(end_x - x_neighbor) < abs(end_x - x) or abs(end_y - y_neighbor) < abs(end_y - y) or z_neigbor < z:
                         best_neighbors.append(neighbor)
+                    elif z_neigbor > z:
+                        medium_neighbors.append
 
             # If there are neighbors in the right direction go there    
             if len(best_neighbors) != 0:
+                x,y,z = random.choice(best_neighbors)
+                path.append((x,y,z))
+            
+            elif len(medium_neighbors) != 0:
                 x,y,z = random.choice(best_neighbors)
                 path.append((x,y,z))
 
@@ -111,7 +118,7 @@ class Greedy_itt:
             if net.path[0] == (start_co[0], start_co[1], 0) and net.path[-1] == (end_co[0], end_co[1], 0):
                 for i in range(1, len(net.path), 1):
                     x,y,z = net.path[i]
-                    self.chip.grid[x][y][z] = 0
+                    self.chip.grid[x][y][z] -= ((net.path[i - 1]), (net.path[i + 1]))
                 
                 self.chip.nets.remove(net)
 

@@ -10,7 +10,7 @@ import argparse
 from code.algorithms import hillclimber
 from code.classes.chips import Chip
 from code.visualization.visualization import visualization_3d
-from code.algorithms.greedy import Greedy
+from code.algorithms.greedy_breakthrough import Greedy
 from code.algorithms import randomise 
 from code.algorithms.greedy_2 import Greedy_random
 from code.algorithms.greedy_itt import Greedy_itt
@@ -38,7 +38,7 @@ def main(netlist_file, gate_coordinates, output_png, algorithm):
         elif algorithm == 'greedy':
             run_chip = Greedy_itt(chip)
         elif algorithm == 'random':
-            run_chip = Random(chip)
+            run_chip = randomise.create_netlist(chip)
         
         if run_chip == True:
             score_2.append(run_chip.chip.calculate_value())

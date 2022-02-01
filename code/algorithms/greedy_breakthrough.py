@@ -57,18 +57,15 @@ class Greedy:
             while z != 0 and self.chip.grid[x][y][z_new] == 0:
                 z = z_new
                 path.append((x, y, z))
-                self.chip.grid[x][y][z] += 1
                 z_new = z - 1
 
             # Change x-coordinate if possible, otherwise move upward
             while self.chip.grid[x_new][y][z] > 0 and z < self.chip.height:
                 z += 1
                 path.append((x, y, z))
-                self.chip.grid[x][y][z] += 1
 
             x = x_new
             path.append((x, y, z))
-            self.chip.grid[x][y][z] += 1
 
         # Change the y-coordinate until the correct y-coordinate is reached
         for _ in range(abs(dy)):
@@ -79,18 +76,15 @@ class Greedy:
             while z != 0 and self.chip.grid[x][y][z_new] == 0:
                 z = z_new
                 path.append((x, y, z))
-                self.chip.grid[x][y][z] += 1
                 z_new = z - 1
 
             # Change the y-coordinate if possible, otherwise move upward
             while self.chip.grid[x][y_new][z] > 0 and z < self.chip.height:
                 z += 1
                 path.append((x, y, z))
-                self.chip.grid[x][y][z] += 1
      
             y = y_new
             path.append((x, y, z))
-            self.chip.grid[x][y][z] += 1
 
         # Make sure the line goes to base layer if the correct final x- and y- coordinates are reached
         if z != 0:

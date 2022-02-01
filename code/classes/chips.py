@@ -172,4 +172,11 @@ class Chip:
             return self.weights.get(neighbor, 1) + 10 * len(gates) + 300 * self.intersection(neighbor)
         else:
             return self.weights.get(neighbor, 1) + 300 * self.intersection(neighbor) 
+            
+
+    def intersection(self, neighbor):
+         intersections = 0
+         if self.grid[neighbor[0]][neighbor[1]][neighbor[2]] != 0 and self.grid[neighbor[0]][neighbor[1]][neighbor[2]] != -1:
+             intersections += 1
+         return intersections
 
