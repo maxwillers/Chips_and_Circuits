@@ -16,8 +16,7 @@ from code.classes.net import Net
 sys.setrecursionlimit(5000)
 
 
-
-def create_netlist(self):
+def run_random(self):
     """Go over all connection that need to be made and ensure they are made"""
     
     
@@ -44,12 +43,10 @@ def create_netlist(self):
         start_gate.connections.append(end_gate.id)
         end_gate.connections.append(start_gate.id)
         self.chip.nets.append(net)
-                # for i in range(len(path)):
-                #     x, y, z = path[i]
-                #     print(self.chip.grid[x][y][z])
+               
     
 
-def random_path(self, start_gate, end_gate):
+def random_path(chip, start_gate, end_gate):
     """
     Assign each net with a randomized path
     """
@@ -84,15 +81,6 @@ def random_path(self, start_gate, end_gate):
             if end == end_coordinates:
                 path.append(end)
                 return path
-                # else:
-                #     try:
-                #         return self.random_path(start_gate, end_gate)
-
-                #     # # if a recursion error is occurring quit the program
-                #     except RecursionError:
-                #         print('stuck')
-                #         quit()     
-
             
         # if there are neighbours available pick one randomly
         if choose: 
@@ -121,20 +109,6 @@ def random_path(self, start_gate, end_gate):
             else:
                 counter += 1
 
-                
-
-
-
-        # If there are no neighbours available, run the function again
-        # elif len(choose) == 0 and len(intersections) > 0:
-        #     new_line = random.choice(intersections)
-
-        #     path.append(new_line)
-
-        #     current_coordinates = new_line
-            
-
-
         else:
             # if possible try again to find a connection
             try:
@@ -143,4 +117,6 @@ def random_path(self, start_gate, end_gate):
             # if a recursion error is occurring quit the program
             except RecursionError:
                 print('stuck')
-                quit()     
+                quit()  
+
+
