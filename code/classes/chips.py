@@ -1,11 +1,8 @@
 """This file contains the class Chip, which forms a chip with gates on them"""
 
-
-from traceback import print_tb
 from code.classes.net import Net
 from code.classes.gate import Gate
 import pandas as pd
-import itertools
 
 class Chip:
     """Class for creating chip"""
@@ -48,8 +45,6 @@ class Chip:
         intersect_neighbors = []
 
         x, y, z = coordinates
-
-        # print(self.grid[x][y][z])
       
         # Check for each neighbour (a location on the grid) if they exist and if they are available
         for i in range(-1, 2, 2):
@@ -72,8 +67,6 @@ class Chip:
                     wires = self.grid[x + i][y][z]
                     if coordinates not in wires:
                         intersect_neighbors.append((x + i, y, z))
-              
-
                     
             # Check for neighbors with varying y coordinate
             if y + i >= 0 and y + i <= self.length:
@@ -108,6 +101,7 @@ class Chip:
         
         # return list of tuples of all possible neighbours 
         return good_neighbors, gate_neighbors, intersect_neighbors
+
 
     ########### Moet nog aangepast worden, maar is dit uberhaupt relevant???#############
     def get_violations(self):
@@ -144,7 +138,6 @@ class Chip:
                             intersections += 1
                         elif len(self.grid[x][y][z]) > 4:
                             intersections += len(self.grid[x][y][z]) - 4     
-        print(f"intersections: {intersections}")
         return intersections
 
 
@@ -168,26 +161,15 @@ class Chip:
         for connection in self.connections: 
             nets.append(f"({connection['start_gate'].id},{connection['end_gate'].id})")
 
-
         return pd.DataFrame(data = {'net': nets, 'wires' : wires})
 
 
     def cost(self, neighbor):
         """Returns costs for the next step (used in astar algorithm)"""
-        choose, gates, intersections = self.available_neighbors(neighbor)
+        gates = self.available_neighbors(neighbor)[1]
             
-        # self.weights[neighbor] = 300 * self.intersection(neighbor) 
         if gates:
             return self.weights.get(neighbor, 1) + 10 * len(gates) + 300 * self.intersection(neighbor)
         else:
             return self.weights.get(neighbor, 1) + 300 * self.intersection(neighbor) 
-
-
-######### moet dit er niet uit? #################
-    def intersection(self, neighbor):
-        intersections = 0
-        if self.grid[neighbor[0]][neighbor[1]][neighbor[2]] != 0 and self.grid[neighbor[0]][neighbor[1]][neighbor[2]] != -1:
-            intersections += 1
-        return intersections
-
 
