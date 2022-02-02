@@ -159,4 +159,5 @@ class Greedy_itt:
                         # Stop algorithm if too many steps have past
                         else:
                             return False
+                    self.chip.connections = self.connection_made
             
