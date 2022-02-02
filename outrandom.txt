@@ -1,2 +1,6 @@
 []
-Iteration 0/1000, current value: 11372
+Iteration 0/2000, current value: 1019
+Iteration 1/2000, current value: 1019
+Iteration 2/2000, current value: 1019
+Iteration 3/2000, current value: 1019
+stuck
