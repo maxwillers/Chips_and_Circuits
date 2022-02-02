@@ -1,6 +1,5 @@
 """
 randomise.py
-
 This file contains the Random class which implements a random algorithm for finding paths between chips.
 """
 import sys

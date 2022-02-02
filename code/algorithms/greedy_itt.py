@@ -7,7 +7,7 @@ import copy
 from importlib.resources import path
 from code.classes.net import Net
 import random
-from code.algorithms.sorting import manhatan_dis_sort
+from code.algorithms import helpers
 
 class Greedy_itt:
     """
@@ -145,7 +145,7 @@ class Greedy_itt:
             self.chip.connections.append((self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])) 
         
         # Sort the netlist from closest connection to farthest away
-        self.chip.connections = manhattan_dis_sort(self.chip.connections)
+        self.chip.connections = helpers.manhattan_dis_sort(self.chip.connections)
 
         self.connections = copy.deepcopy(self.chip.connections)
 

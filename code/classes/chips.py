@@ -17,7 +17,7 @@ class Chip:
         self.gate_coordinates = gate_coordinates
         self.netlist = [netlist["chip_a"].tolist(), netlist["chip_b"].tolist()]
         self.connections = []
-        self.weights = {}
+        #self.weights = {}
         self.add_gates()
 
 
@@ -170,14 +170,15 @@ class Chip:
             intersections += 1
         return intersections
 
-    def cost(self, neighbor):
+    def cost(self, neighbor, flag): 
         """Returns costs for the next step (used in astar algorithm)"""
         gates = self.available_neighbors(neighbor)[1]
-            
-        if gates:
-            return self.weights.get(neighbor, 1) + 10 * len(gates) + 300 * self.intersection(neighbor)
+        
+        #print(flag)
+        if len(gates) > 0 and flag == False:
+            return 1 + 10 * len(gates) + 300 * self.intersection(neighbor)
         else:
-            return self.weights.get(neighbor, 1) + 300 * self.intersection(neighbor) 
+            return 1 + 300 * self.intersection(neighbor) 
             
 
     def intersection(self, neighbor):
