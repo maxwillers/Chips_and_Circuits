@@ -1,7 +1,14 @@
 __pycache__
-plots
-output.csv
+code/__pycache__
+code/algorithms/__pycache__
+code/classes/__pycache__
+code/visualization/__pycache__
 .DS_Store
+output.csv
 output.txt
 out.txt
+plots/plot.png
+test.csv
+
+
 
