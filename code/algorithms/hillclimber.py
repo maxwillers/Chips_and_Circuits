@@ -15,6 +15,7 @@ from . import helpers_path
 class Hillclimber():
 
     def __init__(self, chip): 
+
         self.astar_chip = copy.deepcopy(chip)
         self.score = chip.chip.calculate_value()
         
@@ -23,7 +24,7 @@ class Hillclimber():
             new_chip = copy.deepcopy(self.astar_chip)
             self.reconfigure_chip(new_chip)
             self.check_solution(new_chip)
-            
+            #self.astar_chip = new_chip
 
     def reconfigure_chip(self, new_chip):
         #print(len(new_chip.connections))
@@ -33,12 +34,13 @@ class Hillclimber():
         random_connection = random.choice(new_chip.chip.connections)
         if random_connection not in connection_list:
             connection_list.append(random_connection)
-            helpers_path.undo_connection(new_chip.chip, random_connection['start_co'], random_connection['end_co']) 
+            new_chip.chip = helpers_path.undo_connection(new_chip.chip, random_connection['start_co'], random_connection['end_co']) 
             if isinstance(new_chip, Astar) == True:
                 came_from, start, end = new_chip.search(random_connection['start_gate'], random_connection['end_gate'], flag)
                 path = new_chip.create_path(came_from, start, end)
-                helpers_path.path_to_chip(path, new_chip.chip, random_connection['start_gate'], random_connection['end_gate'])
-                #return new_chip
+                new_chip.chip = helpers_path.path_to_chip(path, new_chip.chip, random_connection['start_gate'], random_connection['end_gate'])
+                return new_chip.chip
+            
 
     def check_solution(self, new_chip):
         new_score = new_chip.chip.calculate_value()        
