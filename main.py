@@ -16,6 +16,7 @@ from code.algorithms.greedy_2 import Greedy_random
 from code.algorithms.greedy_itt import Greedy_itt
 from code.algorithms.astar import Astar
 from code.algorithms.hillclimber import Hillclimber
+from code.algorithms.random_hillclimber import Random_Hillclimber
 import time
 from statistics import mean
 
@@ -47,6 +48,11 @@ def main(netlist_file, gate_coordinates, output_png, algorithm, sorting, n_batch
         elif algorithm == 'random':
             run_chip = randomise.run_random(chip, sorting)
         end_time = time.time()
+        
+        visualization_3d(run_chip.chip, output_png)
+        hill = Hillclimber(run_chip)
+        visualization_3d(hill.astar_chip.chip, 'out2.png')
+        
 
     # hill = Hillclimber(run_chip.chip)
     # end_time = time.time()
@@ -82,12 +88,12 @@ def main(netlist_file, gate_coordinates, output_png, algorithm, sorting, n_batch
             all_output.append("fail")
             all_score.append("fail")
 
-            # Still append time taken
-            time_taken.append(end_time - start_time)
+    #         # Still append time taken
+    #         time_taken.append(end_time - start_time)
             
-    # Create a big dataframe file with all information in it
-    batch_run = pd.DataFrame(data = {'score': all_score, 'output' : all_output, 'time': time_taken})
-    batch_run.to_csv(output_batch_file, index=False)
+    # # Create a big dataframe file with all information in it
+    # batch_run = pd.DataFrame(data = {'score': all_score, 'output' : all_output, 'time': time_taken})
+    # batch_run.to_csv(output_batch_file, index=False)
        
     # Visualize the best sollution
     best= sorted(best_chip, key=lambda d: d['score'])

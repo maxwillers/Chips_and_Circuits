@@ -9,6 +9,7 @@ import heapq
 from code.classes.net import Net
 
 
+
 class PriorityQueue:
     """
     Creates a priority queue
@@ -27,26 +28,35 @@ class PriorityQueue:
     def get(self):
         return heapq.heappop(self.coordinates)[1]
 
-
 class Astar:
     """Base class that stores all the required components for a funcioning A* algorithm"""
+    #flag = False 
+
 
     def __init__(self, chip, sorting):
         self.chip = copy.deepcopy(chip)
-        #self.connections = []
-        self.create_netlist(sorting)
+        self.create_netlist()
 
-    def create_netlist(self, sorting):
+    def create_netlist(self):
+        print("check")
         """Goes over all the connections that need to be made and ensures that they are made"""
-
-        # Create the properly sorted netlistt
-        random_chip = create_netlist(self.chip, sorting)
+        for i in range(len(self.chip.netlist[0])):
+            self.chip.connections.append(
+                (
+                    self.chip.gates[self.chip.netlist[0][i] - 1],
+                    self.chip.gates[self.chip.netlist[1][i] - 1],
+                )
+            )
+        flag = False
+        # Sort the netlist from the connection with the smallest distance to the largest one
+        self.chip.connections = manhattan_dis_sort(self.chip.connections)
 
         for connection in self.chip.connections:
-            start_gate, end_gate = connection
+            start_gate = connection["start_gate"]
+            end_gate = connection["end_gate"]
 
             # Find a path between two gates
-            came_from, start, end = self.search(start_gate, end_gate)
+            came_from, start, end = self.search(start_gate, end_gate, flag)
             path = self.create_path(came_from, start, end)
             if path == False:
                 return False
@@ -68,7 +78,7 @@ class Astar:
             #self.connections.append([path[0], path[-1]])
   
 
-    def search(self, start_gate, end_gate):
+    def search(self, start_gate, end_gate, flag):
         """
         Finds the best paths for a net using the A* algorithm
         Source of inspiration: https://www.redblobgames.com/pathfinding/a-star/implementation.html
@@ -117,7 +127,8 @@ class Astar:
             for option in choose:
 
                 # Update the costs
-                new_cost = costs_so_far[location] + self.chip.cost(option)
+                new_cost = costs_so_far[location] + self.chip.cost(option, flag)
+
 
                 # Check if an option has not appeared before or if the newly found path is a better (cheaper) one
                 if option not in costs_so_far or new_cost < costs_so_far[option]:
@@ -125,8 +136,9 @@ class Astar:
                     # Update the queues
                     costs_so_far[option] = new_cost
                     priority = new_cost + self.manhattan_heuristic(
-                        location, option, end_coordinates
+                        location, option, end_coordinates, flag
                     )
+
                     pq.put(option, priority)
 
                     # Update the path with the newly found better option
@@ -134,15 +146,19 @@ class Astar:
 
         return came_from, (sx, sy, sz), end_coordinates
 
-
-    def manhattan_heuristic(self, location, neighbor, end_gate):
+    def manhattan_heuristic(self, location, neighbor, end_gate, flag):
         """
         Calculates the distance with the Manhattan metric and returns the distance between two gates
         Constitutes the h in the formula f(n) = g(n) + h(n)
         """
         nx, ny, nz = neighbor
         ex, ey, ez = end_gate
-        return abs(nx - ex) + abs(ny - ey)
+        
+        
+        if flag == False:
+            return abs(nx - ex) + abs(ny - ey)
+        else:
+            return abs(nx - ex) + abs(ny - ey) + abs(nz - ez)
 
 
     def create_path(self, came_from, start, end):
