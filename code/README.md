@@ -5,13 +5,9 @@
 - The A* ("astar") algorithm is based on the Dijkstra algorithm, which is also known as the "shortest-path-finder" algorithm.  Whereas the Dijkstra algorithm chooses the paths by solely looking at the costs and selecting the lowest one, the A* algorithm also incorporates a certain heuristic in its calculations.  The heuristic that was chosen here is based on the so-called "Manhattan distance" or "Manhattan metric".  
 - An important feature of the A* algorithm is that it works with a priority queue.  Here all possible options for the path are stored and the lowest costs are given the highest priority. Working from lowest to highest multiple possible paths are explored.  The queue is updated once a cheaper route has been found and along the way the data structure keeps track of the direction the net came from.  When the entire queue is worked through, the path, is backtracked and the best found solution is returned.  Inspiration for our priority queue was taken from [www.redblobgames.com](https://www.redblobgames.com/pathfinding/a-star/implementation.html).
 
-- **greedy_itt**
+- **greedy**
 - The greedy algorithm is designed to make the best choices possible locally, meaning for each step along the way.  To implement this, a distinction has been made between types of so-called neighbors, meaning the neighboring points on the grid.  A neighboring point is classified as a "best_neighbors" if the coordinates are closer to the end gate coordinates.  They are seen as "medium_neighbors" if they are closer to the end gate but on a higher level, so with a higher z-coordinate.  If there are no options which meet either of these conditions, the path will select one of the other possible neighbors randomly. 
-- In this greedy algorithm the netlists are sorted from shortest to longest distance between the two gates, using the Manhattan metric to do so.
-- SNAP NIET HELEMAAL ADD CONNECTION EN UNDO CONNECTION
-
-- **greedy_random**
-
+- In this greedy algorithm has two froms iterative and non iterative. The iterative algorithm also removes paths that have already been layed if it cannot find a sollution. Non iterative will not do this and will return false
 
 - **hillclimber.py**
 - This file contains the hillclimber class.
@@ -24,6 +20,10 @@
 - The nets in the netlist are sorted in run_random using the manhattan_dis_sort function which can be found in helpers.py.
 - The random_path function is called in run_random and serves to generate random paths for the nets.
 - This algorithm uses recursion and call itself when a succesful solution could not be generated.  The recursion limit is set at 5000 and the program will quit if a recursion error occurs.
+
+- **helper_path.py**
+
+- **helper_sorting.py**
 
 
 ## Classes 

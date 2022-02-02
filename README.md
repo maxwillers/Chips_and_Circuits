@@ -20,7 +20,7 @@ Furthermore, there are some restrictions regarding laying down the nets:
     - the chip grid is the size of the outer gate coordinates + 1. so it starts at 0 and ends at max x value +1 and max y value +1. The chip always has a height of 7.
 
 --------------------------------------------------
-## Run model
+## Run 
 - To run the model, run ``main.py`` with command in this directory. e.g.
 
 ```
@@ -45,7 +45,7 @@ Furthermore, there are some restrictions regarding laying down the nets:
     - **times_batch_run**: the amount of times a algorithm will be ran in the batch run
 
 
-# example 
+### example 
 running netlist 4 with astar_hill algorithm with manhattan sort a 100 times:
 ```
     $ python3 main.py gates_netlists/chip_1/netlist_4.csv gates_netlists/chip_1/print_1.csv plot.png batch_run.csv astar_hill manhattan 100
