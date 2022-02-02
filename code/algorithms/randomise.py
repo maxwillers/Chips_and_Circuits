@@ -20,6 +20,7 @@ sys.setrecursionlimit(5000)
 def run_random(chip):
     """Go over all connection that need to be made and ensure they are made"""
 
+    flag = False
     random_chip = copy.deepcopy(chip)
 
     # Iterate over the netlist
@@ -35,7 +36,9 @@ def run_random(chip):
         end_gate = connection['end_gate']
 
         path = random_path(random_chip, start_gate, end_gate)
-
+        if path == False:
+            flag = True
+            break
         # Change values in grid to the coordinates every grid point connects to
         for i in range(len(path)):
             x, y, z = path[i]
@@ -51,7 +54,10 @@ def run_random(chip):
         end_gate.connections.append(start_gate.id)
         random_chip.nets.append(net)
 
-    return random_chip
+    if flag == False:
+        return random_chip
+    else:
+        return False
 
 def random_path(random_chip, start_gate, end_gate):
     """
@@ -108,8 +114,7 @@ def random_path(random_chip, start_gate, end_gate):
 
                 # if a recursion error is occurring quit the program
                 except RecursionError:
-                    print("stuck")
-                    quit()
+                    return False
             else:
                 counter += 1
 
@@ -121,5 +126,4 @@ def random_path(random_chip, start_gate, end_gate):
 
             # if a recursion error is occurring quit the program
             except RecursionError:
-                print("stuck")
-                quit()
+                return False
