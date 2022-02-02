@@ -1,6 +1,7 @@
 """This file contains the class with all gates"""
 
-class Gate: 
+
+class Gate:
     """Class for creating gates"""
 
     def __init__(self, gate_id, x, y):

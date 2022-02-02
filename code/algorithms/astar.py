@@ -1,6 +1,6 @@
 """
 astar.py
-This file contains the A* ("astar") class and creates solutions using the A* algorithm. 
+This file contains the A* ("astar") class and creates solutions using the A* algorithm.
 The heurstic used in this algorithm is based on Manhattan distance.
 """
 import copy
@@ -33,7 +33,6 @@ class Astar:
 
     def __init__(self, chip):
         self.chip = copy.deepcopy(chip)
-        #self.connections = []
         self.create_netlist()
 
     def create_netlist(self):
@@ -70,11 +69,8 @@ class Astar:
             net = Net(path)
             start_gate.connections.append(end_gate.id)
             end_gate.connections.append(start_gate.id)
-            
             self.chip.nets.append(net)
-            #self.connections.append([path[0], path[-1]])
-        
-  
+
 
     def search(self, start_gate, end_gate):
         """
@@ -142,6 +138,7 @@ class Astar:
 
         return came_from, (sx, sy, sz), end_coordinates
 
+
     def manhattan_heuristic(self, location, neighbor, end_gate):
         """
         Calculates the distance with the Manhattan metric and returns the distance between two gates
@@ -151,9 +148,9 @@ class Astar:
         ex, ey, ez = end_gate
         return abs(nx - ex) + abs(ny - ey)
 
+
     def create_path(self, came_from, start, end):
         """Creates a path for a certain net"""
-
         position = end
         path = []
 

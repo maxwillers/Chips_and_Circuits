@@ -1,8 +1,8 @@
 """
+helpers.py
 This file contains functions that can sort the netlist:
-- manhattan_dis_sort : sorts the list based on their manhatan distance
-- union_sort: 
-- random_sort: randomly sorts the netlist 
+- Manhattan_dis_sort : sorts the list based on their Manhattan distance
+- random_sort: randomly sorts the netlist
 """
 
 import random
@@ -36,8 +36,9 @@ def manhattan_dis_sort(connections):
 
 def random_sort(connections):
     """Create a random connections list by swapping connections"""
-    for _ in range(len(connections[0])*2):
-        # Make two indexes
+    for _ in range(len(connections[0]) * 2):
+
+        # Make two indeces
         index_1 = 0
         index_2 = 0
 
@@ -50,10 +51,16 @@ def random_sort(connections):
         tmp = connections[index_1]
         connections[index_1] = connections[index_2]
         connections[index_2] = tmp
-        
-        connections_new =[]
+
+        connections_new = []
         for connection in connections:
             start, end = connection
-            connections_new.append({'start_gate': start, 'end_gate': end, 'start_co': [start.x, start.y], 'end_co':[end.x, end.y]})
-
+            connections_new.append(
+                {
+                    "start_gate": start,
+                    "end_gate": end,
+                    "start_co": [start.x, start.y],
+                    "end_co": [end.x, end.y],
+                }
+            )
     return connections_new

@@ -1,22 +1,25 @@
-### The "code" folder contains three important folders, namely "algorithms", "classes" and "visualization". This README is written to serve as an elaboration on the files contained in these three maps and their functions.
+### The "code" folder contains three important folders, namely "algorithms", "classes" and "visualization". This README is written to serve as an elaboration on the files contained in these three maps and on their functions.
 
 ## Algorithms
 - **astar.py:**
-- The A* ("astar") algorithm is based on the Dijkstra algorithm, which is also known as the "shortest-path-finder".  Whereas the Dijkstra algorithm chooses the paths by solely looking at the costs and selecting the lowest one, the A* algorithm also incorporates a certain heuristic in its calculations.  The heuristic that was chosen here is based on the so-called "Manhattan distance" or "Manhattan metric".  
-- An important feature of the A* algorithm is that it works with a priority queue.  Here all possible options for the path are stored and the lowest costs are given the highest priority. Inspiration for our priority queue was taken from [www.redblobgames.com](https://www.redblobgames.com/pathfinding/a-star/implementation.html).
+- The A* ("astar") algorithm is based on the Dijkstra algorithm, which is also known as the "shortest-path-finder" algorithm.  Whereas the Dijkstra algorithm chooses the paths by solely looking at the costs and selecting the lowest one, the A* algorithm also incorporates a certain heuristic in its calculations.  The heuristic that was chosen here is based on the so-called "Manhattan distance" or "Manhattan metric".  
+- An important feature of the A* algorithm is that it works with a priority queue.  Here all possible options for the path are stored and the lowest costs are given the highest priority. Working from lowest to highest multiple possible paths are explored.  The queue is updated once a cheaper route has been found and along the way the data structure keeps track of the direction the net came from.  When the entire queue is worked through, the path, is backtracked and the best found solution is returned.  Inspiration for our priority queue was taken from [www.redblobgames.com](https://www.redblobgames.com/pathfinding/a-star/implementation.html).
 
-* greedy_breakthrough
-* greedy_itt
-* helpers.py 
+- **greedy_itt**
+- The greedy algorithm is designed to make the best choices possible locally, meaning for each step along the way.  To implement this, a distinction has been made between types of so-called neighbours, meaning the neighbouring points on the grid.  A neighbouring point is classified as a "best_neighbours" if the coordinates are closer to the end gate coordinates.  They are seen as "medium_neighbours" if they are closer to the end gate but on a higher level, so with a higher z-coordinate.  If there are no options which meet either of these conditions, the path will select one of the other possible neighbours randomly. 
+- In this greedy algorithm the netlists are sorted from shortest to longest distance between the two gates, using the Manhattan metric to do so.
+- SNAP NIET HELEMAAL ADD CONNECTION EN UNDO CONNECTION
+
+- **greedy_random**
 
 
 - **hillclimber.py**
 - This file contains the hillclimber class.
-- The hillclimber can be applied to either of the other algorithms.  The selected algorithm is then taken as a starting point and hillclimber will run n amount of times.  If one of the runs turns up a better solution (so with lower total costs), the previous solution will be swapped for this improved one.
+- The hillclimber can be applied to either of the other algorithms.  The selected algorithm is then taken as a starting point and hillclimber will run n amount of times.  If one of the runs turns up a better solution (so with lower total costs), the previous solution will be swapped for this improved one. *WAT TE DOEN IN COMMAND LINE?*
 
 - **randomise.py**
 - The run_random function is the main function used to generate a semi-random solution to the case.
-- This function is more of a semi-random algorithm, seeing as a complete random algorithm has a too extremely low chance of generating a succesful solution (one that connects all the gates as is stated in the netlist)  The nets are forced to connect with their end gate is these coordinates can be found among the available neighbours.
+- This function is more of a semi-random algorithm, seeing as a complete random algorithm has a too extremely low chance of generating a succesful solution (one that connects all the gates as is stated in the netlist).  The nets are forced to connect with their end gate is these coordinates can be found among the available neighbours.
 - The available_neighbours function called here can be found in chips.py
 - The nets in the netlist are sorted in run_random using the manhattan_dis_sort function which can be found in helpers.py.
 - The random_path function is called in run_random and serves to generate random paths for the nets.
