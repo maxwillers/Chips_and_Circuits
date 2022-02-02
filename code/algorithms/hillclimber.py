@@ -1,9 +1,14 @@
+"""
+hillclimber.py
+This file contains the class Hillclimber that implements the hillclimber algorithm.
+The hillclimber algorithm does not stand on its own; it is meant to be applied to any of the other algorithms as an optional addition.
+"""
+
 import ast
 import copy
 from hashlib import new
 from tracemalloc import start
 from matplotlib.pyplot import flag
-
 from scipy import rand
 
 from code.algorithms.astar import Astar

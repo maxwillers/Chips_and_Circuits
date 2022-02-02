@@ -46,6 +46,7 @@ def random_path(random_chip, start_gate, end_gate):
     """
     Assign each net with a randomized path
     """
+    
     path = []
     set_path = set(path)
     counter = 0
@@ -70,7 +71,7 @@ def random_path(random_chip, start_gate, end_gate):
         choose, gates, intersections = random_chip.available_neighbors(current_coordinates)
         choose.extend(intersections)
 
-        # iterate over possible neighbour gates
+        # Iterate over possible neighbour gates
         for end in gates:
 
             # If the current coordinates match the end gate coordinate, check if the coordinates are unique
@@ -78,7 +79,7 @@ def random_path(random_chip, start_gate, end_gate):
                 path.append(end)
                 return path
 
-        # if there are neighbours available pick one randomly
+        # If there are neighbours available pick one randomly
         if choose:
 
             new_line = random.choice(choose)
@@ -95,7 +96,7 @@ def random_path(random_chip, start_gate, end_gate):
                 try:
                     return random_path(random_chip, start_gate, end_gate)
 
-                # if a recursion error is occurring quit the program
+                # If a recursion error is occurring quit the program
                 except RecursionError:
                     return False
             else:
@@ -103,10 +104,10 @@ def random_path(random_chip, start_gate, end_gate):
 
         else:
 
-            # if possible try again to find a connection
+            # If possible try again to find a connection
             try:
                 return random_path(random_chip, start_gate, end_gate)
 
-            # if a recursion error is occurring quit the program
+            # If a recursion error is occurring quit the program
             except RecursionError:
                 return False

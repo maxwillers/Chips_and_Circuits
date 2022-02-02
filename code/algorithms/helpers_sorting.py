@@ -52,8 +52,8 @@ def random_sort(connections):
         tmp = connections[index_1]
         connections[index_1] = connections[index_2]
         connections[index_2] = tmp
-        
-        connections_new =[]
+
+        connections_new = []
         for connection in connections:
             start, end = connection
             connections_new.append({'start_gate': start, 'end_gate': end, 'start_co': [start.x, start.y], 'end_co':[end.x, end.y]})

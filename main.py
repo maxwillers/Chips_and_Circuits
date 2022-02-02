@@ -54,38 +54,39 @@ def main(netlist_file, gate_coordinates, output_png, algorithm, sorting, n_batch
         visualization_3d(hill.astar_chip.chip, 'out2.png')
         
 
-    #     # Append results to correct lists
-    #     if algorithm != 'random' and len(run_chip.chip.nets) == len(run_chip.chip.connections):
-            
-    #         # Create output dataframe and append to list
-    #         all_score.append(run_chip.chip.calculate_value())
-    #         output = run_chip.chip.df_output()
-    #         score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").replace("netlist", "net").split(".csv")[0], 'wires': run_chip.chip.calculate_value()}
-    #         output = output.append(score, ignore_index=True)
-    #         all_output.append(output)
+    # hill = Hillclimber(run_chip.chip)
+    # end_time = time.time()
 
-    #         # Append chip and time to specific list
-    #         best_chip.append({'score':run_chip.chip.calculate_value(), 'time_run': end_time - start_time, 'chip':run_chip })
-    #         time_taken.append(end_time - start_time)
+        # Append results to correct lists
+        print(run_chip.chip.is_solution())
+        if algorithm != 'random' and run_chip.chip.is_solution() == True:
+            # Create output dataframe and append to list
+            all_score.append(run_chip.chip.calculate_value())
+            output = run_chip.chip.df_output()
+            score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").replace("netlist", "net").split(".csv")[0], 'wires': run_chip.chip.calculate_value()}
+            output = output.append(score, ignore_index=True)
+            all_output.append(output)
 
-    #     elif algorithm == 'random' and run_chip != False:
-            
-    #         # Create output dataframe and append to list
-    #         all_score.append(run_chip.calculate_value())
-    #         output = run_chip.df_output()
-    #         score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").replace("netlist", "net").split(".csv")[0], 'wires': run_chip.calculate_value()}
-    #         output = output.append(score, ignore_index=True)
-    #         all_output.append(output)
+            # Append chip and time to specific list
+            best_chip.append({'score':run_chip.chip.calculate_value(), 'time_run': end_time - start_time, 'chip':run_chip })
+            time_taken.append(end_time - start_time)
 
-    #         # Append chip and time to specific list
-    #         best_chip.append({'score':run_chip.calculate_value(), 'time_run': end_time - start_time, 'chip':run_chip })
-    #         time_taken.append(end_time - start_time)
+        elif algorithm == 'random' and run_chip.is_solution() == True:
+            # Create output dataframe and append to list
+            all_score.append(run_chip.calculate_value())
+            output = run_chip.df_output()
+            score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").replace("netlist", "net").split(".csv")[0], 'wires': run_chip.calculate_value()}
+            output = output.append(score, ignore_index=True)
+            all_output.append(output)
+
+            # Append chip and time to specific list
+            best_chip.append({'score':run_chip.calculate_value(), 'time_run': end_time - start_time, 'chip':run_chip, 'output': output})
+            time_taken.append(end_time - start_time)
         
-    #     else:
-
-    #         # If run did not give sollution note down fail in the list
-    #         all_output.append("fail")
-    #         all_score.append("fail")
+        else:
+            # If run did not give sollution note down fail in the list
+            all_output.append("fail")
+            all_score.append("fail")
 
     #         # Still append time taken
     #         time_taken.append(end_time - start_time)
@@ -94,12 +95,14 @@ def main(netlist_file, gate_coordinates, output_png, algorithm, sorting, n_batch
     # batch_run = pd.DataFrame(data = {'score': all_score, 'output' : all_output, 'time': time_taken})
     # batch_run.to_csv(output_batch_file, index=False)
        
-    # # Visualize the best sollution
-    # best= sorted(best_chip, key=lambda d: d['score'])
-    # if algorithm == 'random':
-    #     visualization_3d(best[0]['chip'], output_png)
-    # else:
-    #     visualization_3d(best[0]['chip'].chip, output_png)
+    # Visualize the best sollution
+    best= sorted(best_chip, key=lambda d: d['score'])
+    if algorithm == 'random':
+        visualization_3d(best[0]['chip'], output_png)
+        best[0]['output'].to_csv('output.csv', index=False)
+    else:
+        visualization_3d(best[0]['chip'].chip, output_png)
+        best[0].chip['output'].to_csv('output.csv', index=False)
 
 
 if __name__ == "__main__":

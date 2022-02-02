@@ -16,7 +16,7 @@ class PriorityQueue:
     Source: https://www.redblobgames.com/pathfinding/a-star/implementation.html
     """
 
-    def __init__(self):
+    def _init_(self):
         self.coordinates = []
 
     def empty(self):
@@ -30,30 +30,20 @@ class PriorityQueue:
 
 class Astar:
     """Base class that stores all the required components for a funcioning A* algorithm"""
-    #flag = False 
-
-
-    def __init__(self, chip, sorting):
+    
+    def _init_(self, chip, sorting):
         self.chip = copy.deepcopy(chip)
-        self.create_netlist()
+        self.run(sorting)
 
-    def create_netlist(self):
-        print("check")
+    def run(self, sorting):
         """Goes over all the connections that need to be made and ensures that they are made"""
-        for i in range(len(self.chip.netlist[0])):
-            self.chip.connections.append(
-                (
-                    self.chip.gates[self.chip.netlist[0][i] - 1],
-                    self.chip.gates[self.chip.netlist[1][i] - 1],
-                )
-            )
+        # Create the properly sorted netlistt
+        self.chip = create_netlist(self.chip, sorting)
+
         flag = False
-        # Sort the netlist from the connection with the smallest distance to the largest one
-        self.chip.connections = manhattan_dis_sort(self.chip.connections)
 
         for connection in self.chip.connections:
-            start_gate = connection["start_gate"]
-            end_gate = connection["end_gate"]
+            start_gate , end_gate = connection
 
             # Find a path between two gates
             came_from, start, end = self.search(start_gate, end_gate, flag)
@@ -178,3 +168,4 @@ class Astar:
         path.append(start)
         path.reverse()
         return path
+        

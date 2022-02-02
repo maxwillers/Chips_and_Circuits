@@ -28,11 +28,11 @@ Project is created with:
 
 ## Files
 The code exists of several folders:
-- **code***: contains three important folders, namely:
+- **code**: contains three important folders, namely:
     - algorithms: the random, greedy and A* algoritms are stored here
     - classes: the Chip, Net and Gate classes are kept here
     - visualization: contains files for a 3D visualization using matplotlib
-    - README.md: an extra readme file that elaborates on the files contained in the above mentioned folders
+    - README.md: an extra readme file that elaborates on the files contained in the folders mentioned above
 - **gate_netlist**: contains this case's provided chips and their netlists
 - main.py: to run the code
 

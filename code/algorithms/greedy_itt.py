@@ -10,10 +10,6 @@ import random
 from code.algorithms.helpers_sorting import create_netlist
 
 class Greedy_itt:
-    """
-    The Greedy class that assigns the best possible value to each node one by one.
-    """
-
     def __init__(self, chip, sorting):
         self.chip = copy.deepcopy(chip)
         self.connections = []
@@ -21,11 +17,13 @@ class Greedy_itt:
         self.run(sorting)
         
     def get_next_connection(self):
-        """Gets the next coordinates for the next connection """
+        """Gets the next coordinates for the next connection"""
         return self.connections.pop(0)
+
 
     def add_connection(self, start_gate, end_gate):
         """Make the connection between two gates first changing the x coordinates then the y coordinates"""
+
         # Set start coordinates
         start_x = start_gate.x
         end_x = end_gate.x
@@ -38,7 +36,8 @@ class Greedy_itt:
         x = start_x
         y = start_y
         z = 0
-        path = [(x,y,z)]
+        # flake error redefinition of unused path!!!!!!!!!!!!!!!!!!!!!!!
+        path = [(x, y, z)]
 
         # Make a list with coordinates that are not an option anymore, as they lead to a dead end
         no_option = []
@@ -49,7 +48,7 @@ class Greedy_itt:
                 neighbors = self.chip.available_neighbors((x,y,z))[0]
                 best_neighbors = []
                 medium_neighbors = []
-                available_neigbors = [] 
+                available_neigbors = []
                 for neighbor in neighbors:
 
                     # Check if any of the neighbors are no longer an option(lead to dead end) and remove those
@@ -58,51 +57,57 @@ class Greedy_itt:
                         x_neighbor, y_neighbor, z_neigbor = neighbor
 
                         # Check if the available neighbors are in the right direction or not
-                        if abs(end_x - x_neighbor) < abs(end_x - x) or abs(end_y - y_neighbor) < abs(end_y - y) or z_neigbor < z:
+                        if (
+                            abs(end_x - x_neighbor) < abs(end_x - x)
+                            or abs(end_y - y_neighbor) < abs(end_y - y)
+                            or z_neigbor < z
+                        ):
                             best_neighbors.append(neighbor)
                         elif z_neigbor > z:
                             medium_neighbors.append
 
-                # If there are neighbors in the right direction go there    
+                # If there are neighbors in the right direction go there
                 if len(best_neighbors) != 0:
-                    x,y,z = random.choice(best_neighbors)
-                    path.append((x,y,z))
-                
+                    x, y, z = random.choice(best_neighbors)
+                    path.append((x, y, z))
+
                 elif len(medium_neighbors) != 0:
-                    x,y,z = random.choice(best_neighbors)
-                    path.append((x,y,z))
+                    x, y, z = random.choice(best_neighbors)
+                    path.append((x, y, z))
 
                 # Otherwise go to any of the available neighbors
                 elif len(available_neigbors) != 0:
-                    x,y,z = random.choice(available_neigbors)
-                    path.append((x,y,z))
+                    x, y, z = random.choice(available_neigbors)
+                    path.append((x, y, z))
 
                 # If there are no available neighbors go back a step and make the current position no longer an option
                 else:
-                    if len(self.chip.available_neighbors((x,y,z))[2]) > 0:
-                            available_intersections = []
-                            for intersection in self.chip.available_neighbors((x,y,z))[2]:
-                                if intersection not in no_option:
-                                    available_intersections.append(intersection)
-                            if len(available_intersections) > 0:
-                                x,y,z = random.choice(available_intersections)
-                                path.append((x,y,z))
-                            else: 
-                                return False
+                    if len(self.chip.available_neighbors((x, y, z))[2]) > 0:
+                        available_intersections = []
+                        for intersection in self.chip.available_neighbors((x, y, z))[2]:
+                            if intersection not in no_option:
+                                available_intersections.append(intersection)
+                        if len(available_intersections) > 0:
+                            x, y, z = random.choice(available_intersections)
+                            path.append((x, y, z))
+                        else:
+                            return False
                     else:
                         if len(path) > 1:
                             no_option.append(path.pop())
-                            x,y,z = path[-1]
+                            x, y, z = path[-1]
                         else:
                             return False
             else:
-               return False
+                return False
 
         # If end gate is found put that in the path list
         x,y,z = end_x, end_y, 0
         path.append((x,y,z))
 
         self.chip = path_to_chip(path, self.chip, start_gate, end_gate)
+        print(start_gate.id, start_gate.connections)
+        print(start_gate)
         
         return True
 
@@ -115,7 +120,6 @@ class Greedy_itt:
 
         # Copy the connections list so it can be popped
         self.connections = copy.deepcopy(self.chip.connections)
-
         steps = 0
 
         # Go past every connection that needs to be made
@@ -132,7 +136,7 @@ class Greedy_itt:
                 # If connection succesfully made add to connection made list
                 if self.add_connection(start_gate, end_gate):
                     self.connection_made.append(connection)
-                
+
                 # Otherwise add this connection to connection list again
                 else: 
                     while not self.add_connection(start_gate, end_gate):
@@ -141,7 +145,9 @@ class Greedy_itt:
 
                             # If other connections were made choose one randomly and redo the connection
                             if len(self.connection_made) > 1:
-                                weg_connection = self.connection_made.pop(random.randint(0,(len(self.connection_made)-1)))
+                                weg_connection = self.connection_made.pop(
+                                    random.randint(0, (len(self.connection_made) - 1))
+                                )
                                 self.connections.append(weg_connection)
                                 weg_start, weg_end = weg_connection
                                 self.chip = undo_connection(self.chip, [weg_start.x, weg_start.y], [weg_end.x, weg_end.y])
@@ -149,12 +155,14 @@ class Greedy_itt:
 
                             # Otherwise if no other connections are made choose another connection randomly to be done
                             elif len(self.connections) > 1:
-                                connection = self.connections.pop(random.randint(0, len(self.connections)-1))
-                            
+                                connection = self.connections.pop(
+                                    random.randint(0, len(self.connections) - 1)
+                                )
                             else:
                                 return False
 
                         # Stop algorithm if too many steps have past
                         else:
                             return False
+                    self.chip.connections = self.connection_made
             
