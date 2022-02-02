@@ -20,7 +20,6 @@ def run_random(chip, sorting):
 
     # Create the properly sorted netlist
     random_chip = create_netlist(random_chip, sorting)
-    print(random_chip.connections)
 
     # Go over every connection to be made an make a connection
     for connection in random_chip.connections:

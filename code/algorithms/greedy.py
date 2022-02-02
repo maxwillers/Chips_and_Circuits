@@ -158,19 +158,20 @@ class Greedy:
                                     [remove_start.x, remove_start.y],
                                     [remove_end.x, remove_end.y],
                                 )
-                                self.add_connection(start_gate, end_gate)
 
                             # Otherwise if no other connections are made choose another connection randomly to be done
                             elif len(self.connections) > 1:
                                 connection = self.connections.pop(
                                     random.randint(0, len(self.connections) - 1)
                                 )
+                                start_gate, end_gate = connection
                             else:
                                 return False
 
                         # Stop algorithm if too many steps have been taken
                         else:
                             return False
+                    self.connection_made.append(connection)
                 else:
                     return False
 
