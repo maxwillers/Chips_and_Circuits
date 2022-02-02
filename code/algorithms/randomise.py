@@ -109,7 +109,7 @@ def random_path(random_chip, start_gate, end_gate):
                 # if a recursion error is occurring quit the program
                 except RecursionError:
                     print("stuck")
-                    quit()
+                    return False
             else:
                 counter += 1
 
@@ -122,4 +122,4 @@ def random_path(random_chip, start_gate, end_gate):
             # if a recursion error is occurring quit the program
             except RecursionError:
                 print("stuck")
-                quit()
+                return False

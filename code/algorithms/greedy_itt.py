@@ -7,7 +7,7 @@ import copy
 from importlib.resources import path
 from code.classes.net import Net
 import random
-from code.algorithms.sorting import manhatan_dis_sort
+from code.algorithms.helpers import manhattan_dis_sort
 
 class Greedy_itt:
     """
