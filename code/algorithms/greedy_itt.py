@@ -9,16 +9,18 @@ from code.algorithms.helpers_path import path_to_chip, undo_connection
 import random
 from code.algorithms.helpers_sorting import create_netlist
 
-class Greedy_itt:
+class Greedy:
     """
     The Greedy class that assigns the best possible value to each node one by one.
     """
 
-    def __init__(self, chip, sorting):
+    def __init__(self, chip, sorting, itt = False):
         self.chip = copy.deepcopy(chip)
         self.connections = []
         self.connection_made = []
+        self.itt = itt
         self.run(sorting)
+        
         
     def get_next_connection(self):
         """Gets the next coordinates for the next connection """
@@ -136,7 +138,7 @@ class Greedy_itt:
                     self.connection_made.append(connection)
                 
                 # Otherwise add this connection to connection list again
-                else: 
+                elif self.itt == True: 
                     while not self.add_connection(start_gate, end_gate):
                         steps +=1 
                         if steps < 5000: 
@@ -159,5 +161,8 @@ class Greedy_itt:
                         # Stop algorithm if too many steps have past
                         else:
                             return False
-                    self.chip.connections = self.connection_made
+                else: 
+                    return False
+                
+        self.chip.connections = self.connection_made
             

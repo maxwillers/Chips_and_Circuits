@@ -10,10 +10,9 @@ import argparse
 from code.algorithms import hillclimber
 from code.classes.chips import Chip
 from code.visualization.visualization import visualization_3d
-from code.algorithms.greedy_breakthrough import Greedy
 from code.algorithms import randomise 
 from code.algorithms.greedy_2 import Greedy_random
-from code.algorithms.greedy_itt import Greedy_itt
+from code.algorithms.greedy_itt import Greedy
 from code.algorithms.astar import Astar
 from code.algorithms.hillclimber import Hillclimber
 from code.algorithms.random_hillclimber import Random_Hillclimber
@@ -43,15 +42,17 @@ def main(netlist_file, gate_coordinates, output_png, algorithm, sorting, n_batch
         start_time = time.time()
         if algorithm == 'astar':
             run_chip = Astar(chip, sorting)
-        elif algorithm == 'greedy':
-            run_chip = Greedy_itt(chip, sorting)
+        elif algorithm == 'greedy_itt':
+            run_chip = Greedy(chip, sorting, itt = True)
+        elif algorithm == 'greedy_non_itt':
+            run_chip = Greedy(chip, sorting, itt = False)
         elif algorithm == 'random':
             run_chip = randomise.run_random(chip, sorting)
         end_time = time.time()
         
-        visualization_3d(run_chip.chip, output_png)
-        hill = Hillclimber(run_chip)
-        visualization_3d(hill.astar_chip.chip, 'out2.png')
+        # visualization_3d(run_chip.chip, output_png)
+        # hill = Hillclimber(run_chip)
+        # visualization_3d(hill.astar_chip.chip, 'out2.png')
         
 
     # hill = Hillclimber(run_chip.chip)
@@ -102,7 +103,7 @@ def main(netlist_file, gate_coordinates, output_png, algorithm, sorting, n_batch
         best[0]['output'].to_csv('output.csv', index=False)
     else:
         visualization_3d(best[0]['chip'].chip, output_png)
-        best[0].chip['output'].to_csv('output.csv', index=False)
+        best[0]['output'].to_csv('output.csv', index=False)
 
 
 if __name__ == "__main__":
