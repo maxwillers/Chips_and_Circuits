@@ -45,7 +45,8 @@ Furthermore, there are some restrictions regarding laying down the nets:
     - **times_batch_run**: the amount of times a algorithm will be ran in the batch run
 
 
-- example running netlist 4 with astar_hill algorithm with manhattan sort a 100 times:
+# example 
+running netlist 4 with astar_hill algorithm with manhattan sort a 100 times:
 ```
     $ python3 main.py gates_netlists/chip_1/netlist_4.csv gates_netlists/chip_1/print_1.csv plot.png batch_run.csv astar_hill manhattan 100
 ```
@@ -68,11 +69,3 @@ The code exists of several folders:
 - **gate_netlist**: contains this case's provided chips and their netlists
 - main.py: to run the code
 
---------------------------------------------------
-## Code examples
-* To generate a plot of chip_0 and netlist_1 using the randomise algorithm, use:
-`python3 main.py gates_netlists/chip_0/netlist_1.csv gates_netlists/chip_0/print_0.csv plots/plot.png random`
-* To generate a plot of chip_1 and netlist_4 using the greedy algorithm, use:
-`python3 main.py gates_netlists/chip_0/netlist_3.csv gates_netlists/chip_0/print_0.csv plots/plot.png greedy ` 
-* To generate a plot of chip_2 and netlist_7 using the A* algorithm, use:
-`python3 main.py gates_netlists/chip_2/netlist_8.csv gates_netlists/chip_2/print_2.csv plots/plot.png astar ` 
