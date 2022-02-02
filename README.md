@@ -19,13 +19,45 @@ Furthermore, there are some restrictions regarding laying down the nets:
 - The path cannot go past the chip
     - the chip grid is the size of the outer gate coordinates + 1. so it starts at 0 and ends at max x value +1 and max y value +1. The chip always has a height of 7.
 
+--------------------------------------------------
+## Run model
+- To run the model, run ``main.py`` with command in this directory. e.g.
+
+```
+    $ python3 main.py *netlist_file* *print_file* *output_png* *output_batch_file* *algorithm* *sorting* *times_batch_run*
+```
+- commands that need to be added
+    - **netlist_file**: find the netlist files in the *gates_netlist* map
+    - **print_file output_png**: find the print files in the *gates_netlist* map
+    - **output_png** : the name of the visualization output
+    - **output_batch_file** : the name of the batch_run csv output
+    - **algorithm sorting**: the algorithm that will be ran
+        - algorithm options:
+            - astar   : astar algorithm
+            - astar_hill  : astar algorithm with hillclimber
+            - greedy_it  : itterative greedy algorithm
+            - greedy_non_it   : non-itterative greedy algorithm
+            - random  : random algorith
+    - **sorting**: the sorting algorithm that will be ran
+        - sorting options:
+            - manhattan  : sorts from lowest distance to highest
+            - random   : randomly sorts
+    - **times_batch_run**: the amount of times a algorithm will be ran in the batch run
+
+
+- example running netlist 4 with astar_hill algorithm with manhattan sort a 100 times:
+```
+    $ python3 main.py gates_netlists/chip_1/netlist_4.csv gates_netlists/chip_1/print_1.csv plot.png batch_run.csv astar_hill manhattan 100
+```
+
+---------------------------------------------------
 
 ## Technologies
 Project is created with:
 * Python version: 3.9
 * Matplotlib library version: 3.4
 
-
+--------------------------------------------------
 ## Files
 The code exists of several folders:
 - **code**: contains three important folders, namely:
@@ -36,7 +68,7 @@ The code exists of several folders:
 - **gate_netlist**: contains this case's provided chips and their netlists
 - main.py: to run the code
 
-
+--------------------------------------------------
 ## Code examples
 * To generate a plot of chip_0 and netlist_1 using the randomise algorithm, use:
 `python3 main.py gates_netlists/chip_0/netlist_1.csv gates_netlists/chip_0/print_0.csv plots/plot.png random`

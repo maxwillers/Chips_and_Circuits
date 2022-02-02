@@ -81,7 +81,7 @@ def main(
                     "score": run_chip.chip.calculate_value(),
                     "time_run": end_time - start_time,
                     "chip": run_chip.chip,
-                    "output": output
+                    "output": output,
                 }
             )
             time_taken.append(end_time - start_time)
@@ -150,10 +150,10 @@ if __name__ == "__main__":
     parser.add_argument("netlist_file", help="input file (csv)")
     parser.add_argument("gate_coordinates", help="input print file (csv)")
     parser.add_argument("output_png", help="output file (png)")
+    parser.add_argument("output_batch_file", help="name of output batchrun file(csv)")
     parser.add_argument("algorithm", help="algorithm you want to use")
     parser.add_argument("sorting", help="sorting algorithm to be used")
     parser.add_argument("n_batch", help="number of times batch is ran")
-    parser.add_argument("output_batch_file", help="name of output batchrun file(csv)")
 
     # Read arguments from command line
     args = parser.parse_args()

@@ -48,7 +48,6 @@ def undo_connection(chip, start_co, end_co):
                 old_tuples = [(net.path[i - 1]), (net.path[i + 1])]
                 current_tuples = chip.grid[x][y][z]
 
-
                 # Filter out the coordinates that need to be removed
                 if len(current_tuples) == 2:
                     chip.grid[x][y][z] = 0
