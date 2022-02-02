@@ -39,7 +39,7 @@ class Chip:
             
 
     def available_neighbors(self, coordinates):
-        """checks available neighbours for each position"""
+        """Checks available neighbours for each position"""
         
         good_neighbors = []
         gate_neighbors = []
@@ -50,20 +50,21 @@ class Chip:
         # Check for each neighbour (a location on the grid) if they exist and if they are available
         for i in range(-1, 2, 2):
             
-            # Check if the coordinates stay in the grid
+            # Check if the x-coordinates stay in the grid
             if x + i >= 0 and x + i <= self.width: 
                 
                 # If the location on the grid is free, it is a option or so-called "good neighbour"
                 if self.grid[x + i][y][z] == 0:      
                     good_neighbors.append((x + i, y, z))
-
-                
+            
                 # If the location on the grid is a gate, it might be the endpoint 
                 elif self.grid[x + i][y][z] == -1:
                     if self.grid[x][y][z] == 0 or self.grid[x][y][z] == -1:
                         gate_neighbors.append((x + i, y, z))
                     elif (x + i, y , z) not in self.grid[x][y][z]:
                         gate_neighbors.append((x + i, y, z))
+                
+                # Else it might be an intersection option
                 else:
                     wires = self.grid[x + i][y][z]
                     if coordinates not in wires:
@@ -104,25 +105,14 @@ class Chip:
         return good_neighbors, gate_neighbors, intersect_neighbors
 
 
-    ########### Moet nog aangepast worden, maar is dit uberhaupt relevant???#############
-    def get_violations(self):
-        """Returns the violations if any of the nets cross eachother"""
-        violations = []
-        for x in range (self.width):
-            for y in range (self.length):
-                for z in range (self.height):
-                    if self.grid[x][y][z] > 1:
-                        violations.append((x, y, z))
-        return violations
-
-
     def is_solution(self):
         """Returns True if all gates in netlist are connected"""
-        start_gates = self.netlist["chip_a"].tolist()
-        end_gates = self.netlist["chip_b"].tolist()
-
-        for i in range(len(start_gates)):
-            if self.gates[end_gates[i] -1].id not in self.gates[start_gates[i]-1].connections:
+        for connection in self.connections:
+            start_gate, end_gate = connection
+            print(start_gate)
+            print(f" start+end: {start_gate.id}, {end_gate.id}")
+            if end_gate.id not in start_gate.connections:
+                print(start_gate.connections)
                 return False
         return True
 

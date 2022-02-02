@@ -52,8 +52,8 @@ def main(netlist_file, gate_coordinates, output_png, algorithm, sorting, n_batch
     # end_time = time.time()
 
         # Append results to correct lists
-        if algorithm != 'random' and len(run_chip.chip.nets) == len(run_chip.chip.connections):
-            
+        print(run_chip.chip.is_solution())
+        if algorithm != 'random' and run_chip.chip.is_solution() == True:
             # Create output dataframe and append to list
             all_score.append(run_chip.chip.calculate_value())
             output = run_chip.chip.df_output()
@@ -65,8 +65,7 @@ def main(netlist_file, gate_coordinates, output_png, algorithm, sorting, n_batch
             best_chip.append({'score':run_chip.chip.calculate_value(), 'time_run': end_time - start_time, 'chip':run_chip })
             time_taken.append(end_time - start_time)
 
-        elif algorithm == 'random' and run_chip != False:
-            
+        elif algorithm == 'random' and run_chip.is_solution() == True:
             # Create output dataframe and append to list
             all_score.append(run_chip.calculate_value())
             output = run_chip.df_output()
@@ -75,11 +74,10 @@ def main(netlist_file, gate_coordinates, output_png, algorithm, sorting, n_batch
             all_output.append(output)
 
             # Append chip and time to specific list
-            best_chip.append({'score':run_chip.calculate_value(), 'time_run': end_time - start_time, 'chip':run_chip })
+            best_chip.append({'score':run_chip.calculate_value(), 'time_run': end_time - start_time, 'chip':run_chip, 'output': output})
             time_taken.append(end_time - start_time)
         
         else:
-
             # If run did not give sollution note down fail in the list
             all_output.append("fail")
             all_score.append("fail")
@@ -95,8 +93,10 @@ def main(netlist_file, gate_coordinates, output_png, algorithm, sorting, n_batch
     best= sorted(best_chip, key=lambda d: d['score'])
     if algorithm == 'random':
         visualization_3d(best[0]['chip'], output_png)
+        best[0]['output'].to_csv('output.csv', index=False)
     else:
         visualization_3d(best[0]['chip'].chip, output_png)
+        best[0].chip['output'].to_csv('output.csv', index=False)
 
 
 if __name__ == "__main__":

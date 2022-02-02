@@ -103,6 +103,8 @@ class Greedy_itt:
         path.append((x,y,z))
 
         self.chip = path_to_chip(path, self.chip, start_gate, end_gate)
+        print(start_gate.id, start_gate.connections)
+        print(start_gate)
         
         return True
 
