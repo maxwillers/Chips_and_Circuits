@@ -38,12 +38,13 @@ def random_sort(connections):
             index_2 = random.randrange(0, len(connections[0]))
 
         # Swap nets in the connections list
-        tmp = connections[0][index_1]
-        connections[0][index_1] = connections[0][index_2]
-        connections[0][index_2] = tmp
+        tmp = connections[index_1]
+        connections[index_1] = connections[index_2]
+        connections[index_2] = tmp
+        
+        connections_new =[]
+        for connection in connections:
+            start, end = connection
+            connections_new.append({'start_gate': start, 'end_gate': end, 'start_co': [start.x, start.y], 'end_co':[end.x, end.y]})
 
-        tmp = connections[1][index_1]
-        connections[1][index_1] = connections[1][index_2]
-        connections[1][index_2] = tmp
-
-    return connections
+    return connections_new

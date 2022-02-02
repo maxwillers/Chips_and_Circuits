@@ -4,9 +4,9 @@ This file contains the class greedy class which implements a greedy alogrithm fo
 This greedy algorithm based on Manhattan distance.
 """
 import copy
+from importlib.resources import path
 from code.classes.net import Net
 import random
-import math
 from code.algorithms.sorting import manhatan_dis_sort
 
 class Greedy_itt:
@@ -45,53 +45,60 @@ class Greedy_itt:
 
         # While the endgate is not reached go find a next step
         while (end_x, end_y , 0) not in self.chip.available_neighbors((x,y,z))[1]:
-            neighbors = self.chip.available_neighbors((x,y,z))[0]
-            best_neighbors = []
-            medium_neighbors = []
-            available_neigbors = [] 
-          
-            for neighbor in neighbors:
+            if len(path) < 200 and len(no_option) < 400:
+                neighbors = self.chip.available_neighbors((x,y,z))[0]
+                best_neighbors = []
+                medium_neighbors = []
+                available_neigbors = [] 
+                for neighbor in neighbors:
 
-                # Check if any of the neighbors are no longer an option(lead to dead end) and remove those
-                if neighbor not in no_option and neighbor not in path:
-                    available_neigbors.append(neighbor)
-                    x_neighbor, y_neighbor, z_neigbor = neighbor
+                    # Check if any of the neighbors are no longer an option(lead to dead end) and remove those
+                    if neighbor not in no_option and neighbor not in path:
+                        available_neigbors.append(neighbor)
+                        x_neighbor, y_neighbor, z_neigbor = neighbor
 
-                    # Check if the available neighbors are in the right direction or not
-                    if abs(end_x - x_neighbor) < abs(end_x - x) or abs(end_y - y_neighbor) < abs(end_y - y) or z_neigbor < z:
-                        best_neighbors.append(neighbor)
-                    elif z_neigbor > z:
-                        medium_neighbors.append
+                        # Check if the available neighbors are in the right direction or not
+                        if abs(end_x - x_neighbor) < abs(end_x - x) or abs(end_y - y_neighbor) < abs(end_y - y) or z_neigbor < z:
+                            best_neighbors.append(neighbor)
+                        elif z_neigbor > z:
+                            medium_neighbors.append
 
-            # If there are neighbors in the right direction go there    
-            if len(best_neighbors) != 0:
-                x,y,z = random.choice(best_neighbors)
-                path.append((x,y,z))
-            
-            elif len(medium_neighbors) != 0:
-                x,y,z = random.choice(best_neighbors)
-                path.append((x,y,z))
-
-            # Otherwise go to any of the available neighbors
-            elif len(available_neigbors) != 0:
-                x,y,z = random.choice(available_neigbors)
-                path.append((x,y,z))
+                # If there are neighbors in the right direction go there    
+                if len(best_neighbors) != 0:
+                    x,y,z = random.choice(best_neighbors)
+                    path.append((x,y,z))
                 
+                elif len(medium_neighbors) != 0:
+                    x,y,z = random.choice(best_neighbors)
+                    path.append((x,y,z))
 
-            # If there are no available neighbors go back a step and make the current position no longer an option
-            else:
-                if len(self.chip.available_neighbors((x,y,z))[2]) > 0:
-                        x,y,z = random.choice(self.chip.available_neighbors((x,y,z))[2])
-                        path.append((x,y,z))
+                # Otherwise go to any of the available neighbors
+                elif len(available_neigbors) != 0:
+                    x,y,z = random.choice(available_neigbors)
+                    path.append((x,y,z))
+
+                # If there are no available neighbors go back a step and make the current position no longer an option
                 else:
-                    if len(path) > 1:
-                        # self.chip.grid[x][y][z].remove((path[-1], 0))
-                        no_option.append(path.pop())
-                        x,y,z = path[-1]
+                    if len(self.chip.available_neighbors((x,y,z))[2]) > 0:
+                            available_intersections = []
+                            for intersection in self.chip.available_neighbors((x,y,z))[2]:
+                                if intersection not in no_option:
+                                    available_intersections.append(intersection)
+                            if len(available_intersections) > 0:
+                                x,y,z = random.choice(available_intersections)
+                                path.append((x,y,z))
+                            else: 
+                                return False
                     else:
-                        return False
+                        if len(path) > 1:
+                            no_option.append(path.pop())
+                            x,y,z = path[-1]
+                        else:
+                            return False
+            else:
+               return False
 
-        # If end gate is found make net and adjust connecitons in start and end gate
+            # If end gate is found make net and adjust connecitons in start and end gate
         x,y,z = end_x, end_y, 0
         path.append((x,y,z))
 
@@ -116,12 +123,21 @@ class Greedy_itt:
         """Removes the path made from the grid an removes net from chip"""
         for net in self.chip.nets:
             if net.path[0] == (start_co[0], start_co[1], 0) and net.path[-1] == (end_co[0], end_co[1], 0):
-                for i in range(1, len(net.path), 1):
+                for i in range(1, len(net.path)-1, 1):
                     x,y,z = net.path[i]
-                    self.chip.grid[x][y][z] -= ((net.path[i - 1]), (net.path[i + 1]))
+                    new_tuples = []
+                    old_tuples = [(net.path[i - 1]), (net.path[i + 1])]
+                    current_tuples = self.chip.grid[x][y][z] 
+                    if len(current_tuples) == 2:
+                        self.chip.grid[x][y][z] = 0
+                    else:
+                        for coordinate in current_tuples:
+                            if coordinate not in old_tuples:
+                                new_tuples.append(coordinate)
+                    
+                    self.chip.grid[x][y][z] = new_tuples
                 
                 self.chip.nets.remove(net)
-
             
     def run(self):
         """Runs the greedy model"""
@@ -149,25 +165,22 @@ class Greedy_itt:
                     while not self.add_connection(connection['start_gate'], connection['end_gate']):
                         steps +=1 
                         if steps < 1000: 
-                            self.connections.append(connection)
-
                             # If other connections were made choose one randomly and redo that one
-                            if len(self.connection_made) > 0:
-                                connection = self.connection_made.pop(random.randint(0,(len(self.connection_made) -1)))
-                                self.undo_connection(connection['start_co'],connection['end_co'])
+                            if len(self.connection_made) > 1:
+                                weg_connection = self.connection_made.pop(random.randint(0,(len(self.connection_made)-1)))
+                                self.connections.append(weg_connection)
+                                self.undo_connection(weg_connection['start_co'],weg_connection['end_co'])
                                 self.add_connection(connection['start_gate'], connection['end_gate'])
 
                             # Otherwise choose another connection randomly to be done
-                            else:
+                            elif len(self.connections) > 1:
                                 connection = self.connections.pop(random.randint(0, len(self.connections)-1))
-                        
+                            
+                            else:
+                                return False
+
                         # Fail if to many steps have past
                         else:
                             print("fail")
                             return False
-            else: 
-                print("fail")
-                return False
-
-        print("succes")
-        return True
+            

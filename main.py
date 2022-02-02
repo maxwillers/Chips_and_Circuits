@@ -30,35 +30,46 @@ def main(netlist_file, gate_coordinates, output_png, algorithm):
 
     # Create a chip with gates
     chip = Chip(grid_width, grid_length, netlist, gate_coordinates)
+    all_score = []
     all_output = []
-    score_2 = []
-    for _ in range(1):
+    for _ in range(100):
         if algorithm == 'astar':
             run_chip = Astar(chip)
         elif algorithm == 'greedy':
-            run_chip = Greedy_itt(chip)
+            run_chip = Greedy_random(chip)
         elif algorithm == 'random':
             run_chip = randomise.create_netlist(chip)
-        
-        if run_chip == True:
-            score_2.append(run_chip.chip.calculate_value())
-    
-    print(score_2)
-    # print(statistics.mean(score_2))
+
+        if len(run_chip.chip.nets) == len(run_chip.chip.connections):
+            all_score.append(run_chip.chip.calculate_value())
+            output = run_chip.chip.df_output()
+            score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").replace("netlist", "net").split(".csv")[0], 'wires': run_chip.chip.calculate_value()}
+            output = output.append(score, ignore_index=True)
+            all_output.append(output)
+        else:
+            all_output.append("fail")
+            all_score.append("fail")
         
 
-    output = run_chip.chip.df_output()
-    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").replace("netlist", "net").split(".csv")[0], 'wires': run_chip.chip.calculate_value()}
-    output = output.append(score, ignore_index=True)
-        # all_output.append(output)  
-    
-    # Make a dataframe
-    output.to_csv('output.csv', index=False)
-    
-    # Visualize the chip
-    visualization_3d(run_chip.chip, output_png)
+    big_run = pd.DataFrame(data = {'score': all_score, 'output' : all_output})
 
-    hill = Hillclimber(run_chip)
+    big_run.to_csv('run_astar_9.csv', index=False)       
+    
+    
+        
+
+    # output = run_chip.chip.df_output()
+    # score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").replace("netlist", "net").split(".csv")[0], 'wires': run_chip.chip.calculate_value()}
+    # output = output.append(score, ignore_index=True)
+    #     # all_output.append(output)  
+    
+    # # Make a dataframe
+    # output.to_csv('output.csv', index=False)
+    
+    # # Visualize the chip
+    # visualization_3d(run_chip.chip, output_png)
+
+    # hill = Hillclimber(run_chip)
 
 
 if __name__ == "__main__":
