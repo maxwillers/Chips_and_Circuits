@@ -1,7 +1,7 @@
 """
-greedy_it.py
+greedy.py
 This file contains the class greedy class which implements a greedy alogrithm for finding paths
-This greedy algorithm is based on Manhattan distance.
+This greedy algorithm can both be iterative, which means it will remove random paths if it cannot find a sollution or not
 """
 import copy
 from code.algorithms.helpers_path import path_to_chip, undo_connection

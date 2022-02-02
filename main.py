@@ -11,7 +11,7 @@ import argparse
 from code.classes.chips import Chip
 from code.visualization.visualization import visualization_3d
 from code.algorithms import randomise
-from code.algorithms.greedy_itt import Greedy
+from code.algorithms.greedy import Greedy
 from code.algorithms.astar import Astar
 from code.algorithms.hillclimber import Hillclimber
 import time
