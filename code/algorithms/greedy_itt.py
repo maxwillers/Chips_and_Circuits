@@ -1,5 +1,5 @@
 """
-greedy_itt.py
+greedy_it.py
 This file contains the class greedy class which implements a greedy alogrithm for finding paths
 This greedy algorithm is based on Manhattan distance.
 """
@@ -12,11 +12,11 @@ from code.algorithms.helpers_sorting import create_netlist
 class Greedy:
     """The Greedy class that assigns the best possible value to each node one by one"""
 
-    def __init__(self, chip, sorting, itt=False):
+    def __init__(self, chip, sorting, it=False):
         self.chip = copy.deepcopy(chip)
         self.connections = []
         self.connection_made = []
-        self.itt = itt
+        self.it = it
         self.run(sorting)
 
     def get_next_connection(self):
@@ -141,7 +141,7 @@ class Greedy:
                     self.connection_made.append(connection)
 
                 # Otherwise add this connection to connection list again
-                elif self.itt is True:
+                elif self.it is True:
                     while not self.add_connection(start_gate, end_gate):
                         steps += 1
                         if steps < 5000:

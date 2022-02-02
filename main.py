@@ -80,7 +80,8 @@ def main(
                 {
                     "score": run_chip.chip.calculate_value(),
                     "time_run": end_time - start_time,
-                    "chip": run_chip,
+                    "chip": run_chip.chip,
+                    "output": output
                 }
             )
             time_taken.append(end_time - start_time)
@@ -128,12 +129,16 @@ def main(
 
     # Visualize the best solution and make output
     best = sorted(best_chip, key=lambda d: d["score"])
-    if algorithm == "random":
-        visualization_3d(best[0]["chip"], output_png)
-        best[0]["output"].to_csv("output.csv", index=False)
+    if len(best) > 0:
+        if algorithm == "random":
+            visualization_3d(best[0]["chip"], output_png)
+            best[0]["output"].to_csv("output.csv", index=False)
+        else:
+            visualization_3d(best[0]["chip"], output_png)
+            best[0]["output"].to_csv("output.csv", index=False)
     else:
-        visualization_3d(best[0]["chip"].chip, output_png)
-        best[0]["output"].to_csv("output.csv", index=False)
+        print("Sorry no sollution was found")
+        return False
 
 
 if __name__ == "__main__":
