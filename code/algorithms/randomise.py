@@ -2,60 +2,59 @@
 randomise.py
 This file contains the Random class which implements a random algorithm for finding paths between chips.
 """
+
 import sys
-from calendar import c
 import random
 import copy
-from tracemalloc import start
-from code.algorithms.helpers_sorting import manhattan_dis_sort, random_sort, create_netlist
+from code.algorithms.helpers_sorting import create_netlist
 from code.algorithms.helpers_path import path_to_chip
-from code.classes.chips import Chip
-from code.classes.net import Net
 
 sys.setrecursionlimit(5000)
 
 
 def run_random(chip, sorting):
-    """Go over all connection that need to be made and ensure they are made"""
+    """Go over all connections that need to be made and ensure they are made"""
 
     flag = False
     random_chip = copy.deepcopy(chip)
 
-    # Create the properly sorted netlistt
+    # Create the properly sorted netlist
     random_chip = create_netlist(random_chip, sorting)
     print(random_chip.connections)
 
-    # Go over every connection to be made an make a connection       
+    # Go over every connection to be made an make a connection
     for connection in random_chip.connections:
-        start_gate, end_gate= connection
-        # end_gate = connection['end_gate']
+        start_gate, end_gate = connection
 
         path = random_path(random_chip, start_gate, end_gate)
-        if path == False:
+        if path is False:
             flag = True
             break
-        
+
         random_chip = path_to_chip(path, random_chip, start_gate, end_gate)
 
-    if flag == False:
+    # If all paths are made return chip
+    if flag is False:
         return random_chip
     else:
         return False
 
+
 def random_path(random_chip, start_gate, end_gate):
-    """
-    Assign each net with a randomized path
-    """
-    
+    """Assign each net with a randomized path"""
+
     path = []
     set_path = set(path)
     counter = 0
+
+    # Set start coordinates
     sx = start_gate.x
     sy = start_gate.y
     sz = 0
 
     current_coordinates = (sx, sy, sz)
 
+    # Set end coordinates
     ex = end_gate.x
     ey = end_gate.y
     ez = 0
@@ -68,7 +67,9 @@ def random_path(random_chip, start_gate, end_gate):
     while current_coordinates != end_coordinates:
 
         # If there are neighbour points available, make a random choice between these neighbouring points
-        choose, gates, intersections = random_chip.available_neighbors(current_coordinates)
+        choose, gates, intersections = random_chip.available_neighbors(
+            current_coordinates
+        )
         choose.extend(intersections)
 
         # Iterate over possible neighbour gates
@@ -81,22 +82,20 @@ def random_path(random_chip, start_gate, end_gate):
 
         # If there are neighbours available pick one randomly
         if choose:
-
             new_line = random.choice(choose)
 
-            # Keep track of the lines which have been laid
+            # If a coordinate is already in the path it cannot be added again
             if new_line not in set_path:
                 path.append(new_line)
                 set_path.add(new_line)
                 current_coordinates = new_line
 
-            # Keep track of the current position
+            # If algorithm gets stuck return it
             elif counter == 1000:
-                
                 try:
                     return random_path(random_chip, start_gate, end_gate)
 
-                # If a recursion error is occurring quit the program
+                # If a recursion error is occurring return that path could not be made
                 except RecursionError:
                     return False
             else:
@@ -108,6 +107,6 @@ def random_path(random_chip, start_gate, end_gate):
             try:
                 return random_path(random_chip, start_gate, end_gate)
 
-            # If a recursion error is occurring quit the program
+            # If a recursion error is occurring return that path could not be made
             except RecursionError:
                 return False

@@ -1,13 +1,12 @@
 """
 astar.py
-This file contains the A* ("astar") class and creates solutions using the A* algorithm. 
+This file contains the A* ("astar") class and creates solutions using the A* algorithm.
 The heurstic used in this algorithm is based on Manhattan distance.
 """
 import copy
-from code.algorithms.helpers_sorting import manhattan_dis_sort, random_sort, create_netlist
+from code.algorithms.helpers_sorting import create_netlist
+from code.algorithms.helpers_path import path_to_chip
 import heapq
-from code.classes.net import Net
-
 
 
 class PriorityQueue:
@@ -28,44 +27,33 @@ class PriorityQueue:
     def get(self):
         return heapq.heappop(self.coordinates)[1]
 
+
 class Astar:
     """Base class that stores all the required components for a funcioning A* algorithm"""
+
     def __init__(self, chip, sorting):
         self.chip = copy.deepcopy(chip)
         self.run(sorting)
 
     def run(self, sorting):
         """Goes over all the connections that need to be made and ensures that they are made"""
+
         # Create the properly sorted netlistt
         self.chip = create_netlist(self.chip, sorting)
 
+        # Flag = False is used to take account with the gates, so they do not get closed in
         flag = False
 
+        # Go over every connection and make that connection
         for connection in self.chip.connections:
-            start_gate , end_gate = connection
+            start_gate, end_gate = connection
 
             # Find a path between two gates
             came_from, start, end = self.search(start_gate, end_gate, flag)
             path = self.create_path(came_from, start, end)
-            if path == False:
-                return False
-            for i in range(len(path)):
-                x, y, z = path[i]
-                if self.chip.grid[x][y][z] != -1:
-                    if self.chip.grid[x][y][z] == 0:
-                        self.chip.grid[x][y][z] = [(path[i - 1]), (path[i + 1])]
-                    else:
-                        self.chip.grid[x][y][z] = self.chip.grid[x][y][z] + [
-                            (path[i - 1]),
-                            (path[i + 1]),
-                        ]
-            net = Net(path)
-            start_gate.connections.append(end_gate.id)
-            end_gate.connections.append(start_gate.id)
-            
-            self.chip.nets.append(net)
-            #self.connections.append([path[0], path[-1]])
-  
+
+            # Append path to chip
+            self.chip = path_to_chip(path, self.chip, start_gate, end_gate)
 
     def search(self, start_gate, end_gate, flag):
         """
@@ -118,14 +106,13 @@ class Astar:
                 # Update the costs
                 new_cost = costs_so_far[location] + self.chip.cost(option, flag)
 
-
                 # Check if an option has not appeared before or if the newly found path is a better (cheaper) one
                 if option not in costs_so_far or new_cost < costs_so_far[option]:
 
                     # Update the queues
                     costs_so_far[option] = new_cost
                     priority = new_cost + self.manhattan_heuristic(
-                        location, option, end_coordinates, flag
+                        option, end_coordinates, flag
                     )
 
                     pq.put(option, priority)
@@ -135,21 +122,21 @@ class Astar:
 
         return came_from, (sx, sy, sz), end_coordinates
 
-
-    def manhattan_heuristic(self, location, neighbor, end_gate, flag):
+    def manhattan_heuristic(self, neighbor, end_gate, flag):
         """
         Calculates the distance with the Manhattan metric and returns the distance between two gates
         Constitutes the h in the formula f(n) = g(n) + h(n)
         """
+
+        # Set coordinates neighbor and end_gate
         nx, ny, nz = neighbor
         ex, ey, ez = end_gate
-        
-        
-        if flag == False:
+
+        # If needed take in account the gates(do not come to close)
+        if flag is False:
             return abs(nx - ex) + abs(ny - ey)
         else:
             return abs(nx - ex) + abs(ny - ey) + abs(nz - ez)
-
 
     def create_path(self, came_from, start, end):
         """Creates a path for a certain net"""
@@ -160,11 +147,14 @@ class Astar:
         # Backtrack the path to get the best A* approved option
         while position != start:
             path.append(position)
-            try: 
+            try:
                 position = came_from[position]
             except KeyError:
-                    return False
+                return False
 
         path.append(start)
+
+        # Reverse path so start coordinates are at the beginning
         path.reverse()
+
         return path

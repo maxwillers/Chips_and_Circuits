@@ -4,7 +4,6 @@ This file contains the class greedy class which implements a greedy alogrithm fo
 This greedy algorithm based on Manhattan distance.
 """
 import copy
-from statistics import median
 from code.classes.net import Net
 import random
 import math
@@ -29,6 +28,7 @@ class Greedy_random:
 
     def add_connection(self, start_gate, end_gate):
         """Make the connection between two gates first changing the x coordinates then the y coordinates"""
+
         # Set start coordinates
         start_x = start_gate.x
         end_x = end_gate.x
@@ -43,65 +43,69 @@ class Greedy_random:
         z = 0
         path = [(x, y, z)]
 
-         # Make a list with coordinates that are not an option anymore, as they lead to a dead end
+        # Make a list with coordinates that are not an option anymore, as they lead to a dead end
         no_option = []
 
-        # While the endgate is not reached go find a next step
-        while (end_x, end_y , 0) not in self.chip.available_neighbors((x,y,z))[1]:
+        # While the end gate is not reached go find a next step
+        while (end_x, end_y, 0) not in self.chip.available_neighbors((x, y, z))[1]:
             if len(path) < 200 and len(no_option) < 400:
-                neighbors = self.chip.available_neighbors((x,y,z))[0]
+                neighbors = self.chip.available_neighbors((x, y, z))[0]
                 best_neighbors = []
                 medium_neighbors = []
-                available_neigbors = [] 
+                available_neigbors = []
                 for neighbor in neighbors:
 
-                    # Check if any of the neighbors are no longer an option(lead to dead end) and remove those
+                    # Check if any of the neighbors are no longer an option (lead to dead end) and remove those
                     if neighbor not in no_option and neighbor not in path:
                         available_neigbors.append(neighbor)
                         x_neighbor, y_neighbor, z_neigbor = neighbor
 
-                        # Check if the available neighbors are in the right direction or not
-                        if abs(end_x - x_neighbor) < abs(end_x - x) or abs(end_y - y_neighbor) < abs(end_y - y) or z_neigbor < z:
+                        # Check if the available neighbors are located in the right direction or not
+                        if (
+                            abs(end_x - x_neighbor) < abs(end_x - x)
+                            or abs(end_y - y_neighbor) < abs(end_y - y)
+                            or z_neigbor < z
+                        ):
                             best_neighbors.append(neighbor)
                         elif z_neigbor > z:
                             medium_neighbors.append
 
-                # If there are neighbors in the right direction go there    
+                # If there are neighbors to the right, go there
                 if len(best_neighbors) != 0:
-                    x,y,z = random.choice(best_neighbors)
-                    path.append((x,y,z))
-                
+                    x, y, z = random.choice(best_neighbors)
+                    path.append((x, y, z))
+
                 elif len(medium_neighbors) != 0:
-                    x,y,z = random.choice(best_neighbors)
-                    path.append((x,y,z))
+                    x, y, z = random.choice(best_neighbors)
+                    path.append((x, y, z))
 
-                # Otherwise go to any of the available neighbors
+                # Otherwise, go to any of the available neighbors
                 elif len(available_neigbors) != 0:
-                    x,y,z = random.choice(available_neigbors)
-                    path.append((x,y,z))
+                    x, y, z = random.choice(available_neigbors)
+                    path.append((x, y, z))
 
-                # If there are no available neighbors go back a step and make the current position no longer an option
+                # If there are no available neighbors, go back a step and set the current position to no longer being an option
                 else:
-                    if len(self.chip.available_neighbors((x,y,z))[2]) > 0:
-                            available_intersections = []
-                            for intersection in self.chip.available_neighbors((x,y,z))[2]:
-                                if intersection not in no_option:
-                                    available_intersections.append(intersection)
-                            if len(available_intersections) > 0:
-                                x,y,z = random.choice(available_intersections)
-                                path.append((x,y,z))
-                            else: 
-                                return False
+                    if len(self.chip.available_neighbors((x, y, z))[2]) > 0:
+                        available_intersections = []
+                        for intersection in self.chip.available_neighbors((x, y, z))[2]:
+                            if intersection not in no_option:
+                                available_intersections.append(intersection)
+                        if len(available_intersections) > 0:
+                            x, y, z = random.choice(available_intersections)
+                            path.append((x, y, z))
+                        else:
+                            return False
                     else:
                         if len(path) > 1:
                             no_option.append(path.pop())
-                            x,y,z = path[-1]
+                            x, y, z = path[-1]
                         else:
                             return False
             else:
-               return False
+                return False
 
-        # If end gate is found make net and adjust connecitons in start and end gate
+        # If the end gate is found, create a net and adjust the connections in start and end gate
         x, y, z = end_x, end_y, 0
         path.append((x, y, z))
 
@@ -115,47 +119,46 @@ class Greedy_random:
                     self.chip.grid[x][y][z].append((path[i - 1]))
                     self.chip.grid[x][y][z].append((path[i + 1]))
 
-        # If end gate is found make net and adjust connecitons in start and end gate
+        # If the end gate is found, create a net and adjust the connections in start and end gate
         net = Net(path)
         self.chip.nets.append(net)
         start_gate.connections.append(end_gate.id)
         end_gate.connections.append(start_gate.id)
         return True
-            
+
     def run(self):
         """Runs the greedy model"""
-        for i in range (len(self.chip.netlist[0])):
-            self.chip.connections.append((self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])) 
-        
-        # Sort the netlist from closest connection to farthest away
+        for i in range(len(self.chip.netlist[0])):
+            self.chip.connections.append(
+                (
+                    self.chip.gates[self.chip.netlist[0][i] - 1],
+                    self.chip.gates[self.chip.netlist[1][i] - 1],
+                )
+            )
+
+        # Sort the netlist from closest connection to the connection the farthest away
         self.chip.connections = random_sort(self.chip.connections)
 
         self.connections = copy.deepcopy(self.chip.connections)
-
         steps = 0
+
         # Go past every connection
         while len(self.connections) > 0:
+
+            # uitleg 1000 stappen????
             if steps < 1000:
-                steps +=1
+                steps += 1
                 print(steps)
                 connection = self.get_next_connection()
 
-                # If connection succesfully made add to connection made list
-                if not self.add_connection(connection['start_gate'], connection['end_gate']): 
+                # If connection succesfully made add to the connection list
+                if not self.add_connection(
+                    connection["start_gate"], connection["end_gate"]
+                ):
                     print("fail")
                     return False
             else:
                 return False
-                
-            
-        self.succesfull = True   
-        print("succes")
-                
-    
-                
-        
-    
-        
-        
 
-        print("succes")
+        # Checks if a succesful connection has been found, laten staan????/   waar staat dit, moet "succesful" zijn
+        self.succesfull = True
