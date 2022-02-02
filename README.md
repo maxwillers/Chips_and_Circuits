@@ -18,7 +18,14 @@ Furthermore, there are some restrictions regarding laying down the nets:
     - collisions happen when two units run allong the same path
 - The path cannot go past the chip
     - the chip grid is the size of the outer gate coordinates + 1. so it starts at 0 and ends at max x value +1 and max y value +1. The chip always has a height of 7.
+--------------------------------------------------
+## Requirements
 
+The code is written using python 3. To succesfully run this code a few packages need to be installed, which are noted in requirements.txt. This packages can be downloaded using pip:
+
+```
+pip3 install -r requirements.txt
+```
 --------------------------------------------------
 ## Run 
 - To run the model, run ``main.py`` with command in this directory. e.g.
@@ -68,4 +75,25 @@ The code exists of several folders:
     - README.md: an extra readme file that elaborates on the files contained in the folders mentioned above
 - **gate_netlist**: contains this case's provided chips and their netlists
 - main.py: to run the code
+
+--------------------------------------------------
+## State space
+
+In order to calculate the state space of this problem we first have to understand all the options there are. Every step we do there could be a maximum of 5 choices: front, left, right, up, down. Every grid point a choice needs to be made. The order in which the choices are made does matter and repition of the choices is possible. Therefore the state space is n^r. Where n = the amount of choices and r the amount of choices to be made.
+
+However in our 3d structure not every grid point has 5 options therefore the state space is smaller. On the outer sides of the 3d structure there are only 2, 3 or 4 options. So to properly calculate the state space we have to take these corners and sides into account.
+
+This will lead to the formulas:
+	- r = 8 with n= 2 
+	-  r = (4l + 4b +4h - 24) with n = 3 
+	-  r= ((h-2) * (b + l -4) + (l-2) * (h-2)) * 2 with n= 4 
+	-  r = (l -2) * (b-2) * (h-2)  with n =5
+
+Leading to a total formula:
+2^8 * 3^((4l + 4w +4h - 24)) * 4^(((h-2) * (w + l -4) + (l-2) * (h-2)) * 2 ) *  5 ^ ((l -2) * (w-2) * (h-2)) 
+
+So if we calculate this for a grid of length = 6, with =7, height = 7 
+    - 2^8 * 3^56 * 4^130 * 5^100 = 2,0 * 10^177
+
+
 
