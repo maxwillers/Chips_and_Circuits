@@ -4,9 +4,7 @@ This file contains the A* ("astar") class and creates solutions using the A* alg
 The heurstic used in this algorithm is based on Manhattan distance.
 """
 import copy
-
-from matplotlib.pyplot import flag
-from code.algorithms.helpers import manhattan_dis_sort
+from code.algorithms.helpers_sorting import manhattan_dis_sort, random_sort, create_netlist
 import heapq
 from code.classes.net import Net
 
@@ -35,7 +33,7 @@ class Astar:
     #flag = False 
 
 
-    def __init__(self, chip):
+    def __init__(self, chip, sorting):
         self.chip = copy.deepcopy(chip)
         self.create_netlist()
 
@@ -60,6 +58,8 @@ class Astar:
             # Find a path between two gates
             came_from, start, end = self.search(start_gate, end_gate, flag)
             path = self.create_path(came_from, start, end)
+            if path == False:
+                return False
             for i in range(len(path)):
                 x, y, z = path[i]
                 if self.chip.grid[x][y][z] != -1:
@@ -76,7 +76,6 @@ class Astar:
             
             self.chip.nets.append(net)
             #self.connections.append([path[0], path[-1]])
-        
   
 
     def search(self, start_gate, end_gate, flag):
@@ -161,6 +160,7 @@ class Astar:
         else:
             return abs(nx - ex) + abs(ny - ey) + abs(nz - ez)
 
+
     def create_path(self, came_from, start, end):
         """Creates a path for a certain net"""
 
@@ -170,7 +170,11 @@ class Astar:
         # Backtrack the path to get the best A* approved option
         while position != start:
             path.append(position)
-            position = came_from[position]
+            try: 
+                position = came_from[position]
+            except KeyError:
+                    return False
+
         path.append(start)
         path.reverse()
         return path

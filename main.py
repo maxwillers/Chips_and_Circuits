@@ -21,7 +21,7 @@ import time
 from statistics import mean
 
 
-def main(netlist_file, gate_coordinates, output_png, algorithm):
+def main(netlist_file, gate_coordinates, output_png, algorithm, sorting, n_batch, output_batch_file):
 
     # Make lists of the gates located on the chip and of the connections that are to be made between gates
     netlist = pd.read_csv(netlist_file)
@@ -37,96 +37,71 @@ def main(netlist_file, gate_coordinates, output_png, algorithm):
     all_output = []
     best_chip = []
     time_taken = []
-    for _ in range(1):
+
+    # Run the requested algoritms the requested amount of times
+    for _ in range(int(n_batch)):
         start_time = time.time()
         if algorithm == 'astar':
-            run_chip = Astar(chip)
+            run_chip = Astar(chip, sorting)
         elif algorithm == 'greedy':
-            run_chip = Greedy_random(chip)
+            run_chip = Greedy_itt(chip, sorting)
         elif algorithm == 'random':
+            run_chip = randomise.run_random(chip, sorting)
+        end_time = time.time()
+        
+        visualization_3d(run_chip.chip, output_png)
+        hill = Hillclimber(run_chip)
+        visualization_3d(hill.astar_chip.chip, 'out2.png')
+        
+
+    #     # Append results to correct lists
+    #     if algorithm != 'random' and len(run_chip.chip.nets) == len(run_chip.chip.connections):
             
+    #         # Create output dataframe and append to list
+    #         all_score.append(run_chip.chip.calculate_value())
+    #         output = run_chip.chip.df_output()
+    #         score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").replace("netlist", "net").split(".csv")[0], 'wires': run_chip.chip.calculate_value()}
+    #         output = output.append(score, ignore_index=True)
+    #         all_output.append(output)
 
-            run_chip = randomise.run_random(chip)
-            while run_chip == False:
-                print("madremia")
-                run_chip = randomise.run_random(chip)
-        #if run_chip == True:
-            #score_2.append(run_chip.chip.calculate_value())
-    
+    #         # Append chip and time to specific list
+    #         best_chip.append({'score':run_chip.chip.calculate_value(), 'time_run': end_time - start_time, 'chip':run_chip })
+    #         time_taken.append(end_time - start_time)
 
-    # print(score_2)
+    #     elif algorithm == 'random' and run_chip != False:
+            
+    #         # Create output dataframe and append to list
+    #         all_score.append(run_chip.calculate_value())
+    #         output = run_chip.df_output()
+    #         score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").replace("netlist", "net").split(".csv")[0], 'wires': run_chip.calculate_value()}
+    #         output = output.append(score, ignore_index=True)
+    #         all_output.append(output)
+
+    #         # Append chip and time to specific list
+    #         best_chip.append({'score':run_chip.calculate_value(), 'time_run': end_time - start_time, 'chip':run_chip })
+    #         time_taken.append(end_time - start_time)
         
+    #     else:
 
-    output = run_chip.chip.df_output()
-    score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").replace("netlist", "net").split(".csv")[0], 'wires': run_chip.chip.calculate_value()}
-    output = output.append(score, ignore_index=True)
-    all_output.append(output)  
-    
-    # Make a dataframe
-    output.to_csv('output.csv', index=False)
-    
-    # Visualize the chip
-    visualization_3d(run_chip.chip, output_png)
+    #         # If run did not give sollution note down fail in the list
+    #         all_output.append("fail")
+    #         all_score.append("fail")
 
-    hill = Hillclimber(run_chip)
-
-    visualization_3d(hill.chip.chip, 'out2.png')
-
-###################RANDOM#########################
-
-    # if run_chip == True:
-    #     score_2.append(run_chip.calculate_value())
-    
-
-    # print(score_2)
-        
-
-    # output = run_chip.df_output()
-    # score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").replace("netlist", "net").split(".csv")[0], 'wires': run_chip.calculate_value()}
-    # output = output.append(score, ignore_index=True)
-    # all_output.append(output)  
-    
-    # #Make a dataframe
-    # output.to_csv('output.csv', index=False)
-    
-    # # Visualize the chip
-    # visualization_3d(run_chip, output_png)
-
-    # hill = Random_hillclimber(run_chip)
-    # while hill == False:
-    #     hill = Random_hillclimber(run_chip)
-    # end_time = time.time()
-
-
-    # if len(hill.nets) == len(hill.connections):
-    #     all_score.append(hill.calculate_value())
-    #     output = hill.df_output()
-    #     score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").replace("netlist", "net").split(".csv")[0], 'wires': hill.calculate_value()}
-    #     output = output.append(score, ignore_index=True)
-    #     all_output.append(output)
-    #     best_chip.append({'score':run_chip.chip.calculate_value(), 'time_run': end_time - start_time, 'chip':run_chip })
-    #     time_taken.append(end_time - start_time)
-    # else:
-    #     all_output.append("fail")
-    #     all_score.append("fail")
-    #     time_taken.append(end_time - start_time)
-        
-
-    # big_run = pd.DataFrame(data = {'score': all_score, 'output' : all_output})
-    # big_run.to_csv('run_random_3.csv', index=False)
-    # print(mean(time_taken))
-    # time_taken = pd.DataFrame(time_taken)
-    # time_taken.to_csv('time_astar_hill_1.csv', index=False)     
-    
+    #         # Still append time taken
+    #         time_taken.append(end_time - start_time)
+            
+    # # Create a big dataframe file with all information in it
+    # batch_run = pd.DataFrame(data = {'score': all_score, 'output' : all_output, 'time': time_taken})
+    # batch_run.to_csv(output_batch_file, index=False)
+       
+    # # Visualize the best sollution
     # best= sorted(best_chip, key=lambda d: d['score'])
-    # print(best[0]['score'], best[0]['time_run']) 
-    # visualization_3d(best[0]['chip'].chip, output_png)
+    # if algorithm == 'random':
+    #     visualization_3d(best[0]['chip'], output_png)
+    # else:
+    #     visualization_3d(best[0]['chip'].chip, output_png)
 
 
-
-
-
-    # visualization_3d(hill.astar_chip, 'out2.png')
 if __name__ == "__main__":
 
     # Set-up parsing command line arguments
@@ -137,9 +112,12 @@ if __name__ == "__main__":
     parser.add_argument("gate_coordinates", help="input print file (csv)")
     parser.add_argument("output_png", help = "output file (png)")
     parser.add_argument("algorithm", help = "algorithm you want to use")
+    parser.add_argument("sorting", help = "sorting algorithm to be used")
+    parser.add_argument("n_batch", help= "number of times batch is ran")
+    parser.add_argument("output_batch_file", help= "name of output batchrun file(csv)")
 
     # Read arguments from command line
     args = parser.parse_args()
 
     # Run main with provided arguments
-    main(args.netlist_file, args.gate_coordinates, args.output_png, args.algorithm)
+    main(args.netlist_file, args.gate_coordinates, args.output_png, args.algorithm, args.sorting, args.n_batch, args.output_batch_file)
