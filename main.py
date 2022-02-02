@@ -113,7 +113,7 @@ def main(
             )
             time_taken.append(end_time - start_time)
 
-        # If run did not give sollution note down fail in the list
+        # If run did not give solution note down fail in the list
         else:
             all_output.append("fail")
             all_score.append("fail")
