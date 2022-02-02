@@ -1,26 +1,23 @@
-
-# data structure that handles elements in order from a high to a low assigned priority
+"""
+astar.py
+This file contains the A* ("astar") class and creates solutions using the A* algorithm. 
+The heurstic used in this algorithm is based on Manhattan distance.
+"""
 import copy
-from enum import Flag
-from errno import EMSGSIZE
-from hashlib import new
-from os import path
-from code.algorithms.sorting import random, manhatan_dis_sort
-import numpy 
+from code.algorithms.helpers import manhattan_dis_sort
 import heapq
-from matplotlib.pyplot import flag
 from code.classes.net import Net
-#from queue import PriorityQueue
-import random
+
 
 class PriorityQueue:
     """
-    class which creates a priority queu
-    source: https://www.redblobgames.com/pathfinding/a-star/implementation.html"""
+    Creates a priority queue
+    Source: https://www.redblobgames.com/pathfinding/a-star/implementation.html
+    """
 
     def __init__(self):
         self.coordinates = []
-    
+
     def empty(self):
         return not self.coordinates
 
@@ -30,27 +27,32 @@ class PriorityQueue:
     def get(self):
         return heapq.heappop(self.coordinates)[1]
 
-class Astar():
+
+class Astar:
     """Base class that stores all the required components for a funcioning A* algorithm"""
- 
+
     def __init__(self, chip):
         self.chip = copy.deepcopy(chip)
-        self.connections = []
+        #self.connections = []
         self.create_netlist()
-        
 
     def create_netlist(self):
-        """Go over all the connections that need to be made and ensure that they are made"""
-        
-        for i in range (len(self.chip.netlist[0])):
-            self.chip.connections.append((self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])) 
-        
-        # Sort the netlist from closest connection to farthest away
-        self.chip.connections = manhatan_dis_sort(self.chip.connections)
-            #print(self.search(start_gate, end_gate))
+        """Goes over all the connections that need to be made and ensures that they are made"""
+
+        for i in range(len(self.chip.netlist[0])):
+            self.chip.connections.append(
+                (
+                    self.chip.gates[self.chip.netlist[0][i] - 1],
+                    self.chip.gates[self.chip.netlist[1][i] - 1],
+                )
+            )
+
+        # Sort the netlist from the connection with the smallest distance to the largest one
+        self.chip.connections = manhattan_dis_sort(self.chip.connections)
+
         for connection in self.chip.connections:
-            start_gate = connection['start_gate']
-            end_gate = connection['end_gate']
+            start_gate = connection["start_gate"]
+            end_gate = connection["end_gate"]
 
             # Find a path between two gates
             came_from, start, end = self.search(start_gate, end_gate)
@@ -61,97 +63,104 @@ class Astar():
                     if self.chip.grid[x][y][z] == 0:
                         self.chip.grid[x][y][z] = [(path[i - 1]), (path[i + 1])]
                     else:
-                        self.chip.grid[x][y][z] = self.chip.grid[x][y][z] + [(path[i - 1]), (path[i + 1])]
+                        self.chip.grid[x][y][z] = self.chip.grid[x][y][z] + [
+                            (path[i - 1]),
+                            (path[i + 1]),
+                        ]
             net = Net(path)
             start_gate.connections.append(end_gate.id)
             end_gate.connections.append(start_gate.id)
+            
             self.chip.nets.append(net)
-            self.connections.append([path[0], path[-1]])
+            #self.connections.append([path[0], path[-1]])
         
   
 
     def search(self, start_gate, end_gate):
-        
+        """
+        Finds the best paths for a net using the A* algorithm
+        Source of inspiration: https://www.redblobgames.com/pathfinding/a-star/implementation.html
+        """
 
         # Set start coordinates
         sx = start_gate.x
         sy = start_gate.y
         sz = 0
- 
+
         # Set end coordinates
         ex = end_gate.x
         ey = end_gate.y
         ez = 0
- 
         end_coordinates = (ex, ey, ez)
- 
-        # Set present coordinates and put them in path
+
+        # Set present coordinates and put them in a priority queue
         current_coordinates = (sx, sy, sz)
-       
         pq = PriorityQueue()
         pq.put(current_coordinates, 0)
+
+        # Keep track of the costs of the path thus far and the position the path just came from
         costs_so_far = {}
         came_from = {}
         costs_so_far[(sx, sy, sz)] = 0
         came_from[(sx, sy, sz)] = None
- 
-        # print(f"start: {current_coordinates}, end: {end_coordinates}")
-        while not pq.empty():
-           
-            location = pq.get()
 
+        # Continue the algorithm as long as the priority queue is not empty yet
+        while not pq.empty():
+
+            # Select the best location
+            location = pq.get()
             choose, gates, intersections = self.chip.available_neighbors(location)
             choose.extend(intersections)
 
+            # If the correct end gate is found in the gate list, add it to the possible options
             for gate in gates:
                 if gate == end_coordinates:
                     choose.append(gate)
 
+            # Connection was found
             if location == end_coordinates:
                 break
-            
-          
+
+            # Iterate over every possible option; each possible move to make
             for option in choose:
-                #extra_costs = self.chip.cost(location, option)
+
+                # Update the costs
                 new_cost = costs_so_far[location] + self.chip.cost(option)
-                
+
+                # Check if an option has not appeared before or if the newly found path is a better (cheaper) one
                 if option not in costs_so_far or new_cost < costs_so_far[option]:
+
+                    # Update the queues
                     costs_so_far[option] = new_cost
-                    #print(self.heuristic(option, end_coordinates))                    
-                    priority = new_cost  + self.manhattan_heuristic(location, option, end_coordinates) 
-                
+                    priority = new_cost + self.manhattan_heuristic(
+                        location, option, end_coordinates
+                    )
                     pq.put(option, priority)
+
+                    # Update the path with the newly found better option
                     came_from[option] = location
-                                    
-        # if pq.empty():
-        #     came_from[end_coordinates] = location        
-            # print("false")
-      
+
         return came_from, (sx, sy, sz), end_coordinates
-                   
+
     def manhattan_heuristic(self, location, neighbor, end_gate):
-            """Calculates the distance with the Manhattan metric and returns the distance between two gates"""
-            """Constitutes the h in the formula f(n) = g(n) + h(n)"""
-            # sx, sy, sz = location
-            nx, ny, nz = neighbor
-            ex, ey, ez = end_gate
-            
-            
-            return abs(nx - ex) + abs(ny - ey)
-            # a = numpy.array(neighbor)
-            # b = numpy.array(end_gate)
-            # return numpy.linalg.norm(a-b)
+        """
+        Calculates the distance with the Manhattan metric and returns the distance between two gates
+        Constitutes the h in the formula f(n) = g(n) + h(n)
+        """
+        nx, ny, nz = neighbor
+        ex, ey, ez = end_gate
+        return abs(nx - ex) + abs(ny - ey)
 
     def create_path(self, came_from, start, end):
+        """Creates a path for a certain net"""
+
         position = end
         path = []
+
+        # Backtrack the path to get the best A* approved option
         while position != start:
             path.append(position)
-           
             position = came_from[position]
         path.append(start)
         path.reverse()
         return path
- 
- 
-    # def intersections_search(self, start, end):

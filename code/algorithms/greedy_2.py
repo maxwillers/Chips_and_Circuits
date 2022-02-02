@@ -8,7 +8,8 @@ from statistics import median
 from code.classes.net import Net
 import random
 import math
-from code.algorithms.sorting import manhatan_dis_sort, random_sort
+from code.algorithms.helpers import manhattan_dis_sort, random_sort
+
 
 class Greedy_random:
     """
@@ -23,7 +24,7 @@ class Greedy_random:
         self.succesfull = False
 
     def get_next_connection(self):
-        """Gets the next coordinates for the next connection """
+        """Gets the next coordinates for the next connection"""
         return self.connections.pop(0)
 
     def add_connection(self, start_gate, end_gate):
@@ -40,7 +41,7 @@ class Greedy_random:
         x = start_x
         y = start_y
         z = 0
-        path = [(x,y,z)]
+        path = [(x, y, z)]
 
          # Make a list with coordinates that are not an option anymore, as they lead to a dead end
         no_option = []
@@ -101,14 +102,14 @@ class Greedy_random:
                return False
 
         # If end gate is found make net and adjust connecitons in start and end gate
-        x,y,z = end_x, end_y, 0
-        path.append((x,y,z))
+        x, y, z = end_x, end_y, 0
+        path.append((x, y, z))
 
         # Fill path in grid with tuples where path comes from and goes to
         for i in range(len(path)):
             x, y, z = path[i]
-            if self.chip.grid[x][y][z] != -1: 
-                if self.chip.grid[x][y][z] == 0 :
+            if self.chip.grid[x][y][z] != -1:
+                if self.chip.grid[x][y][z] == 0:
                     self.chip.grid[x][y][z] = [(path[i - 1]), (path[i + 1])]
                 else:
                     self.chip.grid[x][y][z].append((path[i - 1]))
@@ -157,7 +158,4 @@ class Greedy_random:
         
         
 
-
-        
-
-        
+        print("succes")

@@ -1,7 +1,7 @@
 """
 greedy_itt.py
 This file contains the class greedy class which implements a greedy alogrithm for finding paths
-This greedy algorithm based on Manhattan distance.
+This greedy algorithm is based on Manhattan distance.
 """
 import copy
 from importlib.resources import path
@@ -145,7 +145,7 @@ class Greedy_itt:
             self.chip.connections.append((self.chip.gates[self.chip.netlist[0][i]-1], self.chip.gates[self.chip.netlist[1][i] -1])) 
         
         # Sort the netlist from closest connection to farthest away
-        self.chip.connections = manhatan_dis_sort(self.chip.connections)
+        self.chip.connections = manhattan_dis_sort(self.chip.connections)
 
         self.connections = copy.deepcopy(self.chip.connections)
 

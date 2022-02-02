@@ -69,9 +69,34 @@ def main(netlist_file, gate_coordinates, output_png, algorithm):
     # # Visualize the chip
     # visualization_3d(run_chip.chip, output_png)
 
+    hill = Hillclimber(run_chip.chip)
+
+    visualization_3d(hill.astar_chip, 'out2.png')
+
+###################RANDOM#########################
+
+    # if run_chip == True:
+    #     score_2.append(run_chip.calculate_value())
+    
+
+    # print(score_2)
+    # # print(statistics.mean(score_2))
+        
+
+    # output = run_chip.df_output()
+    # score = {'net': netlist_file.split("gates_netlists/")[1].replace("/", "_").replace("netlist", "net").split(".csv")[0], 'wires': run_chip.calculate_value()}
+    # output = output.append(score, ignore_index=True)
+    #     # all_output.append(output)  
+    
+    # # Make a dataframe
+    # output.to_csv('output.csv', index=False)
+    
+    # # Visualize the chip
+    # visualization_3d(run_chip, output_png)
+
     # hill = Hillclimber(run_chip)
 
-
+    # visualization_3d(hill.astar_chip, 'out2.png')
 if __name__ == "__main__":
 
     # Set-up parsing command line arguments
