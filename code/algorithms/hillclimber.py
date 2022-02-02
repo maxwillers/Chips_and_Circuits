@@ -1,6 +1,7 @@
 import ast
 import copy
 from hashlib import new
+from matplotlib.pyplot import flag
 
 from scipy import rand
 from . import randomise
@@ -13,11 +14,15 @@ class Hillclimber():
     def __init__(self, astar_chip): 
         self.astar_chip = copy.deepcopy(astar_chip)
         self.score = astar_chip.calculate_value()
-        for iteration in range(10000):
-            print(f'Iteration {iteration}/1000, current value: {self.score}')
+        self.flag = False
+        for iteration in range(2000):
+            print(f'Iteration {iteration}/2000, current value: {self.score}')
             new_astar_chip = copy.deepcopy(self.astar_chip)
             self.reconfigure_astar_chip(new_astar_chip)
             self.check_solution(new_astar_chip)
+            if self.flag == True:
+                return False
+
         #self.astar_chip = new_astar_chip
 
 
@@ -31,6 +36,11 @@ class Hillclimber():
                 #print(connection_set)
                 self.undo_connection(new_astar_chip, random_connection['start_co'], random_connection['end_co'])  
                 path = randomise.random_path(new_astar_chip, random_connection['start_gate'], random_connection['end_gate'])
+                if path == False:
+                    try: path = randomise.random_path(new_astar_chip, random_connection['start_gate'], random_connection['end_gate'])
+                    except RecursionError:
+                        self.flag = True
+                        return
                 self.create_new_connection(new_astar_chip, path)
             
             #new_astar_chip.connections.remove(random_connection)         
@@ -38,6 +48,11 @@ class Hillclimber():
         
         self.undo_connection(new_astar_chip, new_astar_chip.connections[0]['start_co'], new_astar_chip.connections[0]['end_co'])
         path = randomise.random_path(new_astar_chip, new_astar_chip.connections[0]['start_gate'], new_astar_chip.connections[0]['end_gate'])
+        if path == False:
+            try: path = randomise.random_path(new_astar_chip, random_connection['start_gate'], random_connection['end_gate'])
+            except RecursionError:
+                self.flag = True
+                return
         self.create_new_connection(new_astar_chip, path)
         #new_astar_chip.connections.remove(new_astar_chip.connections[0])
         
@@ -47,7 +62,7 @@ class Hillclimber():
     def check_solution(self, new_astar_chip):
         new_score = new_astar_chip.calculate_value()        
         old_score = self.score
-        if new_score < 100:
+        if new_score < 1000:
             print(new_score)
         #print(new_astar_chip.calculate_intersections())
         if new_score <= old_score:

@@ -160,7 +160,8 @@ class Chip:
             wires.append(str(net.path).replace(' ', ''))
     
         for connection in self.connections: 
-            nets.append(f"({connection['start_gate'].id},{connection['end_gate'].id})")
+            start_gate, end_gate = connection
+            nets.append(f"({start_gate.id},{end_gate.id})")
 
         return pd.DataFrame(data = {'net': nets, 'wires' : wires})
 

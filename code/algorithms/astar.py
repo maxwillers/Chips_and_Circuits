@@ -4,7 +4,7 @@ This file contains the A* ("astar") class and creates solutions using the A* alg
 The heurstic used in this algorithm is based on Manhattan distance.
 """
 import copy
-from code.algorithms.helpers import manhattan_dis_sort
+from code.algorithms.helpers_sorting import manhattan_dis_sort, random_sort, create_netlist
 import heapq
 from code.classes.net import Net
 
@@ -31,32 +31,25 @@ class PriorityQueue:
 class Astar:
     """Base class that stores all the required components for a funcioning A* algorithm"""
 
-    def __init__(self, chip):
+    def __init__(self, chip, sorting):
         self.chip = copy.deepcopy(chip)
         #self.connections = []
-        self.create_netlist()
+        self.create_netlist(sorting)
 
-    def create_netlist(self):
+    def create_netlist(self, sorting):
         """Goes over all the connections that need to be made and ensures that they are made"""
 
-        for i in range(len(self.chip.netlist[0])):
-            self.chip.connections.append(
-                (
-                    self.chip.gates[self.chip.netlist[0][i] - 1],
-                    self.chip.gates[self.chip.netlist[1][i] - 1],
-                )
-            )
-
-        # Sort the netlist from the connection with the smallest distance to the largest one
-        self.chip.connections = manhattan_dis_sort(self.chip.connections)
+        # Create the properly sorted netlistt
+        random_chip = create_netlist(self.chip, sorting)
 
         for connection in self.chip.connections:
-            start_gate = connection["start_gate"]
-            end_gate = connection["end_gate"]
+            start_gate, end_gate = connection
 
             # Find a path between two gates
             came_from, start, end = self.search(start_gate, end_gate)
             path = self.create_path(came_from, start, end)
+            if path == False:
+                return False
             for i in range(len(path)):
                 x, y, z = path[i]
                 if self.chip.grid[x][y][z] != -1:
@@ -73,7 +66,6 @@ class Astar:
             
             self.chip.nets.append(net)
             #self.connections.append([path[0], path[-1]])
-        
   
 
     def search(self, start_gate, end_gate):
@@ -142,6 +134,7 @@ class Astar:
 
         return came_from, (sx, sy, sz), end_coordinates
 
+
     def manhattan_heuristic(self, location, neighbor, end_gate):
         """
         Calculates the distance with the Manhattan metric and returns the distance between two gates
@@ -150,6 +143,7 @@ class Astar:
         nx, ny, nz = neighbor
         ex, ey, ez = end_gate
         return abs(nx - ex) + abs(ny - ey)
+
 
     def create_path(self, came_from, start, end):
         """Creates a path for a certain net"""
@@ -160,7 +154,11 @@ class Astar:
         # Backtrack the path to get the best A* approved option
         while position != start:
             path.append(position)
-            position = came_from[position]
+            try: 
+                position = came_from[position]
+            except KeyError:
+                    return False
+
         path.append(start)
         path.reverse()
         return path

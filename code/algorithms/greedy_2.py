@@ -8,7 +8,7 @@ from statistics import median
 from code.classes.net import Net
 import random
 import math
-from code.algorithms.helpers import manhattan_dis_sort, random_sort
+from code.algorithms.helpers_sorting import manhattan_dis_sort, random_sort
 
 
 class Greedy_random:

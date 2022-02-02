@@ -1,2 +1,0 @@
-[]
-Iteration 0/1000, current value: 11372
