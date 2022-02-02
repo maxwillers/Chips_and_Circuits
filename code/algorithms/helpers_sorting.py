@@ -1,17 +1,10 @@
 """
-<<<<<<< HEAD:code/algorithms/helpers.py
-helpers.py
-This file contains functions that can sort the netlist:
-- Manhattan_dis_sort : sorts the list based on their Manhattan distance
-- random_sort: randomly sorts the netlist
-=======
 helpers_sorting.py
 
 This file contains functions that can sort the netlist:
 - manhattan_dis_sort : sorts the list based on their manhatan distance
 - random_sort: randomly sorts the netlist 
 
->>>>>>> 8b45c5a01cad21f4ec3437f7c69a73d84dd72155:code/algorithms/helpers_sorting.py
 """
 
 import random
@@ -45,14 +38,8 @@ def manhattan_dis_sort(connections):
 
 def random_sort(connections):
     """Create a random connections list by swapping connections"""
-<<<<<<< HEAD:code/algorithms/helpers.py
-    for _ in range(len(connections[0]) * 2):
-
-        # Make two indeces
-=======
     for _ in range(len(connections)*2):
         # Make two indexes
->>>>>>> 8b45c5a01cad21f4ec3437f7c69a73d84dd72155:code/algorithms/helpers_sorting.py
         index_1 = 0
         index_2 = 0
 
@@ -69,17 +56,6 @@ def random_sort(connections):
         connections_new = []
         for connection in connections:
             start, end = connection
-<<<<<<< HEAD:code/algorithms/helpers.py
-            connections_new.append(
-                {
-                    "start_gate": start,
-                    "end_gate": end,
-                    "start_co": [start.x, start.y],
-                    "end_co": [end.x, end.y],
-                }
-            )
-    return connections_new
-=======
             connections_new.append({'start_gate': start, 'end_gate': end, 'start_co': [start.x, start.y], 'end_co':[end.x, end.y]})
 
     return connections_new
@@ -97,4 +73,3 @@ def create_netlist(chip, sorting):
         chip.connections = random_sort(chip.connections)
 
     return chip
->>>>>>> 8b45c5a01cad21f4ec3437f7c69a73d84dd72155:code/algorithms/helpers_sorting.py

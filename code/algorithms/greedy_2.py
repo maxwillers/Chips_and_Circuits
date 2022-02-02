@@ -6,12 +6,8 @@ This greedy algorithm based on Manhattan distance.
 import copy
 from code.classes.net import Net
 import random
-<<<<<<< HEAD
-from code.algorithms.helpers import random_sort
-=======
 import math
 from code.algorithms.helpers_sorting import manhattan_dis_sort, random_sort
->>>>>>> 8b45c5a01cad21f4ec3437f7c69a73d84dd72155
 
 
 class Greedy_random:
