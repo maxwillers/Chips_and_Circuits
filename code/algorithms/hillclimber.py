@@ -7,12 +7,16 @@ The hillclimber algorithm does not stand on its own; it is meant to be applied t
 import ast
 import copy
 from hashlib import new
+from tracemalloc import start
 from matplotlib.pyplot import flag
 from scipy import rand
+
+from code.algorithms.astar import Astar
 from . import randomise
 import random
 from ..classes.chips import Chip
 from ..classes.net import Net
+<<<<<<< HEAD
 
 
 class Hillclimber:
@@ -92,9 +96,46 @@ class Hillclimber:
         if new_score < 1000:
             print(new_score)
         # print(new_astar_chip.calculate_intersections())
+=======
+from . import helpers_path
+class Hillclimber():
+
+    def __init__(self, chip): 
+        self.astar_chip = copy.deepcopy(chip)
+        self.score = chip.chip.calculate_value()
+        
+        for iteration in range(100):
+            print(f'Iteration {iteration}/2000, current value: {self.score}')
+            new_chip = copy.deepcopy(self.astar_chip)
+            self.reconfigure_chip(new_chip)
+            self.check_solution(new_chip)
+            
+
+    def reconfigure_chip(self, new_chip):
+        #print(len(new_chip.connections))
+        flag = True
+        connection_list = []
+        #while len(connection_list) < len(new_chip.chip.connections):
+        random_connection = random.choice(new_chip.chip.connections)
+        if random_connection not in connection_list:
+            connection_list.append(random_connection)
+            helpers_path.undo_connection(new_chip.chip, random_connection['start_co'], random_connection['end_co']) 
+            if isinstance(new_chip, Astar) == True:
+                came_from, start, end = new_chip.search(random_connection['start_gate'], random_connection['end_gate'], flag)
+                path = new_chip.create_path(came_from, start, end)
+                helpers_path.path_to_chip(path, new_chip.chip, random_connection['start_gate'], random_connection['end_gate'])
+                #return new_chip
+
+    def check_solution(self, new_chip):
+        new_score = new_chip.chip.calculate_value()        
+        old_score = self.score
+        print(new_score)
+        print(old_score)
+>>>>>>> 8b45c5a01cad21f4ec3437f7c69a73d84dd72155
         if new_score <= old_score:
-            self.astar_chip = new_astar_chip
+            self.astar_chip = new_chip
             self.score = new_score
+<<<<<<< HEAD
 
     def undo_connection(self, new_astar_chip, start_co, end_co):
         """Removes the path made from the grid an removes net from chip"""
@@ -127,3 +168,5 @@ class Hillclimber:
                     ]
         net = Net(path)
         new_astar_chip.nets.append(net)
+=======
+>>>>>>> 8b45c5a01cad21f4ec3437f7c69a73d84dd72155

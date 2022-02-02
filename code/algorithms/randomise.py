@@ -1,6 +1,5 @@
 """
 randomise.py
-
 This file contains the Random class which implements a random algorithm for finding paths between chips.
 """
 import sys
@@ -8,51 +7,35 @@ from calendar import c
 import random
 import copy
 from tracemalloc import start
-import jinja2
-from code.algorithms.helpers import manhattan_dis_sort
-from code.classes import chips
+from code.algorithms.helpers_sorting import manhattan_dis_sort, random_sort, create_netlist
+from code.algorithms.helpers_path import path_to_chip
 from code.classes.chips import Chip
 from code.classes.net import Net
 
 sys.setrecursionlimit(5000)
 
 
-def run_random(chip):
+def run_random(chip, sorting):
     """Go over all connection that need to be made and ensure they are made"""
 
     flag = False
     random_chip = copy.deepcopy(chip)
 
-    # Iterate over the netlist
-    for i in range(len(random_chip.netlist[0])):
-        random_chip.connections.append((random_chip.gates[random_chip.netlist[0][i]-1], random_chip.gates[random_chip.netlist[1][i] -1])) 
-    
-    # Rearange list so the shortest distances will be first
-    random_chip.connections = manhattan_dis_sort(random_chip.connections)
+    # Create the properly sorted netlistt
+    random_chip = create_netlist(random_chip, sorting)
+    print(random_chip.connections)
 
     # Go over every connection to be made an make a connection       
     for connection in random_chip.connections:
-        start_gate = connection['start_gate']
-        end_gate = connection['end_gate']
+        start_gate, end_gate= connection
+        # end_gate = connection['end_gate']
 
         path = random_path(random_chip, start_gate, end_gate)
         if path == False:
             flag = True
             break
-        # Change values in grid to the coordinates every grid point connects to
-        for i in range(len(path)):
-            x, y, z = path[i]
-            if random_chip.grid[x][y][z] != -1: 
-                if random_chip.grid[x][y][z] == 0:
-                    random_chip.grid[x][y][z] = [(path[i - 1]), (path[i + 1])]
-                else:
-                    random_chip.grid[x][y][z] = random_chip.grid[x][y][z] + [(path[i - 1]), (path[i + 1])]
         
-        # Add path to net and add connections to gates
-        net = Net(path)
-        start_gate.connections.append(end_gate.id)
-        end_gate.connections.append(start_gate.id)
-        random_chip.nets.append(net)
+        random_chip = path_to_chip(path, random_chip, start_gate, end_gate)
 
     if flag == False:
         return random_chip
@@ -63,6 +46,7 @@ def random_path(random_chip, start_gate, end_gate):
     """
     Assign each net with a randomized path
     """
+    
     path = []
     set_path = set(path)
     counter = 0
@@ -87,7 +71,7 @@ def random_path(random_chip, start_gate, end_gate):
         choose, gates, intersections = random_chip.available_neighbors(current_coordinates)
         choose.extend(intersections)
 
-        # iterate over possible neighbour gates
+        # Iterate over possible neighbour gates
         for end in gates:
 
             # If the current coordinates match the end gate coordinate, check if the coordinates are unique
@@ -95,7 +79,7 @@ def random_path(random_chip, start_gate, end_gate):
                 path.append(end)
                 return path
 
-        # if there are neighbours available pick one randomly
+        # If there are neighbours available pick one randomly
         if choose:
 
             new_line = random.choice(choose)
@@ -112,7 +96,7 @@ def random_path(random_chip, start_gate, end_gate):
                 try:
                     return random_path(random_chip, start_gate, end_gate)
 
-                # if a recursion error is occurring quit the program
+                # If a recursion error is occurring quit the program
                 except RecursionError:
                     return False
             else:
@@ -120,10 +104,10 @@ def random_path(random_chip, start_gate, end_gate):
 
         else:
 
-            # if possible try again to find a connection
+            # If possible try again to find a connection
             try:
                 return random_path(random_chip, start_gate, end_gate)
 
-            # if a recursion error is occurring quit the program
+            # If a recursion error is occurring quit the program
             except RecursionError:
                 return False
