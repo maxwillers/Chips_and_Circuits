@@ -25,10 +25,10 @@
 
 
 ### Helpers
-- **helper_path.py**
+- **helper_net.py**
     - This file contains functions that help algorithms with their paths. These functions are used across several algorithms.
-    - *path_to_chip*: adds the created path to the chip
-    - *undo_connection*: removes a path that is already created from the chip
+    - *create_net_on_chip*: adds the created path to the chip to make it a net
+    - *undo_net*: removes a net that is already created from the chip
 
 
 - **helper_sorting.py**

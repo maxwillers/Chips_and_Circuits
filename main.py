@@ -27,7 +27,7 @@ def main(
     output_batch_file,
 ):
 
-    # Make lists of the gates located on the chip and of the connections that are to be made between gates
+    # Make lists of the gates located on the chip and of the nets
     netlist = pd.read_csv(netlist_file)
     gate_coordinates = pd.read_csv(gate_coordinates)
 

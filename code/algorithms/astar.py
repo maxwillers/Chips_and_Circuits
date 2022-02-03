@@ -5,7 +5,7 @@ The heurstic used in this algorithm is based on Manhattan distance.
 """
 import copy
 from code.algorithms.helpers_sorting import create_netlist
-from code.algorithms.helpers_path import path_to_chip
+from code.algorithms.helpers_net import create_net_on_chip
 import heapq
 
 
@@ -36,7 +36,7 @@ class Astar:
         self.run(sorting)
 
     def run(self, sorting):
-        """Goes over all the connections that need to be made and ensures that they are made"""
+        """Goes over all the gate connections that need to be made and ensures that they are made"""
 
         # Create the properly sorted netlistt
         self.chip = create_netlist(self.chip, sorting)
@@ -45,7 +45,7 @@ class Astar:
         flag = False
 
         # Go over every connection and make that connection
-        for connection in self.chip.connections:
+        for connection in self.chip.connected_gates:
             start_gate = connection['start_gate']
             end_gate = connection['end_gate']
 
@@ -54,7 +54,7 @@ class Astar:
             path = self.create_path(came_from, start, end)
 
             # Append path to chip
-            self.chip = path_to_chip(path, self.chip, start_gate, end_gate)
+            self.chip = create_net_on_chip(path, self.chip, start_gate, end_gate)
 
     def search(self, start_gate, end_gate, flag):
         """

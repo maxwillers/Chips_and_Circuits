@@ -7,7 +7,7 @@ import sys
 import random
 import copy
 from code.algorithms.helpers_sorting import create_netlist
-from code.algorithms.helpers_path import path_to_chip
+from code.algorithms.helpers_net import create_net_on_chip
 
 sys.setrecursionlimit(5000)
 
@@ -21,7 +21,7 @@ def run_random(chip, sorting):
     random_chip = create_netlist(random_chip, sorting)
 
     # Go over every connection to be made an make a connection
-    for connection in random_chip.connections:
+    for connection in random_chip.connected_gates:
         start_gate = connection['start_gate']
         end_gate = connection['end_gate']
 
@@ -29,7 +29,7 @@ def run_random(chip, sorting):
         if path is False:
             break
 
-        random_chip = path_to_chip(path, random_chip, start_gate, end_gate)
+        random_chip = create_net_on_chip(path, random_chip, start_gate, end_gate)
 
     # If all paths are made return chip
     return random_chip

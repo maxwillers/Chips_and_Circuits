@@ -1,14 +1,14 @@
 """
-helpers_path.py
+helpers_net.py
 
 This file contains functions that can be used in the algorithms that help with paths
-- path_to_chip: adds the path to the grid and the net to the chip
-- undo_connection: removes connection from chip
+- create_net_on_chip: adds the path to the grid to make it a net
+- undo_net: removes net from chip
 """
 from code.classes.net import Net
 
 
-def path_to_chip(path, chip, start_gate, end_gate):
+def create_net_on_chip(path, chip, start_gate, end_gate):
     """Adds path to grid and the net to chip"""
 
     # Fill grid with coordinates of both the previous and following coordinate of the path
@@ -20,7 +20,7 @@ def path_to_chip(path, chip, start_gate, end_gate):
             else:
                 chip.grid[x][y][z] += [(path[i - 1]), (path[i + 1])]
 
-    # If end gate is found make net and adjust connections in start and end gate
+    # If end gate is found make net and adjust connected_gates in start and end gate
     net = Net(path)
     chip.nets.append(net)
     start_gate.connections.append(end_gate.id)
@@ -29,7 +29,7 @@ def path_to_chip(path, chip, start_gate, end_gate):
     return chip
 
 
-def undo_connection(chip, start_co, end_co):
+def undo_net(chip, start_co, end_co):
     """Removes the path made from the grid an removes net from chip"""
 
     # Go over every path in the chip to see which has the same start and end gate

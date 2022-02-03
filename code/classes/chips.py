@@ -18,7 +18,7 @@ class Chip:
         self.nets = []
         self.gate_coordinates = gate_coordinates
         self.netlist = [netlist["chip_a"].tolist(), netlist["chip_b"].tolist()]
-        self.connections = []
+        self.connected_gates = []
         self.grid = [
             [[0 for _ in range(self.height + 1)] for _ in range(self.length + 1)]
             for _ in range(self.width + 1)
@@ -98,7 +98,7 @@ class Chip:
 
     def is_solution(self):
         """Returns True if all gates in netlist are connected"""
-        for connection in self.connections:
+        for connection in self.connected_gates:
             start_gate = connection["start_gate"]
             end_gate = connection["end_gate"]
 
@@ -143,7 +143,7 @@ class Chip:
             wires.append(str(net.path).replace(" ", ""))
 
         # Make a list of gate ID's that form a connection with each other
-        for connection in self.connections:
+        for connection in self.connected_gates:
             start_gate = connection["start_gate"]
             end_gate = connection["end_gate"]
             nets.append(f"({start_gate.id},{end_gate.id})")

@@ -1,2 +1,2 @@
-pandas
-matplotlib
+pandas==3.4
+matplotlib==1.3.4

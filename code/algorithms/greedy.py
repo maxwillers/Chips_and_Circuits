@@ -4,7 +4,7 @@ This file contains the class greedy class which implements a greedy alogrithm fo
 This greedy algorithm can both be iterative, which means it will remove random paths if it cannot find a sollution or not
 """
 import copy
-from code.algorithms.helpers_path import path_to_chip, undo_connection
+from code.algorithms.helpers_net import create_net_on_chip, undo_net
 import random
 from code.algorithms.helpers_sorting import create_netlist
 
@@ -14,14 +14,14 @@ class Greedy:
 
     def __init__(self, chip, sorting, it=False):
         self.chip = copy.deepcopy(chip)
-        self.connections = []
+        self.connected_gates = []
         self.connection_made = []
         self.it = it
         self.run(sorting)
 
     def get_next_connection(self):
         """Gets the next coordinates for the next connection"""
-        return self.connections.pop(0)
+        return self.connected_gates.pop(0)
 
     def add_connection(self, start_gate, end_gate):
         """Make the connection between two gates first changing the x-coordinate then the y-coordinate"""
@@ -115,7 +115,7 @@ class Greedy:
         x, y, z = end_x, end_y, 0
         path.append((x, y, z))
 
-        self.chip = path_to_chip(path, self.chip, start_gate, end_gate)
+        self.chip = create_net_on_chip(path, self.chip, start_gate, end_gate)
         return True
 
     def run(self, sorting):
@@ -124,12 +124,12 @@ class Greedy:
         # Create the properly sorted netlistt
         self.chip = create_netlist(self.chip, sorting)
 
-        # Copy the connections list so it can be popped
-        self.connections = copy.deepcopy(self.chip.connections)
+        # Copy the connected_gates list so it can be popped
+        self.connected_gates = copy.deepcopy(self.chip.connected_gates)
         steps = 0
 
         # Go past every connection that needs to be made
-        while len(self.connections) > 0:
+        while len(self.connected_gates) > 0:
 
             # Make sure the algorithm does not get stuck in iterations by using a maximum steps
             if steps < 5000:
@@ -150,23 +150,23 @@ class Greedy:
                         steps += 1
                         if steps < 5000:
 
-                            # If other connections were made choose one randomly and redo the connection
+                            # If other nets were made choose one randomly from the list with connected gates and redo the connection
                             if len(self.connection_made) > 1:
                                 remove_connection = self.connection_made.pop(
                                     random.randint(0, (len(self.connection_made) - 1))
                                 )
-                                self.connections.append(remove_connection)
-                                self.chip = undo_connection(
+                                self.connected_gates.append(remove_connection)
+                                self.chip = undo_net(
                                     self.chip,
                                     remove_connection["start_co"],
                                     remove_connection["end_co"],
                                 )
 
                             # Otherwise if no other connections are made choose another connection randomly to be done
-                            elif len(self.connections) > 0:
-                                self.connections.append(remove_connection)
-                                connection = self.connections.pop(
-                                    random.randint(0, len(self.connections) - 1)
+                            elif len(self.connected_gates) > 0:
+                                self.connected_gates.append(remove_connection)
+                                connection = self.connected_gates.pop(
+                                    random.randint(0, len(self.connected_gates) - 1)
                                 )
                                 start_gate = connection["start_gate"]
                                 end_gate = connection["end_gate"]
@@ -182,4 +182,4 @@ class Greedy:
                     return False
 
         # Update chip connections
-        self.chip.connections = self.connection_made
+        self.chip.connected_gates = self.connection_made

@@ -18,10 +18,16 @@ Furthermore, there are some restrictions regarding laying down the nets:
     - collisions happen when two units run allong the same path
 - The path cannot go past the chip
     - the chip grid is the size of the outer gate coordinates + 1. so it starts at 0 and ends at max x value +1 and max y value +1. The chip always has a height of 7.
+- The path cannot go through gates. 
 --------------------------------------------------
 ## Requirements
 
-The code is written using python 3. To succesfully run this code a few packages need to be installed, which are noted in requirements.txt. This packages can be downloaded using pip:
+Project is created with:
+* Python version: 3.9.1
+* Matplotlib library version: 3.4.3
+* Pandas version: 1.3.4
+
+To succesfully run this code a few packages need to be installed, which are noted in requirements.txt. This packages can be downloaded using pip:
 
 ```
 pip3 install -r requirements.txt
@@ -31,7 +37,7 @@ pip3 install -r requirements.txt
 - To run the model, run ``main.py`` with command in this directory. e.g.
 
 ```
-    $ python3 main.py *netlist_file* *print_file* *output_png* *output_batch_file* *algorithm* *sorting* *times_batch_run*
+    $ python3 main.py netlist_file *print_file* *output_png* *output_batch_file* *algorithm* *sorting* *times_batch_run*
 ```
 - commands that need to be added
     - **netlist_file**: find the netlist files in the *gates_netlist* map
@@ -67,12 +73,6 @@ When running this model you will receive the following output:
 - a batchrun file with score, output (same as in the output file) and time of each run
 
 ---------------------------------------------------
-## Technologies
-Project is created with:
-* Python version: 3.9
-* Matplotlib library version: 3.4
-
---------------------------------------------------
 ## Files
 The code exists of several folders:
 - **code**: contains three important folders, namely:
