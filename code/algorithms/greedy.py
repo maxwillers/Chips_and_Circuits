@@ -88,7 +88,7 @@ class Greedy:
 
                         # Check if intersection is in no option
                         for intersection in self.chip.available_neighbors((x, y, z))[2]:
-                            if intersection not in no_option:
+                            if intersection not in no_option and intersection not in path:
                                 available_intersections.append(intersection)
 
                         # Make intersection if there are any available
@@ -134,7 +134,8 @@ class Greedy:
 
                 # Get next connection
                 connection = self.get_next_connection()
-                start_gate, end_gate = connection
+                start_gate = connection['start_gate']
+                end_gate = connection['end_gate']
 
                 # If connection succesfully made add to connection made list
                 if self.add_connection(start_gate, end_gate):
@@ -152,11 +153,10 @@ class Greedy:
                                     random.randint(0, (len(self.connection_made) - 1))
                                 )
                                 self.connections.append(remove_connection)
-                                remove_start, remove_end = remove_connection
                                 self.chip = undo_connection(
                                     self.chip,
-                                    [remove_start.x, remove_start.y],
-                                    [remove_end.x, remove_end.y],
+                                    remove_connection['start_co'],
+                                    remove_connection['end_co'],
                                 )
 
                             # Otherwise if no other connections are made choose another connection randomly to be done
@@ -164,7 +164,9 @@ class Greedy:
                                 connection = self.connections.pop(
                                     random.randint(0, len(self.connections) - 1)
                                 )
-                                start_gate, end_gate = connection
+                                start_gate = connection['start_gate']
+                                end_gate = connection['end_gate']
+
                             else:
                                 return False
 

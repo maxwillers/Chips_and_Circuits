@@ -15,7 +15,6 @@ sys.setrecursionlimit(5000)
 def run_random(chip, sorting):
     """Go over all connections that need to be made and ensure they are made"""
 
-    flag = False
     random_chip = copy.deepcopy(chip)
 
     # Create the properly sorted netlist
@@ -23,25 +22,21 @@ def run_random(chip, sorting):
 
     # Go over every connection to be made an make a connection
     for connection in random_chip.connections:
-        start_gate, end_gate = connection
+        start_gate = connection['start_gate']
+        end_gate = connection['end_gate']
 
         path = random_path(random_chip, start_gate, end_gate)
         if path is False:
-            flag = True
             break
 
         random_chip = path_to_chip(path, random_chip, start_gate, end_gate)
 
     # If all paths are made return chip
-    if flag is False:
-        return random_chip
-    else:
-        return False
+    return random_chip
 
 
 def random_path(random_chip, start_gate, end_gate):
     """Assign each net with a randomized path"""
-
     path = []
     set_path = set(path)
     counter = 0

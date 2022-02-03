@@ -15,8 +15,7 @@ class Hillclimber:
         self.score = chip.chip.calculate_value()
 
         # Iterate 2000 times to find the local best solution
-        for iteration in range(2000):
-            print(f"Iteration {iteration}/2000, current value: {self.score}")
+        for _ in range(2000):
             new_chip = copy.deepcopy(self.astar_chip)
             self.reconfigure_chip(new_chip)
             self.check_solution(new_chip)
@@ -30,17 +29,16 @@ class Hillclimber:
         # Check if connection has been chosen before otherwise undo connection
         if random_connection not in connection_list:
             connection_list.append(random_connection)
-            random_start, random_end = random_connection
             undo_connection(
                 new_chip.chip,
-                [random_start.x, random_start.y],
-                [random_end.x, random_end.y],
+                random_connection['start_co'],
+                random_connection['end_co'],
             )
 
             # Create new path and append it to chip
-            came_from, start, end = new_chip.search(random_start, random_end, flag)
+            came_from, start, end = new_chip.search(random_connection['start_gate'], random_connection['end_gate'], flag)
             path = new_chip.create_path(came_from, start, end)
-            path_to_chip(path, new_chip.chip, random_start, random_end)
+            path_to_chip(path, new_chip.chip, random_connection['start_gate'], random_connection['end_gate'])
 
     def check_solution(self, new_chip):
         """Check if new solution is better than the old solution"""

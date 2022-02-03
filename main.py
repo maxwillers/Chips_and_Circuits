@@ -130,12 +130,8 @@ def main(
     # Visualize the best solution and make output
     best = sorted(best_chip, key=lambda d: d["score"])
     if len(best) > 0:
-        if algorithm == "random":
-            visualization_3d(best[0]["chip"], output_png)
-            best[0]["output"].to_csv("output.csv", index=False)
-        else:
-            visualization_3d(best[0]["chip"], output_png)
-            best[0]["output"].to_csv("output.csv", index=False)
+        visualization_3d(best[0]["chip"], output_png)
+        best[0]["output"].to_csv("output.csv", index=False)
     else:
         print("Sorry no sollution was found")
         return False

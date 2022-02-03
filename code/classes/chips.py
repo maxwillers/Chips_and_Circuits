@@ -96,7 +96,9 @@ class Chip:
     def is_solution(self):
         """Returns True if all gates in netlist are connected"""
         for connection in self.connections:
-            start_gate, end_gate = connection
+            start_gate = connection['start_gate']
+            end_gate = connection['end_gate']
+
             if end_gate.id not in start_gate.connections:
                 return False
         return True
@@ -115,14 +117,14 @@ class Chip:
                         if len(self.grid[x][y][z]) == 4:
                             intersections += 1
                         elif len(self.grid[x][y][z]) > 4:
-                            intersections += len(self.grid[x][y][z]) - 4
+                            intersections += len(self.grid[x][y][z])-4
         return intersections
 
     def calculate_value(self):
         """Returns the cost of placing the wires"""
         value = 0
         for net in self.nets:
-            value += len(net.path) - 2
+            value += len(net.path) - 1
         value = value + (300 * self.calculate_intersections())
 
         return value
@@ -138,7 +140,8 @@ class Chip:
 
         # Make a list of gate ID's that form a connection with each other
         for connection in self.connections:
-            start_gate, end_gate = connection
+            start_gate = connection['start_gate']
+            end_gate = connection['end_gate']
             nets.append(f"({start_gate.id},{end_gate.id})")
 
         return pd.DataFrame(data={"net": nets, "wires": wires})

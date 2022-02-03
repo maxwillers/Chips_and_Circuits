@@ -18,8 +18,7 @@ def path_to_chip(path, chip, start_gate, end_gate):
             if chip.grid[x][y][z] == 0:
                 chip.grid[x][y][z] = [(path[i - 1]), (path[i + 1])]
             else:
-                chip.grid[x][y][z].append((path[i - 1]))
-                chip.grid[x][y][z].append((path[i + 1]))
+                chip.grid[x][y][z] += [(path[i - 1]), (path[i + 1])]
 
     # If end gate is found make net and adjust connections in start and end gate
     net = Net(path)
@@ -49,7 +48,7 @@ def undo_connection(chip, start_co, end_co):
                 current_tuples = chip.grid[x][y][z]
 
                 # Filter out the coordinates that need to be removed
-                if len(current_tuples) == 2:
+                if current_tuples == 0 or len(current_tuples) == 2:
                     chip.grid[x][y][z] = 0
                 else:
                     for coordinate in current_tuples:

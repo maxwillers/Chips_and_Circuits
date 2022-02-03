@@ -46,7 +46,8 @@ class Astar:
 
         # Go over every connection and make that connection
         for connection in self.chip.connections:
-            start_gate, end_gate = connection
+            start_gate = connection['start_gate']
+            end_gate = connection['end_gate']
 
             # Find a path between two gates
             came_from, start, end = self.search(start_gate, end_gate, flag)
