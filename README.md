@@ -15,7 +15,7 @@ Hereby the **units of wire** is every coordinate the wire passes and an **inters
 
 Furthermore, there are some restrictions regarding laying down the nets:
 -  **Collision** is not allowed
-    - collisions happen when two units run allong the same path
+    - collisions happen when two units run allong the same grid segment
 - The path cannot go past the chip
     - the chip grid is the size of the outer gate coordinates + 1. so it starts at 0 and ends at max x value +1 and max y value +1. The chip always has a height of 7.
 - The path cannot go through gates. 
@@ -41,7 +41,7 @@ pip3 install -r requirements.txt
 ```
 - commands that need to be added
     - **netlist_file**: find the netlist files in the *gates_netlist* map
-    - **print_file output_png**: find the print files in the *gates_netlist* map
+    - **print_file**: find the print files in the *gates_netlist* map
     - **output_png** : the name of the visualization output
     - **output_batch_file** : the name of the batch_run csv output
     - **algorithm sorting**: the algorithm that will be ran
@@ -69,8 +69,8 @@ running netlist 4 with astar_hill algorithm with manhattan sort a 100 times:
 
 When running this model you will receive the following output:
 - A visualization of the run with the lowest score 
-- a output.csv file including the gates id's, the nets and score. This is the output of the run with the lowest score
-- a batchrun file with score, output (same as in the output file) and time of each run
+- An output.csv file including the gates id's, the nets and score. This is the output of the run with the lowest score
+- A batchrun file with score, output (same as in the output file) and time of each run
 
 ---------------------------------------------------
 ## Files
