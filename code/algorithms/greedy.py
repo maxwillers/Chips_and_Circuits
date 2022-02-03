@@ -45,7 +45,7 @@ class Greedy:
 
         # While the endgate is not reached go find a next step
         while (end_x, end_y, 0) not in self.chip.available_neighbors((x, y, z))[1]:
-            if len(path) < 350 and len(no_option) < 500:
+            if len(path) < 200 and len(no_option) < 500:
                 neighbors = self.chip.available_neighbors((x, y, z))[0]
                 best_neighbors = []
                 medium_neighbors = []
@@ -88,7 +88,10 @@ class Greedy:
 
                         # Check if intersection is in no option
                         for intersection in self.chip.available_neighbors((x, y, z))[2]:
-                            if intersection not in no_option and intersection not in path:
+                            if (
+                                intersection not in no_option
+                                and intersection not in path
+                            ):
                                 available_intersections.append(intersection)
 
                         # Make intersection if there are any available
@@ -134,8 +137,8 @@ class Greedy:
 
                 # Get next connection
                 connection = self.get_next_connection()
-                start_gate = connection['start_gate']
-                end_gate = connection['end_gate']
+                start_gate = connection["start_gate"]
+                end_gate = connection["end_gate"]
 
                 # If connection succesfully made add to connection made list
                 if self.add_connection(start_gate, end_gate):
@@ -155,17 +158,18 @@ class Greedy:
                                 self.connections.append(remove_connection)
                                 self.chip = undo_connection(
                                     self.chip,
-                                    remove_connection['start_co'],
-                                    remove_connection['end_co'],
+                                    remove_connection["start_co"],
+                                    remove_connection["end_co"],
                                 )
 
                             # Otherwise if no other connections are made choose another connection randomly to be done
-                            elif len(self.connections) > 1:
+                            elif len(self.connections) > 0:
+                                self.connections.append(remove_connection)
                                 connection = self.connections.pop(
                                     random.randint(0, len(self.connections) - 1)
                                 )
-                                start_gate = connection['start_gate']
-                                end_gate = connection['end_gate']
+                                start_gate = connection["start_gate"]
+                                end_gate = connection["end_gate"]
 
                             else:
                                 return False

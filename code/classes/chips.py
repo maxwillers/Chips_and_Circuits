@@ -96,8 +96,8 @@ class Chip:
     def is_solution(self):
         """Returns True if all gates in netlist are connected"""
         for connection in self.connections:
-            start_gate = connection['start_gate']
-            end_gate = connection['end_gate']
+            start_gate = connection["start_gate"]
+            end_gate = connection["end_gate"]
 
             if end_gate.id not in start_gate.connections:
                 return False
@@ -108,16 +108,17 @@ class Chip:
         intersections = 0
 
         # For every grid point, check the number of coordinates
-        for x in range(self.width):
-            for y in range(self.length):
-                for z in range(self.height):
+        for x in range(self.width + 1):
+            for y in range(self.length + 1):
+                for z in range(self.height + 1):
 
                     # If more than two coordinates are found at a point, it is an intersection
                     if self.grid[x][y][z] != 0 and self.grid[x][y][z] != -1:
                         if len(self.grid[x][y][z]) == 4:
                             intersections += 1
                         elif len(self.grid[x][y][z]) > 4:
-                            intersections += len(self.grid[x][y][z])-4
+                            intersections += len(self.grid[x][y][z]) - 4
+
         return intersections
 
     def calculate_value(self):
@@ -140,8 +141,8 @@ class Chip:
 
         # Make a list of gate ID's that form a connection with each other
         for connection in self.connections:
-            start_gate = connection['start_gate']
-            end_gate = connection['end_gate']
+            start_gate = connection["start_gate"]
+            end_gate = connection["end_gate"]
             nets.append(f"({start_gate.id},{end_gate.id})")
 
         return pd.DataFrame(data={"net": nets, "wires": wires})

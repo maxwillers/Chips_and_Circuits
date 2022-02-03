@@ -24,21 +24,31 @@ class Hillclimber:
         """Reconfigures chip, by rearranging a randomly chosen connection"""
         flag = True
         connection_list = []
-        random_connection = random.choice(new_chip.chip.connections)
+        for _ in range(2):
+            random_connection = random.choice(new_chip.chip.connections)
 
-        # Check if connection has been chosen before otherwise undo connection
-        if random_connection not in connection_list:
-            connection_list.append(random_connection)
-            undo_connection(
-                new_chip.chip,
-                random_connection['start_co'],
-                random_connection['end_co'],
-            )
+            # Check if connection has been chosen before otherwise undo connection
+            if random_connection not in connection_list:
+                connection_list.append(random_connection)
+                undo_connection(
+                    new_chip.chip,
+                    random_connection["start_co"],
+                    random_connection["end_co"],
+                )
 
-            # Create new path and append it to chip
-            came_from, start, end = new_chip.search(random_connection['start_gate'], random_connection['end_gate'], flag)
-            path = new_chip.create_path(came_from, start, end)
-            path_to_chip(path, new_chip.chip, random_connection['start_gate'], random_connection['end_gate'])
+                # Create new path and append it to chip
+                came_from, start, end = new_chip.search(
+                    random_connection["start_gate"], random_connection["end_gate"], flag
+                )
+                path = new_chip.create_path(came_from, start, end)
+                path_to_chip(
+                    path,
+                    new_chip.chip,
+                    random_connection["start_gate"],
+                    random_connection["end_gate"],
+                )
+                new_chip.chip.connections.remove(random_connection)
+                new_chip.chip.connections.append(random_connection)
 
     def check_solution(self, new_chip):
         """Check if new solution is better than the old solution"""
