@@ -1,4 +1,8 @@
-"""This file contains the class with all gates"""
+"""
+gate.py
+
+This file contains the class with all gates
+"""
 
 
 class Gate:

@@ -59,7 +59,14 @@ running netlist 4 with astar_hill algorithm with manhattan sort a 100 times:
 ```
 
 ---------------------------------------------------
+## Output
 
+When running this model you will receive the following output:
+- A visualization of the run with the lowest score 
+- a output.csv file including the gates id's, the nets and score. This is the output of the run with the lowest score
+- a batchrun file with score, output (same as in the output file) and time of each run
+
+---------------------------------------------------
 ## Technologies
 Project is created with:
 * Python version: 3.9

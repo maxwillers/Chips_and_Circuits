@@ -1,4 +1,5 @@
 """
+visualization.py
 This file contains the code for both a 2D and a 3D visualization
 """
 

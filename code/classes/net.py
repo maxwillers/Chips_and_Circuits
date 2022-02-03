@@ -1,4 +1,7 @@
-"""This file contains the class Net which form the connections between gates"""
+"""
+Net.py
+This file contains the class Net which form the connections between gates
+"""
 
 
 class Net:

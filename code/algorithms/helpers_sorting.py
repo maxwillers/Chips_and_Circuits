@@ -1,6 +1,5 @@
 """
 helpers_sorting.py
-
 This file contains functions that can sort the netlist:
 - manhattan_dis_sort : sorts the list based on their manhatan distance
 - random_sort: randomly sorts the netlist

@@ -1,4 +1,7 @@
-"""This file contains the class Chip, which forms a chip with gates on it"""
+"""
+Chips.py
+This file contains the class Chip, which forms a chip with gates on it
+"""
 
 from code.classes.gate import Gate
 import pandas as pd
